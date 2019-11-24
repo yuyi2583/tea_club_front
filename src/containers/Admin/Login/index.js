@@ -5,7 +5,7 @@ import {actions as authActions,getAuth} from "../../../redux/modules/auth";
 import { Form, Icon, Input, Button, Checkbox } from 'antd';
 import "./style.css";
 import {Redirect,Link} from "react-router-dom";
-import {map} from "../../../router/map";
+import {map} from "../../../router";
 
 class NormalLoginForm extends React.Component {
     constructor(props){
@@ -35,7 +35,7 @@ class NormalLoginForm extends React.Component {
   
     render() {
       const {redirectToReferrer}=this.state;
-      const { from } = this.props.location.state || { from: { pathname:map.AdminHome()  } };
+      const { from } = this.props.location.state || { from: { pathname:map.admin.AdminHome()  } };
       if(redirectToReferrer){
         return <Redirect to={from} />;
       }
@@ -70,7 +70,7 @@ class NormalLoginForm extends React.Component {
                 initialValue: true,
               })(<Checkbox>记住我</Checkbox>)}
               <Link className="login-form-forgot" to={{
-                pathname:map.AdminForgetPsw(),
+                pathname:map.admin.AdminForgetPsw(),
                 state:{from}
               }}>忘记密码</Link>
               <Button type="primary" htmlType="submit" className="login-form-button">

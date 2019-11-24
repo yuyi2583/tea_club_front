@@ -5,7 +5,7 @@ import { actions as uiActions, getCountDown, totalCountDown } from "../../../red
 import { bindActionCreators } from "redux";
 import { actions as authActions, getAuth } from "../../../redux/modules/auth";
 import { connect } from "react-redux";
-import { map } from "../../../router/map";
+import { map } from "../../../router";
 import { Link, Redirect } from "react-router-dom";
 
 const InputGroup = Input.Group;
@@ -30,8 +30,6 @@ class ForgetPsw extends Component {
 
     handleSubmit = e => {
         e.preventDefault();
-        console.log("123")
-        console.log(this.props.location.state)
         this.props.form.validateFields((err, values) => {
             if (!err) {
                 // console.log('Received values of form: ', values);
@@ -69,7 +67,7 @@ class ForgetPsw extends Component {
             <div id="admin-forget-root">
                 <Form onSubmit={this.handleSubmit} className="forget-form">
                     <Form.Item>
-                        <Link to={map.AdminLogin()} style={{ color: 'rgba(0,0,0,.25)' }}>
+                        <Link to={map.admin.AdminLogin()} style={{ color: 'rgba(0,0,0,.25)' }}>
                             <Icon type="double-left" style={{ color: 'rgba(0,0,0,.25)' }} />
                             &nbsp;返回登录
                         </Link>

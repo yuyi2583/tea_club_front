@@ -3,16 +3,19 @@ import './style.css';
 import {
   BrowserRouter as Router,
   Switch,
-  Route,
-  Redirect
+  Route
 } from "react-router-dom";
-import Routers, { NotFound } from "../../router/map";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actions as appActions, getError, getRequestQuantity } from "../../redux/modules/app";
 import { getAuth } from "../../redux/modules/auth";
 import { actions as uiActions, getClientHeight, getClientWidth } from "../../redux/modules/ui";
-import { map } from "../../router/map";
+import { map  } from "../../router";
+import asyncComponent from "../../utils/AsyncComponent";
+import connectRoute from "../../utils/connectRoute";
+
+const AsyncAdmin=connectRoute(asyncComponent(()=>import("../Admin")));
+const AsyncClient=connectRoute(asyncComponent(()=>import("../Client")))
 
 class App extends React.Component {
 
@@ -22,24 +25,11 @@ class App extends React.Component {
   }
   render() {
     return (
-      <div style={{ width: this.props.clientWidth + "px", height: this.props.clientHeight + "px" }}>
+      <div style={{ width: this.props.clientWidth + "px", height: this.props.clientHeight + "px",overflow:"hidden" }}>
         <Router>
           <Switch>
-            {Routers.map((item, index) => {
-              return <Route key={index} path={item.path} exact render={(props) => (
-                !item.auth ? <item.component {...props} /> : this.props.auth.userId ? <item.component {...props} /> :
-                  item.isClient ? <Redirect to={{
-                    pathname: map.ClientLogin(),
-                    state: { from: props.location }
-                  }} /> :
-                    <Redirect to={{
-                      pathname: map.AdminLogin(),
-                      state: { from: props.location }
-                    }} />
-              )} />
-            })}
-            // 所有错误路由跳转页面
-            <Route component={NotFound} />
+            <Route path={map.admin.AdminHome()} component={AsyncAdmin}/>
+            <Route path={map.client.ClientHome()} component={AsyncClient}/>
           </Switch>
         </Router>
       </div>
