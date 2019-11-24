@@ -1,19 +1,18 @@
-.login-form {
-    max-width: 300px;
+.forget-form {
+    max-width: 350px;
     border:1px solid#DCDCDC;
     border-radius: 10px;
     padding:20px;
     margin:auto;
     box-shadow: 10px 10px 5px #DCDCDC;
-  }
-.login-form-forgot {
+}
+.forget-form-forgot {
     float: right;
-  }
-.login-form-button {
+}
+.forget-form-button {
     width: 100%;
 }
-
-#admin-login-root {
+#admin-forget-root {
   width:100%;
   height:100%;
   padding-top:50px;

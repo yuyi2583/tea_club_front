@@ -7,6 +7,7 @@ const ADMIN="/administrator";
 const component = {
     AdminLogin: connectRoute(asyncComponent(() => import("../containers/Admin/Login"))),
     AdminHome: connectRoute(asyncComponent(() => import("../containers/Admin/Home"))),
+    AdminForget:connectRoute(asyncComponent(()=>import("../containers/Admin/ForgetPsw"))),
 }
 
 export const NotFound = connectRoute(asyncComponent(() => import("../components/NotFound")));
@@ -14,6 +15,7 @@ export const NotFound = connectRoute(asyncComponent(() => import("../components/
 export const map = {
     AdminHome:()=>ADMIN,
     AdminLogin:()=>ADMIN+"/login",
+    AdminForgetPsw:()=>ADMIN+"/forget",
     ClientHome:()=>"/",
     ClientLogin:()=>"/login",
 };
@@ -25,4 +27,5 @@ export const map = {
 export default [
     { path: map.AdminHome(), name: "AdminHome", component: component.AdminHome, auth: true },
     { path: map.AdminLogin(), name: "AdminLogin", component: component.AdminLogin },
+    { path: map.AdminForgetPsw(), name: "AdminForget", component: component.AdminForget },
 ]

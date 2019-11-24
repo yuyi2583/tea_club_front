@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import {actions as authActions,getAuth} from "../../../redux/modules/auth";
 import { Form, Icon, Input, Button, Checkbox } from 'antd';
 import "./style.css";
-import {Redirect} from "react-router-dom";
+import {Redirect,Link} from "react-router-dom";
 import {map} from "../../../router/map";
 
 class NormalLoginForm extends React.Component {
@@ -41,41 +41,44 @@ class NormalLoginForm extends React.Component {
       }
       const { getFieldDecorator } = this.props.form;
       return (
-        <Form onSubmit={this.handleSubmit} className="login-form">
-          <Form.Item>
-            {getFieldDecorator('username', {
-              rules: [{ required: true, message: '请输入用户名!' }],
-            })(
-              <Input
-                prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                placeholder="用户名"
-              />,
-            )}
-          </Form.Item>
-          <Form.Item>
-            {getFieldDecorator('password', {
-              rules: [{ required: true, message: '请输入密码!' }],
-            })(
-              <Input
-                prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                type="password"
-                placeholder="密码"
-              />,
-            )}
-          </Form.Item>
-          <Form.Item>
-            {getFieldDecorator('remember', {
-              valuePropName: 'checked',
-              initialValue: true,
-            })(<Checkbox>记住我</Checkbox>)}
-            <a className="login-form-forgot" href="">
-              忘记密码
-            </a>
-            <Button type="primary" htmlType="submit" className="login-form-button">
-              登录
-            </Button>
-          </Form.Item>
-        </Form>
+        <div id="admin-login-root">
+          <Form onSubmit={this.handleSubmit} className="login-form">
+            <Form.Item>
+              {getFieldDecorator('username', {
+                rules: [{ required: true, message: '请输入用户名!' }],
+              })(
+                <Input
+                  prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                  placeholder="用户名"
+                />,
+              )}
+            </Form.Item>
+            <Form.Item>
+              {getFieldDecorator('password', {
+                rules: [{ required: true, message: '请输入密码!' }],
+              })(
+                <Input
+                  prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                  type="password"
+                  placeholder="密码"
+                />,
+              )}
+            </Form.Item>
+            <Form.Item>
+              {getFieldDecorator('remember', {
+                valuePropName: 'checked',
+                initialValue: true,
+              })(<Checkbox>记住我</Checkbox>)}
+              <Link className="login-form-forgot" to={{
+                pathname:map.AdminForgetPsw(),
+                state:{from}
+              }}>忘记密码</Link>
+              <Button type="primary" htmlType="submit" className="login-form-button">
+                登录
+              </Button>
+            </Form.Item>
+          </Form>
+        </div>
       );
     }
   }
