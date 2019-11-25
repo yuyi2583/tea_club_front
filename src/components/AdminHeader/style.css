@@ -1,0 +1,29 @@
+.header-body,.header-logo {
+    height: 43px;
+    margin: 10px 28px 10px 0;
+    display: flex;
+    align-items: center;
+    /* background: rgba(255, 255, 255, 0.2); */
+    font-size: 24px;
+    color:#DCDCDC;
+}
+.header-logo {
+    width: 206px;
+    float: left;
+    justify-content: space-around;
+}
+.header-body {
+    width:50%;
+    float: right;
+    padding:0 20px;
+    flex-direction: row-reverse;
+}
+.avatar-content:hover{
+    background:#F5F5F5;
+}
+.avatar-content {
+    color: #808080;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
