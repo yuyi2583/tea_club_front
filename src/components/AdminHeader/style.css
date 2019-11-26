@@ -23,7 +23,4 @@
 }
 .avatar-content {
     color: #808080;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
 }

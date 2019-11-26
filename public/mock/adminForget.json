@@ -1,8 +1,7 @@
 {
     "user": {
       "userId":"123",
-      "userName":"123",
-      "userType":2
+      "userName":"123"
     },
     "retCode": "200",
     "error":""

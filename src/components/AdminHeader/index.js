@@ -1,18 +1,16 @@
 import React from "react";
-import { Layout, Icon, Row, Col, Avatar, Badge, Popover, Button } from 'antd';
+import { Layout, Icon, Row, Col, Avatar, Badge, Popover, Button ,Divider} from 'antd';
 import "./style.css";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actions as uiActions, getMessageDrawerState } from "../../redux/modules/ui";
 import { Link } from "react-router-dom";
 import { map } from "../../router";
+import { actions as authActions, getAuth } from "../../redux/modules/adminAuth";
 
 const { Header } = Layout;
 
 class AdminHeader extends React.Component {
-    constructor(props) {
-        super(props);
-    }
 
     handleClick = () => {
         this.props.openMessageDrawer();
@@ -21,19 +19,39 @@ class AdminHeader extends React.Component {
     render() {
         const { from } = this.props.location.state || { from: { pathname: map.admin.AdminHome() } };
         const content = (
-            <div>
+            <div style={{ width: "150px" }}>
                 <Button type="link" block className="avatar-content">
-                    <Icon type="setting" />
-                    <Link to={{
-                        pathname: map.admin.AdminAlterPsw(),
-                        state: { from }
-                    }}>
-                        &nbsp;&nbsp;修改密码
-                    </Link>
+                    <Row gutter={8}>
+                        <Col span={8}><Icon type="user" /></Col>
+                        <Col span={16}>
+                            {this.props.auth.userName}
+                        </Col>
+                    </Row>
+                </Button>
+                <Divider style={{margin:"5px 0"}}/>
+                <Button type="link" block className="avatar-content">
+                    <Row gutter={8}>
+                        <Col span={8}><Icon type="setting" /></Col>
+                        <Col span={16}>
+                            <Link
+                                to={{
+                                    pathname: map.admin.AdminAlterPsw(),
+                                    state: { from }
+                                }}
+                                style={{ color: "#808080" }}
+                            >
+                                修改密码
+                            </Link>
+                        </Col>
+                    </Row>
                 </Button>
                 <Button type="link" block className="avatar-content">
-                    <Icon type="logout" />
-                    &nbsp;&nbsp;登出
+                    <Row gutter={8}>
+                        <Col span={8}><Icon type="logout" /></Col>
+                        <Col span={16} style={{ color: "#808080" }}>
+                            登出
+                        </Col>
+                    </Row>
                 </Button>
             </div>
         );
@@ -68,13 +86,14 @@ class AdminHeader extends React.Component {
 
 const mapStateToProps = (state, props) => {
     return {
-        openDrawer: getMessageDrawerState(state)
+        openDrawer: getMessageDrawerState(state),
+        auth: getAuth(state)
     }
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        ...bindActionCreators(uiActions, dispatch)
+        ...bindActionCreators({ ...uiActions, ...authActions }, dispatch)
     }
 };
 

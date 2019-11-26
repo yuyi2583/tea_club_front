@@ -8,14 +8,15 @@ import {
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actions as appActions, getError, getRequestQuantity } from "../../redux/modules/app";
-import { getAuth } from "../../redux/modules/auth";
+import { getAuth } from "../../redux/modules/adminAuth";
 import { actions as uiActions, getClientHeight, getClientWidth } from "../../redux/modules/ui";
-import { map  } from "../../router";
+import { map } from "../../router";
 import asyncComponent from "../../utils/AsyncComponent";
 import connectRoute from "../../utils/connectRoute";
 
 const AsyncAdmin=connectRoute(asyncComponent(()=>import("../Admin")));
-const AsyncClient=connectRoute(asyncComponent(()=>import("../Client")))
+const AsyncClient=connectRoute(asyncComponent(()=>import("../Client")));
+const AsyncNotFound=connectRoute(asyncComponent(()=>import("../../components/NotFound")));
 
 class App extends React.Component {
 
@@ -28,6 +29,7 @@ class App extends React.Component {
       <div style={{ width: this.props.clientWidth + "px", height: this.props.clientHeight + "px",overflow:"hidden" }}>
         <Router>
           <Switch>
+            <Route path={map.error()} exact component={AsyncNotFound} />
             <Route path={map.admin.AdminHome()} component={AsyncAdmin}/>
             <Route path={map.client.ClientHome()} component={AsyncClient}/>
           </Switch>

@@ -2,7 +2,16 @@
     "user": {
       "userId":"123",
       "userName":"123",
-      "userType":2
+      "authority":[
+        {"id":"1","name":"h1","belong":{"id":"1","name":"t1"}},
+        {"id":"2","name":"h2","belong":{"id":"1","name":"t1"}},
+        {"id":"3","name":"h3","belong":{"id":"2","name":"t2"}},
+        {"id":"4","name":"h4","belong":{"id":"2","name":"t2"}},
+        {"id":"5","name":"h5","belong":{"id":"3","name":"t3"}},
+        {"id":"6","name":"h6","belong":{"id":"4","name":"t4"}},
+        {"id":"7","name":"h7","belong":{"id":"4","name":"t4"}},
+        {"id":"8","name":"h8","belong":{"id":"4","name":"t4"}}
+      ]
     },
     "retCode": "200",
     "error":""

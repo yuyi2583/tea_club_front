@@ -1,12 +1,12 @@
 import { combineReducers } from "redux";
-import auth from "./auth";
+import adminAuth from "./adminAuth";
 import app from "./app";
 import ui from "./ui";
 
 
 // 合并所有模块的reducer成一个根reducer
 const rootReducer=combineReducers({
-    auth,
+    adminAuth,
     app,
     ui,
 });

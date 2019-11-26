@@ -3,7 +3,7 @@ import { Form, Icon, Input, Button, Row, Col, } from 'antd';
 import "./style.css";
 import { actions as uiActions, getCountDown, totalCountDown } from "../../../redux/modules/ui";
 import { bindActionCreators } from "redux";
-import { actions as authActions, getAuth } from "../../../redux/modules/auth";
+import { actions as authActions, getAuth } from "../../../redux/modules/adminAuth";
 import { connect } from "react-redux";
 import { map } from "../../../router";
 import { Link, Redirect } from "react-router-dom";
