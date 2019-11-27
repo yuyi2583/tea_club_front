@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import CompanyInfo from "../containers/Admin/CompanyInfo";
 
 //此高阶组件作用为代码分片
 
@@ -13,10 +14,14 @@ export default function asyncComponent(importComponent) {
     }
 
     componentDidMount() {
+      console.log("companyInfo class:"+CompanyInfo);
       importComponent().then((mod) => {
+        const component=mod.default ? mod.default : mod;
+        console.log("flag in async:"+component);
+        // AsyncComponent.flag=mod.default.flag;
         this.setState({
           // 同时兼容ES6和CommonJS的模块
-          component: mod.default ? mod.default : mod
+          component
         });
       });
     }

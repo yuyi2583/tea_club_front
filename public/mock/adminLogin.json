@@ -3,14 +3,14 @@
       "userId":"123",
       "userName":"123",
       "authority":[
-        {"id":"1","name":"h1","belong":{"id":"1","name":"t1"}},
-        {"id":"2","name":"h2","belong":{"id":"1","name":"t1"}},
-        {"id":"3","name":"h3","belong":{"id":"2","name":"t2"}},
-        {"id":"4","name":"h4","belong":{"id":"2","name":"t2"}},
-        {"id":"5","name":"h5","belong":{"id":"3","name":"t3"}},
-        {"id":"6","name":"h6","belong":{"id":"4","name":"t4"}},
-        {"id":"7","name":"h7","belong":{"id":"4","name":"t4"}},
-        {"id":"8","name":"h8","belong":{"id":"4","name":"t4"}}
+        {"id":"1","name":"company_info","component":"Admin/CompanyInfo","title":"公司信息","belong":{"id":"1","name":"company","title":"公司管理","icon":"book"}},
+        {"id":"2","name":"h2","component":"Admin/CompanyInfo","title":"h2","belong":{"id":"1","name":"t1","title":"t1","icon":"mail"}},
+        {"id":"3","name":"h3","component":"Admin/CompanyInfo","title":"h3","belong":{"id":"2","name":"t2","title":"t2","icon":"mail"}},
+        {"id":"4","name":"h4","component":"Admin/CompanyInfo","title":"h4","belong":{"id":"2","name":"t2","title":"t2","icon":"mail"}},
+        {"id":"5","name":"h5","component":"Admin/CompanyInfo","title":"h5","belong":{"id":"3","name":"t3","title":"t3","icon":"mail"}},
+        {"id":"6","name":"h6","component":"Admin/CompanyInfo","title":"h6","belong":{"id":"4","name":"t4","title":"t4","icon":"mail"}},
+        {"id":"7","name":"h7","component":"Admin/CompanyInfo","title":"h7","belong":{"id":"4","name":"t4","title":"t4","icon":"mail"}},
+        {"id":"8","name":"h8","component":"Admin/CompanyInfo","title":"h8","belong":{"id":"4","name":"t4","title":"t4","icon":"mail"}}
       ]
     },
     "retCode": "200",

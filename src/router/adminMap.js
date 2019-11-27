@@ -11,6 +11,9 @@ const component = {
 
 export const NotFound = connectRoute(asyncComponent(() => import("../components/NotFound")));
 
+
+
+//通用路由map
 export const map = {
     AdminHome:()=>ADMIN,
     AdminLogin:()=>ADMIN+"/login",
@@ -19,6 +22,9 @@ export const map = {
 };
 
 /**
+ * 此处路由为通用路由
+ * 不同账户权限不同路由不同
+ * 对应路由根据账户权限动态配置
  * auth:此路由是否需要登录验证
  */
 export default [

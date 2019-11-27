@@ -59,8 +59,8 @@ class SiderContent extends React.Component {
                   key={index}
                   title={
                     <span>
-                      <Icon type="mail" />
-                      <span>{belong.name}</span>
+                      <Icon type={belong.icon} />
+                      <span>{belong.title}</span>
                     </span>
                   }>
                     {authority.filter((item)=>item.belong===belong.id).map((item)=>{
@@ -68,7 +68,7 @@ class SiderContent extends React.Component {
                         <Menu.Item key={item.id}>
                           <Link to={{
                             pathname:item.pathname,
-                          }}>{item.name}</Link>
+                          }}>{item.title}</Link>
                         </Menu.Item>
                       )
                     })}

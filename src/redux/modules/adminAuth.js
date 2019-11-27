@@ -1,23 +1,29 @@
 import { actions as appActions } from "./app";
 import { post, get } from "../../utils/request";
 import url from "../../utils/url";
-import {map} from "../../router";
+import {map,dynamicRoute} from "../../router";
 
 const initialState = {
     userId: null,
     userName: null,
     authority: {},
     authorityBelong:[],
+    hasAuthority:false,
 };
 
 //action types
 export const types = {
-    LOGIN: "AUTH/LOGIN",   //登录
-    LOGOUT: "AUTH/LOGOUT"  //注销
+    LOGIN: "AUTH/LOGIN",                    //登录
+    LOGOUT: "AUTH/LOGOUT",                  //注销
+    CHECK_AUTHORITY:"AUTH/CHECK_AUTHORITY"  //检查权限
 };
 
 //action creators
 export const actions = {
+    //检查是否有权限
+    checkAuthority:(flag)=>{
+        
+    },
     forgetPsw: (phoneNumber, verifyNumber, idNumber, password) => {
         return (dispatch) => {
             dispatch(appActions.startRequest());
@@ -78,6 +84,7 @@ const convertToPlainStructure=(data)=>{
             byAuthorityBelong[item.belong.id]=item.belong;
         }
     });
+    byAuthority=dynamicRoute(byAuthority);
     return {
         userId,
         userName,
@@ -108,6 +115,7 @@ export default reducer;
 
 //selector
 export const getAuth = (state) => state.adminAuth;
+//将权限类别转为数组
 export const getAuthorityBelong=(state)=>{
     const {authorityBelong}=state.adminAuth;
     let byAuthorityBelong=[];
@@ -116,6 +124,7 @@ export const getAuthorityBelong=(state)=>{
     }
     return byAuthorityBelong;
 }
+//将权限转为数组
 export const getAuthority=(state)=>{
     const {authority}=state.adminAuth;
     let byAuthority=[];
