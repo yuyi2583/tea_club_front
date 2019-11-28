@@ -20,10 +20,6 @@ export const types = {
 
 //action creators
 export const actions = {
-    //检查是否有权限
-    checkAuthority:(flag)=>{
-        
-    },
     forgetPsw: (phoneNumber, verifyNumber, idNumber, password) => {
         return (dispatch) => {
             dispatch(appActions.startRequest());

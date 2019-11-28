@@ -1,6 +1,5 @@
 import asyncComponent from "../utils/AsyncComponent";
 import connectRoute from "../utils/connectRoute";
-import checkAuthority from "../utils/checkAuthority";
 import adminRouters,{map as adminMap} from "./adminMap";
 import clientRouters,{map as clientMap} from "./clientMap";
 
@@ -15,7 +14,7 @@ export const dynamicRoute=(data)=>{
     let authority=data;
     for(var key in authority){
         let a=authority[key].component;
-        let component=connectRoute(checkAuthority(asyncComponent(() => import(`../containers/${a}`))));
+        let component=connectRoute(asyncComponent(() => import(`../containers/${a}`)));
         authority[key].component=component;
     }
     return authority;
