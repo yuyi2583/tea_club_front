@@ -1,9 +1,10 @@
 export const totalCountDown = 5;
 const initialState = {
-    clientHeight: null,
-    clientWidth: null,
-    countDown: totalCountDown,
-    openMessageDrawer: false,
+    clientHeight: null,             //客户端高度
+    clientWidth: null,              //客户端宽度
+    countDown: totalCountDown,      //计时数
+    openMessageDrawer: false,       //打开消息抽屉
+    alterInfo: false,                //修改信息状态
 };
 
 //action types
@@ -13,6 +14,8 @@ export const types = {
     FINISH_COUNT_DOWN: "UI/FINISH_COUNT_DOWN",         //结束倒计时
     OPEN_MESSAGE_DRAWER: "UI/OPEN_MESSAGE_DRAWER",     //打开消息抽屉
     CLOSE_MESSAGE_DRAWER: "UI/CLOSE_MESSAGE_DRAWER",    //关闭消息抽屉
+    START_ALTER_INFO: "UI/START_ALTER_INFO",             //开始修改信息
+    FINISH_ALTER_INFO: "UI/FINISH_ALTER_INFO",           //结束修改信息
 };
 
 //action creators
@@ -34,6 +37,12 @@ export const actions = {
     }),
     closeMessageDrawer: () => ({
         type: types.CLOSE_MESSAGE_DRAWER,
+    }),
+    startAlterInfo: () => ({
+        type: types.START_ALTER_INFO
+    }),
+    finishAlterInfo: () => ({
+        type: types.FINISH_ALTER_INFO
     })
 };
 
@@ -50,6 +59,10 @@ const reducer = (state = initialState, action) => {
             return { ...state, openMessageDrawer: true };
         case types.CLOSE_MESSAGE_DRAWER:
             return { ...state, openMessageDrawer: false };
+        case types.START_ALTER_INFO:
+            return { ...state, alterInfo: true };
+        case types.FINISH_ALTER_INFO:
+            return { ...state, alterInfo: false };
         default:
             return state;
     }
@@ -62,3 +75,4 @@ export const getClientWidth = (state) => state.ui.clientWidth;
 export const getClientHeight = (state) => state.ui.clientHeight;
 export const getCountDown = (state) => state.ui.countDown;
 export const getMessageDrawerState = (state) => state.ui.openMessageDrawer;
+export const getAlterInfoState = (state) => state.ui.alterInfo;

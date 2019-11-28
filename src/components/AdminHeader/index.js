@@ -7,6 +7,7 @@ import { actions as uiActions, getMessageDrawerState } from "../../redux/modules
 import { Link } from "react-router-dom";
 import { map } from "../../router";
 import { actions as authActions, getAuth } from "../../redux/modules/adminAuth";
+import Brand from "../../assets/brand.svg";
 
 const { Header } = Layout;
 
@@ -60,7 +61,7 @@ class AdminHeader extends React.Component {
                 <div className="header-logo">
                     <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
                         <Col span={6}>
-                            <Icon type="bulb" theme="twoTone" />
+                            <Icon type="bulb"/>
                         </Col>
                         <Col span={16}>茶会所</Col>
                     </Row>

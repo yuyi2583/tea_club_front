@@ -14,11 +14,8 @@ export default function asyncComponent(importComponent) {
     }
 
     componentDidMount() {
-      console.log("companyInfo class:"+CompanyInfo);
       importComponent().then((mod) => {
         const component=mod.default ? mod.default : mod;
-        console.log("flag in async:"+component);
-        // AsyncComponent.flag=mod.default.flag;
         this.setState({
           // 同时兼容ES6和CommonJS的模块
           component

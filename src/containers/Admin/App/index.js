@@ -15,7 +15,7 @@ const { Content, Sider } = Layout;
 
 class App extends React.Component {
 
-    componentWillMount(){
+    componentDidMount(){
         //调试用，避免每次热更新都要重新登录，生产环境需要删除
         this.props.login("123","1");
     }

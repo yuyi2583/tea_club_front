@@ -13,7 +13,7 @@ function Admin() {
         <Switch>
             <Route path={map.admin.AdminLogin()} exact component={AsyncLogin}/>
             <Route path={map.admin.AdminForgetPsw()} exact component={AsyncForget}/>
-            <Route path={map.admin.AdminHome()}  component={AsyncApp}/>
+            <Route path={map.admin.AdminHome()}  component={AsyncApp} />
         </Switch>
     )
 }
