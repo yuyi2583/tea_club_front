@@ -3,8 +3,8 @@
       "userId":"123",
       "userName":"123",
       "authority":[
-        {"id":"1","name":"company_info","component":"Admin/CompanyInfo","title":"公司信息","belong":{"id":"1","name":"company","title":"公司管理","icon":"book"}},
-        {"id":"2","name":"h2","component":"Admin/CompanyInfo","title":"h2","belong":{"id":"1","name":"t1","title":"t1","icon":"mail"}},
+        {"id":"1","name":"company_info","component":"Admin/CompanyInfo","title":"公司信息管理","belong":{"id":"1","name":"company","title":"公司管理","icon":"book"}},
+        {"id":"2","name":"shop_management","component":"Admin/ShopManagement","title":"门店管理","belong":{"id":"1","name":"company","title":"公司管理","icon":"book"}},
         {"id":"3","name":"h3","component":"Admin/CompanyInfo","title":"h3","belong":{"id":"2","name":"t2","title":"t2","icon":"mail"}},
         {"id":"4","name":"h4","component":"Admin/CompanyInfo","title":"h4","belong":{"id":"2","name":"t2","title":"t2","icon":"mail"}},
         {"id":"5","name":"h5","component":"Admin/CompanyInfo","title":"h5","belong":{"id":"3","name":"t3","title":"t3","icon":"mail"}},
