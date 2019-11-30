@@ -1,10 +1,11 @@
 import { actions as appActions } from "./app";
 import url from "../../utils/url";
 import { get } from "../../utils/request";
+import {actions as clerkActions} from "./clerk";
 
 const initialState = {
-    shopList: {},
-    shopInfo: {}
+    shopList: null,
+    shopInfo: null
 }
 
 export const types = {
@@ -21,7 +22,9 @@ export const actions = {
             return get(url.fetchShopInfo(), params).then((data) => {
                 dispatch(appActions.finishRequest());
                 if (!data.error) {
-                    dispatch(fetchShopInfoSuccess(data.shopInfo));
+                    const {shopInfo,byClerks}=convertShopInfoToPlainStructure(data.shopInfo);
+                    dispatch(fetchShopInfoSuccess(shopInfo));
+                    dispatch(clerkActions.fetchClerks(byClerks))
                 } else {
                     dispatch(appActions.setError(data.error));
                 }
@@ -43,7 +46,27 @@ export const actions = {
         }
     }
 };
-
+const convertShopInfoToPlainStructure=(shopInfo)=>{
+    let byClerk=[];
+    let plainClerk={};
+    const {clerk}=shopInfo;
+    const shopManager=clerk.filter((item)=>item.position.indexOf("店长")!=-1);
+    shopManager.forEach((item)=>{
+        byClerk.push(item.id);
+    })
+    clerk.forEach((item)=>{
+        if(item.position.indexOf("店长")==-1){
+            byClerk.push(item.id);
+        }
+        if(!plainClerk[item.id]){
+            plainClerk[item.id]=item;
+        }
+    })
+    return {
+        shopInfo:{...shopInfo,clerk:byClerk},
+        byClerks:plainClerk
+    }
+}
 const convertShopListToPlainStructure=(shopList)=>{
     let byShopList={};
     shopList.forEach((item)=>{

@@ -3,6 +3,7 @@ import adminAuth from "./adminAuth";
 import app from "./app";
 import ui from "./ui";
 import shop from "./shop";
+import clerk from "./clerk";
 
 
 // 合并所有模块的reducer成一个根reducer
@@ -11,6 +12,7 @@ const rootReducer = combineReducers({
     app,
     ui,
     shop,
+    clerk,
 });
 
 export default rootReducer;

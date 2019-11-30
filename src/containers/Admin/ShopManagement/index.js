@@ -4,12 +4,15 @@ import { Select, Empty } from "antd";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actions as shopActions, getShop, getShopList } from "../../../redux/modules/shop";
+import { getClerks } from "../../../redux/modules/clerk";
+import Content from "./components/Content";
 
 const { Option } = Select;
 
 class ShopManagement extends React.Component {
     onChange = (value) => {
         console.log(`selected ${value}`);
+        this.props.fetchShopInfo(value);
     }
 
     onBlur = () => {
@@ -29,7 +32,7 @@ class ShopManagement extends React.Component {
     }
     render() {
         const { shopList, shopInfo } = this.props.shop;
-        const {shopListInArray}=this.props;
+        const { shopListInArray,byClerks } = this.props;
         return (
             <PageHeader
                 title="门店管理">
@@ -51,7 +54,7 @@ class ShopManagement extends React.Component {
                             return <Option value={shop.id} key={shop.id}>{shop.name}</Option>
                         })}
                     </Select>
-                    <Empty />
+                    {shopInfo?<Content shopInfo={shopInfo} byClerks={byClerks} />:<Empty />}
                 </div>
             </PageHeader>
         )
@@ -61,7 +64,8 @@ class ShopManagement extends React.Component {
 const mapStateToProps = (state, props) => {
     return {
         shop: getShop(state),
-        shopListInArray: getShopList(state)
+        shopListInArray: getShopList(state),
+        byClerks: getClerks(state)
     };
 };
 
