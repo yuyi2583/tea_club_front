@@ -5,6 +5,7 @@ const initialState = {
     countDown: totalCountDown,      //计时数
     openMessageDrawer: false,       //打开消息抽屉
     alterInfo: false,                //修改信息状态
+    shopId_shopManagement:"",          //门店管理选择的门店编号
 };
 
 //action types
@@ -16,6 +17,7 @@ export const types = {
     CLOSE_MESSAGE_DRAWER: "UI/CLOSE_MESSAGE_DRAWER",    //关闭消息抽屉
     START_ALTER_INFO: "UI/START_ALTER_INFO",             //开始修改信息
     FINISH_ALTER_INFO: "UI/FINISH_ALTER_INFO",           //结束修改信息
+    SHOPMANAGEMENT_SELECT_SHOP: "UI/SHOPMANAGEMENT_SELECT_SHOP",     //选择门店
 };
 
 //action creators
@@ -43,6 +45,10 @@ export const actions = {
     }),
     finishAlterInfo: () => ({
         type: types.FINISH_ALTER_INFO
+    }),
+    selectShop_shopManagement: (shopId) => ({
+        type: types.SHOPMANAGEMENT_SELECT_SHOP,
+        shopId_shopManagement: shopId
     })
 };
 
@@ -63,6 +69,8 @@ const reducer = (state = initialState, action) => {
             return { ...state, alterInfo: true };
         case types.FINISH_ALTER_INFO:
             return { ...state, alterInfo: false };
+        case types.SHOPMANAGEMENT_SELECT_SHOP:
+            return { ...state, shopId_shopManagement: action.shopId_shopManagement };
         default:
             return state;
     }
@@ -76,3 +84,4 @@ export const getClientHeight = (state) => state.ui.clientHeight;
 export const getCountDown = (state) => state.ui.countDown;
 export const getMessageDrawerState = (state) => state.ui.openMessageDrawer;
 export const getAlterInfoState = (state) => state.ui.alterInfo;
+export const getShopId_shopManagement = (state) => state.ui.shopId_shopManagement;

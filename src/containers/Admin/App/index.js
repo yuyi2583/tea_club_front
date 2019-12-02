@@ -9,20 +9,21 @@ import Header from "../../../components/AdminHeader";
 import Drawer from "../../../components/MessageDrawer";
 import Routers, { map } from "../../../router";
 import { Route, Redirect, Switch } from "react-router-dom";
-import { actions as authActions,getAuth,getAuthority } from "../../../redux/modules/adminAuth";
+import { actions as authActions, getAuth, getAuthority } from "../../../redux/modules/adminAuth";
+import { getRequestQuantity, getError } from "../../../redux/modules/app";
 
 const { Content, Sider } = Layout;
 
 class App extends React.Component {
 
-    componentDidMount(){
+    componentDidMount() {
         //调试用，避免每次热更新都要重新登录，生产环境需要删除
-        this.props.login("123","1");
+        this.props.login("123", "1");
     }
 
     render() {
         const { from } = this.props.location.state || { from: { pathname: map.admin.AdminHome() } };
-        const {authority}=this.props;
+        const { authority,requestQuantity,error } = this.props;
         return (
             <Layout>
                 <Header location={this.props.location} />
@@ -56,30 +57,30 @@ class App extends React.Component {
                                         return <Route key={index} path={item.path} exact render={(props) => (
                                             !item.auth ? <item.component {...props} /> :
                                                 // this.props.auth.userId ? 
-                                                true?
-                                                <item.component {...props} /> :
+                                                true ?
+                                                    <item.component {...props} /> :
                                                     <Redirect to={{
                                                         pathname: map.admin.AdminLogin(),
                                                         state: { from }
                                                     }} />
                                         )} />
                                     })}
-                                    {authority.map((item)=>{
-                                       return <Route key={item.id} path={item.pathname} exact render={(props) => (
-                                        !item.auth ? <item.component {...props} authority={authority} /> :
-                                            // this.props.auth.userId ? 
-                                            true?
-                                            <item.component {...props} authority={authority} /> :
-                                                <Redirect to={{
-                                                    pathname: map.admin.AdminLogin(),
-                                                    state: { from }
-                                                }} />
-                                    )} />
+                                    {authority.map((item) => {
+                                        return <Route key={item.id} path={item.pathname} render={(props) => (
+                                            !item.auth ? <item.component {...props} authority={authority}/> :
+                                                // this.props.auth.userId ? 
+                                                true ?
+                                                    <item.component {...props} authority={authority}/> :
+                                                    <Redirect to={{
+                                                        pathname: map.admin.AdminLogin(),
+                                                        state: { from }
+                                                    }} />
+                                        )} />
                                     })}
                                     <Redirect to={{
-                                        pathname:map.error(),
-                                        state:{from}
-                                    }}/>
+                                        pathname: map.error(),
+                                        state: { from }
+                                    }} />
                                 </Switch>
                             </div>
                         </Content>
@@ -95,13 +96,13 @@ const mapStateToProps = (state, props) => {
     return {
         clientHeight: getClientHeight(state),
         auth: getAuth(state),
-        authority:getAuthority(state)
+        authority: getAuthority(state),
     }
 }
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        ...bindActionCreators(authActions,dispatch)
+        ...bindActionCreators(authActions, dispatch)
     }
 }
 export default connect(mapStateToProps, mapDispatchToProps)(App);
