@@ -1,14 +1,14 @@
 import React from "react";
-import { Select, Empty, Spin } from "antd";
+import { Select, PageHeader } from "antd";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actions as shopActions, getShop, getShopList } from "../../../redux/modules/shop";
 import { getClerks } from "../../../redux/modules/clerk";
-import ShopInfo from "./components/ShopInfo";
-import { Switch, Route, Link } from "react-router-dom";
-import PageHeader from "../../../components/AdminPageHeader";
+import ShopView from "./components/ShopView";
+import { Route } from "react-router-dom";
 import { getError, getRequestQuantity } from "../../../redux/modules/app";
 import { actions as uiActions, getShopId_shopManagement } from "../../../redux/modules/ui";
+import ClerkView from "./components/ClerkView";
 
 
 const { Option } = Select;
@@ -33,42 +33,26 @@ class ShopManagement extends React.Component {
         return (
             <div>
                 <PageHeader
-                    title="门店管理">
+                    title="门店管理"
+                    onBack={() => window.history.back()}>
                     <div>
-                        <Select
-                            showSearch
-                            style={{ width: 200 }}
-                            optionFilterProp="children"
-                            defaultValue={shopId ? shopId : "请选择门店"}
-                            onChange={this.onChange}
-                            filterOption={(input, option) =>
-                                option.props.children.props.children.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                            }>
-                            {shopListInArray.map((shop) => {
-                                return <Option value={shop.id} key={shop.id}>
-                                    <Link to={`${match.url}/${shop.id}`}>
-                                        <div style={{ width: "100%", color: "#808080" }}>{shop.name}</div>
-                                    </Link>
-                                </Option>
-                            })}
-                        </Select>
-                        {requestQuantity > 0 ?
-                            <div style={{ width: "100%", height: "300px", display: "flex", justifyContent: "center", alignItems: "center" }}><Spin size="large" /></div> :
-                            <div>
-                                <Route
-                                    path={match.url}
-                                    exact
-                                    render={props => <Empty description="请选择门店" />} />
-                                <Route
-                                    path={`${match.url}/:shopId`}
-                                    exact
-                                    render={props =>
-                                        <ShopInfo {...props} byClerks={byClerks} shopInfo={shopInfo} />} />
-                                <Route
-                                    path={`${match.url}/:shopId/:clerkId`}
-                                    render={(props) => (<div>clerk</div>)} />
-                            </div>
-                        }
+                        <Route
+                            path={match.url}
+                            exact
+                            render={props =>
+                                <ShopView
+                                    {...props}
+                                    shopListInArray={shopListInArray}
+                                    requestQuantity={requestQuantity}
+                                    shopId={shopId}
+                                    onChange={this.onChange}
+                                    byClerks={byClerks}
+                                    shopInfo={shopInfo} />} />
+                        <Route
+                            path={`${match.url}/:shopId/:clerkId`}
+                            render={(props) => (
+                                <ClerkView {...props} byClerks={byClerks} />
+                            )} />
                     </div>
                 </PageHeader>
             </div>
