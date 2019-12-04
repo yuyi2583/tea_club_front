@@ -23,6 +23,7 @@ class CompanyInfo extends React.Component {
         this.props.startAlterInfo();
     }
 
+
     completeAlter = () => {
         const info=this.state;
         for(var key in info){
@@ -38,6 +39,10 @@ class CompanyInfo extends React.Component {
         this.props.alterCompanyInfo(info);
     }
 
+    componentWillUnmount(){
+        this.props.finishAlterInfo();
+    }
+    
     handleChange = (e) => {
         const name = e.target.name;
         this.setState({

@@ -5,7 +5,8 @@ const initialState = {
     countDown: totalCountDown,      //计时数
     openMessageDrawer: false,       //打开消息抽屉
     alterInfo: false,                //修改信息状态
-    shopId_shopManagement:"",          //门店管理选择的门店编号
+    shopId_shopManagement: "",          //门店管理选择的门店编号
+    addButtonVisible_shopManagement: true,   //新增门店按钮显示
 };
 
 //action types
@@ -18,6 +19,8 @@ export const types = {
     START_ALTER_INFO: "UI/START_ALTER_INFO",             //开始修改信息
     FINISH_ALTER_INFO: "UI/FINISH_ALTER_INFO",           //结束修改信息
     SHOPMANAGEMENT_SELECT_SHOP: "UI/SHOPMANAGEMENT_SELECT_SHOP",     //选择门店
+    SHOPMANAGEMENT_ADD_BUTTON_VISIBLE: "UI/SHOPMANAGEMENT_ADD_BUTTON_VISIBLE", //显示按钮
+    SHOPMANAGEMENT_ADD_BUTTON_INVISIBLE: "UI/SHOPMANAGEMENT_ADD_BUTTON_INVISIBLE",//去除按钮
 };
 
 //action creators
@@ -49,6 +52,12 @@ export const actions = {
     selectShop_shopManagement: (shopId) => ({
         type: types.SHOPMANAGEMENT_SELECT_SHOP,
         shopId_shopManagement: shopId
+    }),
+    setAddButtonVisible: () => ({
+        type: types.SHOPMANAGEMENT_ADD_BUTTON_VISIBLE
+    }),
+    setAddButtonInvisible: () => ({
+        type: types.SHOPMANAGEMENT_ADD_BUTTON_INVISIBLE
     })
 };
 
@@ -71,6 +80,10 @@ const reducer = (state = initialState, action) => {
             return { ...state, alterInfo: false };
         case types.SHOPMANAGEMENT_SELECT_SHOP:
             return { ...state, shopId_shopManagement: action.shopId_shopManagement };
+        case types.SHOPMANAGEMENT_ADD_BUTTON_VISIBLE:
+            return { ...state, addButtonVisible_shopManagement: true };
+        case types.SHOPMANAGEMENT_ADD_BUTTON_INVISIBLE:
+            return { ...state, addButtonVisible_shopManagement: false };
         default:
             return state;
     }
@@ -85,3 +98,4 @@ export const getCountDown = (state) => state.ui.countDown;
 export const getMessageDrawerState = (state) => state.ui.openMessageDrawer;
 export const getAlterInfoState = (state) => state.ui.alterInfo;
 export const getShopId_shopManagement = (state) => state.ui.shopId_shopManagement;
+export const getAddButtonVisible_shopManagement=(state)=>state.ui.addButtonVisible_shopManagement;
