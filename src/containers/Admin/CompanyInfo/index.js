@@ -23,6 +23,11 @@ class CompanyInfo extends React.Component {
         this.props.startAlterInfo();
     }
 
+    handleCancelAlter=()=>{
+        this.setState({...this.props.companyInfo});
+        this.props.finishAlterInfo();
+    }
+
 
     completeAlter = () => {
         const info=this.state;
@@ -95,8 +100,11 @@ class CompanyInfo extends React.Component {
                     </Descriptions>
                     {alterInfo ?
                         <Row style={{ margin: "20px 0" }}>
-                            <Col span={12} offset={6}>
+                            <Col span={12} offset={4}>
                                 <Button type="primary" block onClick={this.completeAlter} loading={requestQuantity>0} >{requestQuantity>0?"":"确认修改"}</Button>
+                            </Col>
+                            <Col span={4} push={4}>
+                                <Button block onClick={this.handleCancelAlter}>取消修改</Button>
                             </Col>
                         </Row>
                         : null}

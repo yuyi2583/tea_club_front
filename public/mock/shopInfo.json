@@ -8,51 +8,40 @@
       "businessHours":"周一到周日 8:00~20:00",
       "display":[
         {
-          "id": "1",
+          "uid": "1",
           "name": "image.png",
           "status": "done",
           "url": "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
         },
         {
-          "id": "2",
+          "uid": "2",
           "name": "image.png",
           "status": "done",
           "url": "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
         },
         {
-          "id": "3",
+          "uid": "3",
           "name": "image.png",
           "status": "done",
           "url": "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
-        },
-        {
-          "id": "4",
-          "name": "image.png",
-          "status": "done",
-          "url": "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
-        },
-        {
-          "id": "5",
-          "name": "image.png",
-          "status": "error"
         }
       ],
-      "clerk":[
-        {"id":"2","name":"职员2","position":"服务员","contact":"15868859587","identityId":"350723199610051010","sex":"男","avatar":"http://www.jsjzx.top/Volunteer/Images/1.jpg","address":"No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China"},
-        {"id":"4","name":"职员4","position":"服务员","contact":"15868859587","identityId":"350723199610051010","sex":"男","avatar":"http://www.jsjzx.top/Volunteer/Images/1.jpg","address":"No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China"},
-        {"id":"3","name":"职员3","position":"服务员","contact":"15868859587","identityId":"350723199610051010","sex":"男","avatar":"http://www.jsjzx.top/Volunteer/Images/1.jpg","address":"No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China"},
-        {"id":"1","name":"职员1","position":"店长","contact":"15868859587","identityId":"350723199610051010","sex":"男","avatar":"http://www.jsjzx.top/Volunteer/Images/1.jpg","address":"No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China"},
-        {"id":"5","name":"职员5","position":"服务员","contact":"15868859587","identityId":"350723199610051010","sex":"男","avatar":"http://www.jsjzx.top/Volunteer/Images/1.jpg","address":"No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China"},
-        {"id":"6","name":"职员6","position":"服务员","contact":"15868859587","identityId":"350723199610051010","sex":"男","avatar":"http://www.jsjzx.top/Volunteer/Images/1.jpg","address":"No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China"},
-        {"id":"7","name":"职员7","position":"服务员","contact":"15868859587","identityId":"350723199610051010","sex":"男","avatar":"http://www.jsjzx.top/Volunteer/Images/1.jpg","address":"No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China"},
-        {"id":"8","name":"职员8","position":"服务员","contact":"15868859587","identityId":"350723199610051010","sex":"男","avatar":"http://www.jsjzx.top/Volunteer/Images/1.jpg","address":"No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China"},
-        {"id":"9","name":"职员9","position":"服务员","contact":"15868859587","identityId":"350723199610051010","sex":"男","avatar":"http://www.jsjzx.top/Volunteer/Images/1.jpg","address":"No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China"},
-        {"id":"10","name":"职员10","position":"服务员","contact":"15868859587","identityId":"350723199610051010","sex":"男","avatar":"http://www.jsjzx.top/Volunteer/Images/1.jpg","address":"No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China"},
-        {"id":"11","name":"职员11","position":"服务员","contact":"15868859587","identityId":"350723199610051010","sex":"男","avatar":"http://www.jsjzx.top/Volunteer/Images/1.jpg","address":"No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China"},
-        {"id":"12","name":"职员12","position":"服务员","contact":"15868859587","identityId":"350723199610051010","sex":"男","avatar":"http://www.jsjzx.top/Volunteer/Images/1.jpg","address":"No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China"},
-        {"id":"13","name":"职员13","position":"服务员","contact":"15868859587","identityId":"350723199610051010","sex":"男","avatar":"http://www.jsjzx.top/Volunteer/Images/1.jpg","address":"No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China"},
-        {"id":"14","name":"职员14","position":"服务员","contact":"15868859587","identityId":"350723199610051010","sex":"男","avatar":"http://www.jsjzx.top/Volunteer/Images/1.jpg","address":"No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China"},
-        {"id":"15","name":"职员15","position":"服务员","contact":"15868859587","identityId":"350723199610051010","sex":"男","avatar":"http://www.jsjzx.top/Volunteer/Images/1.jpg","address":"No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China"}
+      "clerks":[
+        {"id":"2","name":"职员2","position":"服务员","contact":"15868859587","identityId":"350723199610051010","sex":"男","avatar":"http://www.jsjzx.top/Volunteer/Images/1.jpg","address":"No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China","shopId":"1"},
+        {"id":"4","name":"职员4","position":"服务员","contact":"15868859587","identityId":"350723199610051010","sex":"男","avatar":"http://www.jsjzx.top/Volunteer/Images/1.jpg","address":"No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China","shopId":"1"},
+        {"id":"3","name":"职员3","position":"服务员","contact":"15868859587","identityId":"350723199610051010","sex":"男","avatar":"http://www.jsjzx.top/Volunteer/Images/1.jpg","address":"No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China","shopId":"1"},
+        {"id":"1","name":"职员1","position":"店长","contact":"15868859587","identityId":"350723199610051010","sex":"男","avatar":"http://www.jsjzx.top/Volunteer/Images/1.jpg","address":"No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China","shopId":"1"},
+        {"id":"5","name":"职员5","position":"服务员","contact":"15868859587","identityId":"350723199610051010","sex":"男","avatar":"http://www.jsjzx.top/Volunteer/Images/1.jpg","address":"No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China","shopId":"1"},
+        {"id":"6","name":"职员6","position":"服务员","contact":"15868859587","identityId":"350723199610051010","sex":"男","avatar":"http://www.jsjzx.top/Volunteer/Images/1.jpg","address":"No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China","shopId":"1"},
+        {"id":"7","name":"职员7","position":"服务员","contact":"15868859587","identityId":"350723199610051010","sex":"男","avatar":"http://www.jsjzx.top/Volunteer/Images/1.jpg","address":"No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China","shopId":"1"},
+        {"id":"8","name":"职员8","position":"服务员","contact":"15868859587","identityId":"350723199610051010","sex":"男","avatar":"http://www.jsjzx.top/Volunteer/Images/1.jpg","address":"No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China","shopId":"1"},
+        {"id":"9","name":"职员9","position":"服务员","contact":"15868859587","identityId":"350723199610051010","sex":"男","avatar":"http://www.jsjzx.top/Volunteer/Images/1.jpg","address":"No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China","shopId":"1"},
+        {"id":"10","name":"职员10","position":"服务员","contact":"15868859587","identityId":"350723199610051010","sex":"男","avatar":"http://www.jsjzx.top/Volunteer/Images/1.jpg","address":"No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China","shopId":"1"},
+        {"id":"11","name":"职员11","position":"服务员","contact":"15868859587","identityId":"350723199610051010","sex":"男","avatar":"http://www.jsjzx.top/Volunteer/Images/1.jpg","address":"No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China","shopId":"1"},
+        {"id":"12","name":"职员12","position":"服务员","contact":"15868859587","identityId":"350723199610051010","sex":"男","avatar":"http://www.jsjzx.top/Volunteer/Images/1.jpg","address":"No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China","shopId":"1"},
+        {"id":"13","name":"职员13","position":"服务员","contact":"15868859587","identityId":"350723199610051010","sex":"男","avatar":"http://www.jsjzx.top/Volunteer/Images/1.jpg","address":"No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China","shopId":"1"},
+        {"id":"14","name":"职员14","position":"服务员","contact":"15868859587","identityId":"350723199610051010","sex":"男","avatar":"http://www.jsjzx.top/Volunteer/Images/1.jpg","address":"No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China","shopId":"1"},
+        {"id":"15","name":"职员15","position":"服务员","contact":"15868859587","identityId":"350723199610051010","sex":"男","avatar":"http://www.jsjzx.top/Volunteer/Images/1.jpg","address":"No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China","shopId":"1"}
       ],
       "boxes":[
         

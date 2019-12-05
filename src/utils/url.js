@@ -6,4 +6,5 @@ export default {
     alterCompanyInfo: () => "/mock/companyInfo.json",
     fetchShopInfo: () => "/mock/shopInfo.json",
     fetchShopList: () => "/mock/shopList.json",
+    fetchAllClerks: () => "/mock/allClerks.json",
 }

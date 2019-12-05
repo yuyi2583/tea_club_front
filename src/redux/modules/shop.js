@@ -58,9 +58,9 @@ export const actions = {
         clerkId
     }),
     //添加门店职员
-    addShopClerk: (clerkId) => ({
+    addShopClerk: (clerks) => ({
         type: types.ADD_SHOP_CLERK,
-        clerkId
+        clerks
     }),
     setDisplay: (display) => ({
         type: types.SET_DISPLAY,
@@ -75,12 +75,12 @@ const convertShopInfoToPlainStructure = (shopInfo) => {
     let plainBoxes = {};
     let byDisplay = [];
     let plainDisplay = {}
-    const { clerk, boxes, display } = shopInfo;
-    const shopManager = clerk.filter((item) => item.position.indexOf("店长") != -1);
+    const { clerks, boxes, display } = shopInfo;
+    const shopManager = clerks.filter((item) => item.position.indexOf("店长") != -1);
     shopManager.forEach((item) => {
         byClerk.push(item.id);
     })
-    clerk.forEach((item) => {
+    clerks.forEach((item) => {
         if (item.position.indexOf("店长") == -1) {
             byClerk.push(item.id);
         }
@@ -95,14 +95,13 @@ const convertShopInfoToPlainStructure = (shopInfo) => {
         }
     });
     display.forEach((item) => {
-        byDisplay.push(item.id);
-        if (!plainDisplay[item.id]) {
-            plainDisplay[item.id] = item;
-            plainDisplay[item.id].uid = "-" + item.id;
+        byDisplay.push(item.uid);
+        if (!plainDisplay[item.uid]) {
+            plainDisplay[item.uid] = item;
         }
     })
     return {
-        shopInfo: { ...shopInfo, clerk: byClerk, boxes: byBoxes, display: byDisplay },
+        shopInfo: { ...shopInfo, clerks: byClerk, boxes: byBoxes, display: byDisplay },
         byClerks: plainClerk,
         byBoxes: plainBoxes,
         byDisplay: plainDisplay,
@@ -137,23 +136,16 @@ const reducer = (state = initialState, action) => {
         case types.FETCH_SHOP_LIST:
             return { ...state, shopList: action.shopList };
         case types.ADD_SHOP_CLERK:
-            let clerk = state.shopInfo.clerk;
-            clerk.push(action.clerkId);
-            const shopInfo = { ...state.shopInfo, clerk };
+            const clerk = [...state.shopInfo.clerks,...action.clerks];
+            const shopInfo = { ...state.shopInfo, clerks:clerk };
             return { ...state, shopInfo };
         case types.REMOVE_SHOP_CLERK:
-            const clerks = state.shopInfo.clerk.filter(id => id != action.clerkId);
-            const newShopInfo = { ...state.shopInfo, clerk: clerks };
+            const clerks = state.shopInfo.clerks.filter(id => id != action.clerkId);
+            const newShopInfo = { ...state.shopInfo, clerks: clerks };
             return { ...state, shopInfo: newShopInfo };
         case types.SET_DISPLAY:
-            let byDisplay = {};
-            action.display.forEach((displayId) => {
-                if (!byDisplay[displayId]) {
-                    byDisplay[displayId] = state.byDisplay[displayId];
-                }
-            });
             const shopinfo = { ...state.shopInfo, display: action.display };
-            return { ...state, byDisplay, shopInfo: shopinfo };
+            return { ...state, shopInfo: shopinfo };
         default:
             return state;
     }

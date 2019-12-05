@@ -7,6 +7,7 @@ const initialState = {
     alterInfo: false,                //修改信息状态
     shopId_shopManagement: "",          //门店管理选择的门店编号
     addButtonVisible_shopManagement: true,   //新增门店按钮显示
+    modalVisible: false,             //modal显示与否
 };
 
 //action types
@@ -21,6 +22,8 @@ export const types = {
     SHOPMANAGEMENT_SELECT_SHOP: "UI/SHOPMANAGEMENT_SELECT_SHOP",     //选择门店
     SHOPMANAGEMENT_ADD_BUTTON_VISIBLE: "UI/SHOPMANAGEMENT_ADD_BUTTON_VISIBLE", //显示按钮
     SHOPMANAGEMENT_ADD_BUTTON_INVISIBLE: "UI/SHOPMANAGEMENT_ADD_BUTTON_INVISIBLE",//去除按钮
+    OPEN_MODAL: "UI/OPEN_MODAL",                     //打开modal
+    CLOSE_MODAL: "UI/CLOSE_MODAL",                   //关闭modal
 };
 
 //action creators
@@ -58,6 +61,12 @@ export const actions = {
     }),
     setAddButtonInvisible: () => ({
         type: types.SHOPMANAGEMENT_ADD_BUTTON_INVISIBLE
+    }),
+    openModal: () => ({
+        type: types.OPEN_MODAL
+    }),
+    closeModal: () => ({
+        type: types.CLOSE_MODAL
     })
 };
 
@@ -84,6 +93,10 @@ const reducer = (state = initialState, action) => {
             return { ...state, addButtonVisible_shopManagement: true };
         case types.SHOPMANAGEMENT_ADD_BUTTON_INVISIBLE:
             return { ...state, addButtonVisible_shopManagement: false };
+        case types.OPEN_MODAL:
+            return { ...state, modalVisible: true };
+        case types.CLOSE_MODAL:
+            return { ...state, modalVisible: false };
         default:
             return state;
     }
@@ -98,4 +111,5 @@ export const getCountDown = (state) => state.ui.countDown;
 export const getMessageDrawerState = (state) => state.ui.openMessageDrawer;
 export const getAlterInfoState = (state) => state.ui.alterInfo;
 export const getShopId_shopManagement = (state) => state.ui.shopId_shopManagement;
-export const getAddButtonVisible_shopManagement=(state)=>state.ui.addButtonVisible_shopManagement;
+export const getAddButtonVisible_shopManagement = (state) => state.ui.addButtonVisible_shopManagement;
+export const getModalVisible = (state) => state.ui.modalVisible;

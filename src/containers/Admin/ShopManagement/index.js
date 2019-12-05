@@ -20,19 +20,6 @@ import AddShop from "./components/AddShop";
 const { Option } = Select;
 
 class ShopManagement extends React.Component {
-    onChange = (value) => {
-        this.props.fetchShopInfo(value);
-        this.props.selectShop_shopManagement(value);
-    }
-
-    componentDidMount() {
-        this.props.fetchShopList();
-    }
-
-    componentWillUnmount() {
-        this.props.selectShop_shopManagement("请选择门店");
-    }
-
     handleBack = () => {
         window.history.back();
         this.props.setAddButtonVisible();
@@ -43,25 +30,8 @@ class ShopManagement extends React.Component {
         this.props.setAddButtonInvisible();
     }
 
-    startAlterInfo=()=>{
-        this.props.startAlterInfo()
-    }
-
-    finishAlterInfo=()=>{
-        this.props.finishAlterInfo();
-    }
-
-    handleRemoveClerk=(clerkId)=>{
-        this.props.removeShopClerk(clerkId);
-    }
-
-    setDisplay=(display)=>{
-        this.props.setDisplay(display);
-    }
-
     render() {
-        const { shopList, shopInfo } = this.props.shop;
-        const { shopListInArray, byClerks, requestQuantity, error, match, shopId, addButtonVisible, boxes,alterInfo,byDisplay } = this.props;
+        const { byClerks, match, addButtonVisible } = this.props;
         return (
             <div>
                 <PageHeader
@@ -75,22 +45,7 @@ class ShopManagement extends React.Component {
                             path={match.url}
                             exact
                             render={props =>
-                                <ShopView
-                                    {...props}
-                                    shopListInArray={shopListInArray}
-                                    requestQuantity={requestQuantity}
-                                    shopId={shopId}
-                                    byDisplay={byDisplay}
-                                    setDisplay={this.setDisplay}
-                                    handleRemoveClerk={this.handleRemoveClerk}
-                                    alterInfo={alterInfo}
-                                    startAlterInfo={this.startAlterInfo}
-                                    finishAlterInfo={this.finishAlterInfo}
-                                    handleClickClerk={this.setAddButtonInvisible}
-                                    onChange={this.onChange}
-                                    boxesInArray={boxes}
-                                    byClerks={byClerks}
-                                    shopInfo={shopInfo} />} />
+                                <ShopView {...props} />} />
                         <Route
                             path={`${match.url}/addShop`}
                             render={props =>
@@ -110,22 +65,13 @@ class ShopManagement extends React.Component {
 
 const mapStateToProps = (state, props) => {
     return {
-        shop: getShop(state),
-        shopListInArray: getShopList(state),
         byClerks: getClerks(state),
-        requestQuantity: getRequestQuantity(state),
-        error: getError(state),
-        shopId: getShopId_shopManagement(state),
         addButtonVisible: getAddButtonVisible_shopManagement(state),
-        boxes: getBoxesInArray(state),
-        alterInfo:getAlterInfoState(state),
-        byDisplay:getDisplay(state),
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        ...bindActionCreators(shopActions, dispatch),
         ...bindActionCreators(uiActions, dispatch)
     };
 };
