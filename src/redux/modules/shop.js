@@ -4,10 +4,11 @@ import { get } from "../../utils/request";
 import { actions as clerkActions } from "./clerk";
 
 const initialState = {
-    shopList: null,
+    shopList: [],
     shopInfo: null,
     byBoxes: null,//包厢
     byDisplay: null,//门店图片
+    byShopList:null,
 }
 
 export const types = {
@@ -108,18 +109,26 @@ const convertShopInfoToPlainStructure = (shopInfo) => {
     }
 }
 const convertShopListToPlainStructure = (shopList) => {
-    let byShopList = {};
+    let byShopList = [];
+    let plainShopList={}
     shopList.forEach((item) => {
-        byShopList[item.id] = {
-            ...item
+        byShopList.push(item.id);
+        if(!plainShopList[item.id]){
+            plainShopList[item.id] = {
+                ...item
+            }
         }
     })
-    return byShopList;
+    return {
+        shopList:byShopList,
+        byShopList:plainShopList
+    };
 }
 
-const fetchShopListSuccess = (shopList) => ({
+const fetchShopListSuccess = ({shopList,byShopList}) => ({
     type: types.FETCH_SHOP_LIST,
-    shopList
+    shopList,
+    byShopList
 });
 
 const fetchShopInfoSuccess = (shopInfo, byBoxes, byDisplay) => ({
@@ -134,10 +143,10 @@ const reducer = (state = initialState, action) => {
         case types.FETCH_SHOP_INFO:
             return { ...state, shopInfo: action.shopInfo, byBoxes: action.byBoxes, byDisplay: action.byDisplay };
         case types.FETCH_SHOP_LIST:
-            return { ...state, shopList: action.shopList };
+            return { ...state, shopList: action.shopList,byShopList:action.byShopList };
         case types.ADD_SHOP_CLERK:
-            const clerk = [...state.shopInfo.clerks,...action.clerks];
-            const shopInfo = { ...state.shopInfo, clerks:clerk };
+            const clerk = [...state.shopInfo.clerks, ...action.clerks];
+            const shopInfo = { ...state.shopInfo, clerks: clerk };
             return { ...state, shopInfo };
         case types.REMOVE_SHOP_CLERK:
             const clerks = state.shopInfo.clerks.filter(id => id != action.clerkId);
@@ -154,20 +163,6 @@ const reducer = (state = initialState, action) => {
 export default reducer;
 
 export const getShop = (state) => state.shop;
-export const getShopList = (state) => {
-    const { shopList } = state.shop;
-    let byShopList = [];
-    for (var key in shopList) {
-        byShopList.push(shopList[key]);
-    }
-    return byShopList;
-}
-export const getBoxesInArray = (state) => {
-    const { byBoxes } = state.shop;
-    let boxesInArray = [];
-    for (var key in byBoxes) {
-        boxesInArray.push(byBoxes[key]);
-    }
-    return boxesInArray;
-}
+export const getShopList = (state) =>state.shop.byShopList;
+export const getBoxes = (state) => state.shop.byBoxes;
 export const getDisplay = (state) => state.shop.byDisplay;

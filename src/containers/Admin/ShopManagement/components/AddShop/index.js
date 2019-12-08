@@ -1,6 +1,7 @@
 import React from "react";
 
-function AddShop(){
+function AddShop(props){
+    console.log(props)
     return(
         <div>addShop</div>
     )

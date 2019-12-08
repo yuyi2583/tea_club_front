@@ -1,11 +1,6 @@
 import React from "react";
 import { Modal, Button, Spin, Select, Row, Col, Typography } from "antd";
-import { bindActionCreators } from "redux";
-import { connect } from "react-redux";
-import { actions as clerkActions, getPlainClerks, getClerks } from "../../../../../../../redux/modules/clerk";
-import { actions as appActions, getModalRequestQuantity } from "../../../../../../../redux/modules/app";
-import { actions as uiActions } from "../../../../../../../redux/modules/ui";
-import { removePointById } from "../../../../../../../utils/commonUtils";
+import { removePointById } from "../../../../../utils/commonUtils";
 
 const { Option } = Select;
 
@@ -16,7 +11,6 @@ class AddClerkModal extends React.Component {
 
     handleOk = e => {
         this.props.handleOk();
-        console.log("ok")
     };
 
     handleCancel = e => {

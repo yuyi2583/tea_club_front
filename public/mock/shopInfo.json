@@ -3,7 +3,7 @@
       "id":"1",
       "name":"门店1",
       "address":"No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China",
-      "introduction":"这是门店1",
+      "description":"这是门店1",
       "contact":"88271998",
       "businessHours":"周一到周日 8:00~20:00",
       "display":[
@@ -44,7 +44,87 @@
         {"id":"15","name":"职员15","position":"服务员","contact":"15868859587","identityId":"350723199610051010","sex":"男","avatar":"http://www.jsjzx.top/Volunteer/Images/1.jpg","address":"No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China","shopId":"1"}
       ],
       "boxes":[
-        
+        {"id":"1","shopId":"1","name":"包厢1","boxNum":"101","price":50,"startTime":"09:00","endTime":"20:00","description":"这是包厢1","img":[
+          {
+          "uid": "1",
+          "name": "image.png",
+          "status": "done",
+          "url": "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
+        },{
+          "uid": "2",
+          "name": "image.png",
+          "status": "done",
+          "url": "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
+        },{
+          "uid": "3",
+          "name": "image.png",
+          "status": "done",
+          "url": "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
+        }]},
+        {"id":"2","shopId":"1","name":"包厢2","boxNum":"102","price":50,"startTime":"09:00","endTime":"20:00","description":"这是包厢2","img":[{
+          "uid": "4",
+          "name": "image.png",
+          "status": "done",
+          "url": "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
+        },{
+          "uid": "5",
+          "name": "image.png",
+          "status": "done",
+          "url": "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
+        },{
+          "uid": "6",
+          "name": "image.png",
+          "status": "done",
+          "url": "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
+        }]},
+        {"id":"3","shopId":"1","name":"包厢3","boxNum":"103","price":50,"startTime":"09:00","endTime":"20:00","description":"这是包厢3","img":[{
+          "uid": "7",
+          "name": "image.png",
+          "status": "done",
+          "url": "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
+        },{
+          "uid": "8",
+          "name": "image.png",
+          "status": "done",
+          "url": "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
+        },{
+          "uid": "9",
+          "name": "image.png",
+          "status": "done",
+          "url": "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
+        }]},
+        {"id":"4","shopId":"1","name":"包厢4","boxNum":"104","price":50,"startTime":"09:00","endTime":"20:00","description":"这是包厢4","img":[{
+          "uid": "10",
+          "name": "image.png",
+          "status": "done",
+          "url": "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
+        },{
+          "uid": "11",
+          "name": "image.png",
+          "status": "done",
+          "url": "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
+        },{
+          "uid": "12",
+          "name": "image.png",
+          "status": "done",
+          "url": "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
+        }]},
+        {"id":"5","shopId":"1","name":"包厢5","boxNum":"105","price":50,"startTime":"09:00","endTime":"20:00","description":"这是包厢5","img":[{
+          "uid": "13",
+          "name": "image.png",
+          "status": "done",
+          "url": "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
+        },{
+          "uid": "14",
+          "name": "image.png",
+          "status": "done",
+          "url": "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
+        },{
+          "uid": "15",
+          "name": "image.png",
+          "status": "done",
+          "url": "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
+        }]}
       ]
     },
     "retCode": "200",

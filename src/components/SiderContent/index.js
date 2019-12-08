@@ -6,6 +6,7 @@ import { connect } from "react-redux";
 import { getAuthority, getAuthorityBelong } from "../../redux/modules/adminAuth";
 import {Link} from "react-router-dom";
 import {map} from "../../router";
+import {actions as uiActions} from "../../redux/modules/ui";
 
 const { SubMenu } = Menu;
 
@@ -41,6 +42,10 @@ class SiderContent extends React.Component {
     // this.props.fetchSiderContent(user)
   }
 
+  handleClick=()=>{
+    this.props.selectShop_shopManagement("请选择门店");
+  }
+
   render() {
     const { authorityBelong, authority } = this.props;
     return (
@@ -65,7 +70,7 @@ class SiderContent extends React.Component {
                   }>
                     {authority.filter((item)=>item.belong===belong.id).map((item)=>{
                       return (
-                        <Menu.Item key={item.id}>
+                        <Menu.Item key={item.id} onClick={this.handleClick}>
                           <Link to={{
                             pathname:item.pathname,
                           }}>{item.title}</Link>
@@ -91,7 +96,7 @@ const mapStateToProps = (state, props) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    ...bindActionCreators(dispatch)
+    ...bindActionCreators(uiActions,dispatch)
   }
 }
 

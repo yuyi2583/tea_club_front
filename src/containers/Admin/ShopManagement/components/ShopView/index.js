@@ -19,16 +19,19 @@ import PictureCard from "../../../../../components/PictureCard";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actions as appActions, getError, getRequestQuantity, getModalRequestQuantity } from "../../../../../redux/modules/app";
-import { actions as shopActions, getShop, getShopList, getBoxesInArray, getDisplay } from "../../../../../redux/modules/shop";
+import { actions as shopActions, getShop, getShopList, getBoxes, getDisplay } from "../../../../../redux/modules/shop";
 import { actions as clerkActions, getPlainClerks, getClerks } from "../../../../../redux/modules/clerk";
 import {
     actions as uiActions,
     getShopId_shopManagement,
     getAddButtonVisible_shopManagement,
     getAlterInfoState,
-    getModalVisible
+    getModalVisible,
+    getClientHeight,
+    getClientWidth
 } from "../../../../../redux/modules/ui";
-import AddClerkModal from "./components/AddClerkModal";
+import AddClerkModal from "../AddClerkModal";
+import BoxCard from "../BoxCard";
 
 const { Option } = Select;
 
@@ -37,7 +40,6 @@ class ShopView extends React.Component {
         super(props);
         this.state = {
             shopInfo: { ...this.props.shop.shopInfo },
-            modalVisible: false,
             selectClerks: [],
             selectManagers: [],
         }
@@ -70,13 +72,14 @@ class ShopView extends React.Component {
     }
 
     componentDidMount() {
+
         this.props.fetchShopList();
     }
 
 
     componentWillUnmount() {
         this.props.finishAlterInfo();
-        this.props.selectShop_shopManagement("请选择门店");
+        // this.props.selectShop_shopManagement("请选择门店");
     }
 
     handleChange = (e) => {
@@ -89,13 +92,12 @@ class ShopView extends React.Component {
     }
 
     handleRemoveClerk = (clerkId) => {
-        const { shopInfo,selectClerks,selectManagers } = this.state;
-        const newClerks = shopInfo.clerks.filter((item) => item != clerkId);
-        const newSelectClerks=selectClerks.filter((item) => item != clerkId);
-        const newSelectManagers=selectManagers.filter((item) => item != clerkId);
+        const { shopInfo, selectClerks, selectManagers } = this.state;
+        const newClerks = shopInfo.clerks.filter((item) => item !== clerkId);
+        const newSelectClerks = selectClerks.filter((item) => item !== clerkId);
+        const newSelectManagers = selectManagers.filter((item) => item !== clerkId);
         const newShopInfo = { ...shopInfo, clerks: newClerks };
-        console.log(newShopInfo)
-        this.setState({ shopInfo: newShopInfo,selectClerks:newSelectClerks,selectManagers:newSelectManagers });
+        this.setState({ shopInfo: newShopInfo, selectClerks: newSelectClerks, selectManagers: newSelectManagers });
         // this.props.removeShopClerk(clerkId);
     }
 
@@ -103,19 +105,18 @@ class ShopView extends React.Component {
         this.props.addShopClerk(clerks);
     }
 
-    forDisplay = (displayId) => {
-        const { byDisplay } = this.props;
-        return byDisplay[displayId];
-    }
+
 
 
     handleDisplayChange = (fileList) => {
-        console.log(fileList)
         let display = [];
         for (var key in fileList) {
             display.push(fileList[key].uid);
         }
-        this.props.setDisplay(display);
+        const {shopInfo}=this.state;
+        const newShopInfo={...shopInfo,display};
+        this.setState({shopInfo:newShopInfo});
+        // this.props.setDisplay(display);
     };
 
     showModal = () => {
@@ -130,7 +131,7 @@ class ShopView extends React.Component {
 
     handleModalOk = () => {
         // this.props.addShopClerk(clerks);
-        const { shopInfo,selectClerks, selectManagers } = this.state;
+        const { shopInfo, selectClerks, selectManagers } = this.state;
         const { clerks } = shopInfo;
         const newClerks = [...clerks, ...selectClerks, ...selectManagers];
         const newShopInfo = { ...shopInfo, clerks: newClerks };
@@ -139,7 +140,7 @@ class ShopView extends React.Component {
     }
 
     handleModalCancel = () => {
-        this.setState({ selectClerks: new Array(),selectManagers:new Array() });
+        this.setState({ selectClerks: new Array(), selectManagers: new Array() });
         this.props.closeModal();
     }
 
@@ -153,12 +154,29 @@ class ShopView extends React.Component {
         this.setState({ selectManagers: value });
     }
 
+    forDisplay = () => {
+        const {shopInfo}=this.props.shop;
+        if(shopInfo===null){
+            return {
+                fileListInProps:new Array(),
+                fileListInState:new Array()
+            };
+        }
+        const { byDisplay } = this.props;
+        const fileListInProps=shopInfo.display.map((displayId)=>byDisplay[displayId]);
+        const shopInfoInState=this.state.shopInfo;
+        const fileListInState=shopInfoInState.display.map((displayId)=>byDisplay[displayId]);
+        return {
+            fileListInProps,
+            fileListInState
+        };
+    }
 
     render() {
         const { shopList, shopInfo } = this.props.shop;
-        const { byClerks, match, shopId, shopListInArray, modalRequestQuantity, clerks,
-            requestQuantity, boxesInArray, alterInfo, modalVisible } = this.props;
-        const fileList = shopInfo == null ? [] : shopInfo.display.map(this.forDisplay);
+        const { byClerks, match, shopId, byShopList, modalRequestQuantity, clerks,
+            requestQuantity, byBoxes, alterInfo, modalVisible, shop } = this.props;
+        const { fileListInProps, fileListInState } = this.forDisplay();
         return (
             <div>
                 <div>
@@ -166,21 +184,21 @@ class ShopView extends React.Component {
                         showSearch
                         style={{ width: 200 }}
                         optionFilterProp="children"
-                        defaultValue={shopId ? shopId : "请选择门店"}
+                        defaultValue={!shopId || shopId === "请选择门店" ? "请选择门店" : shopId}
                         onChange={this.onChange}
                         filterOption={(input, option) =>
                             option.props.children.props.children.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                         }>
-                        {shopListInArray.map((shop) => {
-                            return <Option value={shop.id} key={shop.id}>{shop.name}</Option>
+                        {shop.shopList.map((shopId) => {
+                            return <Option value={byShopList[shopId].id} key={byShopList[shopId].id}>{byShopList[shopId].name}</Option>
                         })}
                     </Select>
-                    {shopId == "" || shopId == "请选择门店" ? null : <Button onClick={this.startAlterInfo} style={{ marginBottom: "20px", float: "right" }}>修改门店信息</Button>}
+                    {shopId === "" || shopId === "请选择门店" ? null : <Button onClick={this.startAlterInfo} style={{ marginBottom: "20px", float: "right" }}>修改门店信息</Button>}
                 </div>
                 {requestQuantity > 0 ?
                     <div style={{ width: "100%", height: "300px", display: "flex", justifyContent: "center", alignItems: "center" }}><Spin size="large" /></div> :
                     <div style={{ margin: "20px 0" }}>
-                        {shopId == "" || shopId == "请选择门店" ? <Empty description="请选择门店" /> :
+                        {shopId === "" || shopId === "请选择门店" ? <Empty description="请选择门店" /> :
                             shopInfo ?
                                 <Descriptions bordered column={2}>
                                     <Descriptions.Item label="门店名称">
@@ -195,8 +213,8 @@ class ShopView extends React.Component {
                                     </Descriptions.Item>
                                     <Descriptions.Item label="介绍" span={2}>
                                         {alterInfo ?
-                                            <Input.TextArea rows={3} value={this.state.shopInfo.introduction} allowClear name="introduction" onChange={this.handleChange} />
-                                            : shopInfo.introduction}
+                                            <Input.TextArea rows={3} value={this.state.shopInfo.description} allowClear name="description" onChange={this.handleChange} />
+                                            : shopInfo.description}
                                     </Descriptions.Item>
                                     <Descriptions.Item label="营业时间">
                                         {alterInfo ?
@@ -234,10 +252,10 @@ class ShopView extends React.Component {
                                                                     this.handleRemoveClerk(id);
                                                                 }}
                                                             >
-                                                                {byClerks[id].position == null ?
-                                                                    (this.state.selectClerks.indexOf(id) != -1 ?
-                                                                    byClerks[id].name + " · " +"服务员" :
-                                                                    byClerks[id].name + " · " + "店长")
+                                                                {byClerks[id].position === null ?
+                                                                    (this.state.selectClerks.indexOf(id) !== -1 ?
+                                                                        byClerks[id].name + " · " + "服务员" :
+                                                                        byClerks[id].name + " · " + "店长")
                                                                     : (byClerks[id].name + " · " + byClerks[id].position)
                                                                 }
                                                             </Tag>
@@ -258,20 +276,34 @@ class ShopView extends React.Component {
                                             )) : <Empty />}
                                     </Descriptions.Item>
                                     <Descriptions.Item label="门店展示图片" span={2}>
-                                        {shopInfo.display == null || shopInfo.display.length == 0 ? alterInfo ?
+                                        { alterInfo ?
                                             <PictureCard
-                                                fileList={fileList}
+                                                fileList={fileListInState}
                                                 alterInfo={alterInfo}
+                                                p="state"
                                                 onChange={this.handleDisplayChange} />
-                                            : <Empty />
+                                            :shopInfo.display === null || shopInfo.display.length === 0 ?
+                                             <Empty />
                                             : <PictureCard
-                                                fileList={fileList}
+                                                fileList={fileListInProps}
+                                                p="props"
                                                 alterInfo={alterInfo}
                                                 onChange={this.handleDisplayChange} />
                                         }
                                     </Descriptions.Item>
-                                    <Descriptions.Item label="包厢" span={2}>{boxesInArray.length != 0 ? "asdf" :
-                                        <Empty />}</Descriptions.Item>
+                                    <Descriptions.Item label="包厢" span={2}>
+                                        {shopInfo.boxes.length > 0 ?
+                                            shopInfo.boxes.map((boxId) => (
+                                                <BoxCard
+                                                    key={boxId}
+                                                    match={match}
+                                                    shopId={shopId}
+                                                    boxInfo={byBoxes[boxId]}
+                                                    alterInfo={alterInfo} />))
+
+                                            : <Empty />
+                                        }
+                                    </Descriptions.Item>
                                 </Descriptions>
                                 : <Empty />
                         }
@@ -304,18 +336,20 @@ class ShopView extends React.Component {
 const mapStateToProps = (state, props) => {
     return {
         shop: getShop(state),
-        shopListInArray: getShopList(state),
         clerks: getClerks(state),
         byClerks: getPlainClerks(state),
         requestQuantity: getRequestQuantity(state),
         error: getError(state),
         shopId: getShopId_shopManagement(state),
         addButtonVisible: getAddButtonVisible_shopManagement(state),
-        boxesInArray: getBoxesInArray(state),
+        byBoxes: getBoxes(state),
         alterInfo: getAlterInfoState(state),
         byDisplay: getDisplay(state),
         modalVisible: getModalVisible(state),
         modalRequestQuantity: getModalRequestQuantity(state),
+        clientWidth: getClientWidth(state),
+        clientHeight: getClientHeight(state),
+        byShopList: getShopList(state)
     };
 };
 
