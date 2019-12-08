@@ -37,7 +37,9 @@ class ShopView extends React.Component {
         super(props);
         this.state = {
             shopInfo: { ...this.props.shop.shopInfo },
-            modalVisible: false
+            modalVisible: false,
+            selectClerks: [],
+            selectManagers: [],
         }
     }
     onChange = (value) => {
@@ -49,10 +51,12 @@ class ShopView extends React.Component {
     }
 
     static getDerivedStateFromProps(props, state) {
-        if (props.shop.shopInfo !== state.shopInfo) {
+        if (props.shop.shopInfo !== state.shopInfo && !props.alterInfo) {
             return {
                 shopInfo: { ...props.shop.shopInfo }
             };
+        } else {
+            return null;
         }
     }
 
@@ -77,16 +81,25 @@ class ShopView extends React.Component {
 
     handleChange = (e) => {
         const name = e.target.name;
+        const { shopInfo } = this.state;
+        const newShopInfo = { ...shopInfo, [name]: e.target.value };
         this.setState({
-            [name]: e.target.value
+            shopInfo: newShopInfo
         })
     }
 
     handleRemoveClerk = (clerkId) => {
-        this.props.removeShopClerk(clerkId);
+        const { shopInfo,selectClerks,selectManagers } = this.state;
+        const newClerks = shopInfo.clerks.filter((item) => item != clerkId);
+        const newSelectClerks=selectClerks.filter((item) => item != clerkId);
+        const newSelectManagers=selectManagers.filter((item) => item != clerkId);
+        const newShopInfo = { ...shopInfo, clerks: newClerks };
+        console.log(newShopInfo)
+        this.setState({ shopInfo: newShopInfo,selectClerks:newSelectClerks,selectManagers:newSelectManagers });
+        // this.props.removeShopClerk(clerkId);
     }
 
-    handleAddClerk=(clerks)=>{
+    handleAddClerk = (clerks) => {
         this.props.addShopClerk(clerks);
     }
 
@@ -115,14 +128,31 @@ class ShopView extends React.Component {
         this.props.fetchAllClerks();
     }
 
-    handleModalOk=(clerks)=>{
-        this.props.addShopClerk(clerks);
+    handleModalOk = () => {
+        // this.props.addShopClerk(clerks);
+        const { shopInfo,selectClerks, selectManagers } = this.state;
+        const { clerks } = shopInfo;
+        const newClerks = [...clerks, ...selectClerks, ...selectManagers];
+        const newShopInfo = { ...shopInfo, clerks: newClerks };
+        this.setState({ shopInfo: newShopInfo, selectClerks, selectManagers });
         this.props.closeModal();
     }
 
-    handleModalCancel=()=>{
+    handleModalCancel = () => {
+        this.setState({ selectClerks: new Array(),selectManagers:new Array() });
         this.props.closeModal();
     }
+
+    //新增服务员处理器
+    handleClerksChange = (value) => {
+        this.setState({ selectClerks: value });
+    }
+
+    //新增店长处理器
+    handleManagersChange = (value) => {
+        this.setState({ selectManagers: value });
+    }
+
 
     render() {
         const { shopList, shopInfo } = this.props.shop;
@@ -194,7 +224,7 @@ class ShopView extends React.Component {
                                                     leave={{ opacity: 0, width: 0, scale: 0, duration: 200 }}
                                                     appear={false}
                                                 >
-                                                    {shopInfo.clerks.map((id) => (
+                                                    {this.state.shopInfo.clerks.map((id) => (
                                                         <span key={id} style={{ display: 'inline-block' }}>
                                                             <Tag
                                                                 closable
@@ -204,7 +234,12 @@ class ShopView extends React.Component {
                                                                     this.handleRemoveClerk(id);
                                                                 }}
                                                             >
-                                                                {byClerks[id].name} · {byClerks[id].position}
+                                                                {byClerks[id].position == null ?
+                                                                    (this.state.selectClerks.indexOf(id) != -1 ?
+                                                                    byClerks[id].name + " · " +"服务员" :
+                                                                    byClerks[id].name + " · " + "店长")
+                                                                    : (byClerks[id].name + " · " + byClerks[id].position)
+                                                                }
                                                             </Tag>
                                                         </span>))
                                                     }
@@ -217,8 +252,8 @@ class ShopView extends React.Component {
                                                 <Tooltip key={id} title={"点击查看员工详情"} placement="topLeft">
                                                     <Link to={`${match.url}/${shopId}/${id}`}>
                                                         <Tag onClick={this.showClerkInfo} style={{ margin: "10px" }}>
-                                                        {byClerks[id].name} · {byClerks[id].position}
-                                                    </Tag></Link>
+                                                            {byClerks[id].name} · {byClerks[id].position}
+                                                        </Tag></Link>
                                                 </Tooltip>
                                             )) : <Empty />}
                                     </Descriptions.Item>
@@ -253,6 +288,10 @@ class ShopView extends React.Component {
                     visible={modalVisible}
                     requestQuantity={modalRequestQuantity}
                     clerks={clerks}
+                    selectClerks={this.state.selectClerks}
+                    selectManagers={this.state.selectManagers}
+                    handleClerksChange={this.handleClerksChange}
+                    handleManagersChange={this.handleManagersChange}
                     byClerks={byClerks}
                     handleOk={this.handleModalOk}
                     handleCancel={this.handleModalCancel}
