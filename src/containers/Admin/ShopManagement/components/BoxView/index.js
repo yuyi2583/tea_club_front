@@ -20,6 +20,10 @@ class BoxView extends React.Component {
 
 
     componentDidMount() {
+        console.log(this.props);
+        if(this.props.location.alterInfo){
+            this.props.startAlterInfo();
+        }
         const { byBoxes, match } = this.props;
         const { boxId } = match.params;
         this.setState({ ...byBoxes[boxId] });
@@ -87,6 +91,7 @@ class BoxView extends React.Component {
         const {match}=this.props;
         const {shopId,boxId}=match.params;
         //TODO 修改store中的byBoxes
+        this.props.alterBoxInfo(newBoxInfo);
     }
 
     handleCancelAlter = () => {
@@ -176,7 +181,8 @@ class BoxView extends React.Component {
                                 : <PictureCard
                                     props
                                     fileList={fileListInProps}
-                                    alterInfo={alterInfo} />
+                                    alterInfo={alterInfo} 
+                                    onChange={this.handleDisplayChange} />
                         }
                     </Descriptions.Item>
                 </Descriptions>

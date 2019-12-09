@@ -13,7 +13,7 @@ import {
     Icon,
     Modal
 } from "antd";
-import { Link } from "react-router-dom";
+import { Link, Prompt } from "react-router-dom";
 import { TweenOneGroup } from 'rc-tween-one';
 import PictureCard from "../../../../../components/PictureCard";
 import { bindActionCreators } from "redux";
@@ -65,9 +65,17 @@ class ShopView extends React.Component {
     startAlterInfo = () => {
         this.props.startAlterInfo();
     }
+
     completeAlter = () => {
         const newShopInfo = this.state;
         console.log(newShopInfo);
+        //TODO 修改门店信息完成
+        this.props.finishAlterInfo();
+    }
+
+    handleCancelAlter = () => {
+        const { shopInfo } = this.props.shop;
+        this.setState({ shopInfo });
         this.props.finishAlterInfo();
     }
 
@@ -106,16 +114,18 @@ class ShopView extends React.Component {
     }
 
 
-
+    deleteBoxInfo = (shopId, boxId) => {
+        this.props.deleteBoxInfo(shopId, boxId);
+    }
 
     handleDisplayChange = (fileList) => {
         let display = [];
         for (var key in fileList) {
             display.push(fileList[key].uid);
         }
-        const {shopInfo}=this.state;
-        const newShopInfo={...shopInfo,display};
-        this.setState({shopInfo:newShopInfo});
+        const { shopInfo } = this.state;
+        const newShopInfo = { ...shopInfo, display };
+        this.setState({ shopInfo: newShopInfo });
         // this.props.setDisplay(display);
     };
 
@@ -155,17 +165,17 @@ class ShopView extends React.Component {
     }
 
     forDisplay = () => {
-        const {shopInfo}=this.props.shop;
-        if(shopInfo===null){
+        const { shopInfo } = this.props.shop;
+        if (shopInfo === null) {
             return {
-                fileListInProps:new Array(),
-                fileListInState:new Array()
+                fileListInProps: new Array(),
+                fileListInState: new Array()
             };
         }
         const { byDisplay } = this.props;
-        const fileListInProps=shopInfo.display.map((displayId)=>byDisplay[displayId]);
-        const shopInfoInState=this.state.shopInfo;
-        const fileListInState=shopInfoInState.display.map((displayId)=>byDisplay[displayId]);
+        const fileListInProps = shopInfo.display.map((displayId) => byDisplay[displayId]);
+        const shopInfoInState = this.state.shopInfo;
+        const fileListInState = shopInfoInState.display.map((displayId) => byDisplay[displayId]);
         return {
             fileListInProps,
             fileListInState
@@ -276,41 +286,55 @@ class ShopView extends React.Component {
                                             )) : <Empty />}
                                     </Descriptions.Item>
                                     <Descriptions.Item label="门店展示图片" span={2}>
-                                        { alterInfo ?
+                                        {alterInfo ?
                                             <PictureCard
                                                 fileList={fileListInState}
                                                 alterInfo={alterInfo}
                                                 p="state"
                                                 onChange={this.handleDisplayChange} />
-                                            :shopInfo.display === null || shopInfo.display.length === 0 ?
-                                             <Empty />
-                                            : <PictureCard
-                                                fileList={fileListInProps}
-                                                p="props"
-                                                alterInfo={alterInfo}
-                                                onChange={this.handleDisplayChange} />
+                                            : shopInfo.display === null || shopInfo.display.length === 0 ?
+                                                <Empty />
+                                                : <PictureCard
+                                                    fileList={fileListInProps}
+                                                    p="props"
+                                                    alterInfo={alterInfo}
+                                                    onChange={this.handleDisplayChange} />
                                         }
                                     </Descriptions.Item>
                                     <Descriptions.Item label="包厢" span={2}>
-                                        {shopInfo.boxes.length > 0 ?
-                                            shopInfo.boxes.map((boxId) => (
-                                                <BoxCard
-                                                    key={boxId}
-                                                    match={match}
-                                                    shopId={shopId}
-                                                    boxInfo={byBoxes[boxId]}
-                                                    alterInfo={alterInfo} />))
+                                        <div>
+                                            <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                                                <Link to={{
+                                                    pathname: `${match.url}/addBox/${shopId}`,
+                                                    state:{from:this.props.location}
+                                                }}>
+                                                    <Button type="primary">新增包厢</Button>
+                                                </Link>
+                                            </div>
+                                            {shopInfo.boxes.length > 0 ?
+                                                shopInfo.boxes.map((boxId) => (
+                                                    <BoxCard
+                                                        key={boxId}
+                                                        match={match}
+                                                        shopId={shopId}
+                                                        deleteBoxInfo={this.deleteBoxInfo}
+                                                        boxInfo={byBoxes[boxId]}
+                                                        alterInfo={alterInfo} />))
 
-                                            : <Empty />
-                                        }
+                                                : <Empty />
+                                            }
+                                        </div>
                                     </Descriptions.Item>
                                 </Descriptions>
                                 : <Empty />
                         }
                         {alterInfo ?
                             <Row style={{ margin: "20px 0" }}>
-                                <Col span={12} offset={6}>
-                                    <Button type="primary" block onClick={this.completeAlter} loading={requestQuantity > 0} >{requestQuantity > 0 ? "" : "确认修改"}</Button>
+                                <Col span={12} offset={4}>
+                                    <Button type="primary" block onClick={this.completeAlter} loading={modalRequestQuantity > 0} >{modalRequestQuantity > 0 ? "" : "确认修改"}</Button>
+                                </Col>
+                                <Col span={4} push={4}>
+                                    <Button block onClick={this.handleCancelAlter}>取消修改</Button>
                                 </Col>
                             </Row>
                             : null}
@@ -328,6 +352,7 @@ class ShopView extends React.Component {
                     handleOk={this.handleModalOk}
                     handleCancel={this.handleModalCancel}
                 />
+                <Prompt message="当前页面正在输入中，离开此页面您输入的数据不会被保存，是否离开?" when={alterInfo} />
             </div>
         );
     }

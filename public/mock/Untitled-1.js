@@ -1,91 +1,92 @@
-import { Upload, Icon, Modal } from 'antd';
+import { Form, DatePicker, TimePicker, Button } from 'antd';
 
-function getBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
-  });
-}
+const { MonthPicker, RangePicker } = DatePicker;
 
-class PicturesWall extends React.Component {
-  state = {
-    previewVisible: false,
-    previewImage: '',
-    fileList: [
-      {
-        uid: '-1',
-        name: 'image.png',
-        status: 'done',
-        url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-      },
-      {
-        uid: '-2',
-        name: 'image.png',
-        status: 'done',
-        url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-      },
-      {
-        uid: '-3',
-        name: 'image.png',
-        status: 'done',
-        url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-      },
-      {
-        uid: '-4',
-        name: 'image.png',
-        status: 'done',
-        url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-      },
-      {
-        uid: '-5',
-        name: 'image.png',
-        status: 'error',
-      },
-    ],
-  };
+class TimeRelatedForm extends React.Component {
+  handleSubmit = e => {
+    e.preventDefault();
 
-  handleCancel = () => this.setState({ previewVisible: false });
+    this.props.form.validateFields((err, fieldsValue) => {
+      if (err) {
+        return;
+      }
 
-  handlePreview = async file => {
-    if (!file.url && !file.preview) {
-      file.preview = await getBase64(file.originFileObj);
-    }
-
-    this.setState({
-      previewImage: file.url || file.preview,
-      previewVisible: true,
+      // Should format date value before submit.
+      const rangeValue = fieldsValue['range-picker'];
+      const rangeTimeValue = fieldsValue['range-time-picker'];
+      const values = {
+        ...fieldsValue,
+        'date-picker': fieldsValue['date-picker'].format('YYYY-MM-DD'),
+        'date-time-picker': fieldsValue['date-time-picker'].format('YYYY-MM-DD HH:mm:ss'),
+        'month-picker': fieldsValue['month-picker'].format('YYYY-MM'),
+        'range-picker': [rangeValue[0].format('YYYY-MM-DD'), rangeValue[1].format('YYYY-MM-DD')],
+        'range-time-picker': [
+          rangeTimeValue[0].format('YYYY-MM-DD HH:mm:ss'),
+          rangeTimeValue[1].format('YYYY-MM-DD HH:mm:ss'),
+        ],
+        'time-picker': fieldsValue['time-picker'].format('HH:mm:ss'),
+      };
+      console.log('Received values of form: ', values);
     });
   };
 
-  handleChange = ({ fileList }) => this.setState({ fileList });
-
   render() {
-    const { previewVisible, previewImage, fileList } = this.state;
-    const uploadButton = (
-      <div>
-        <Icon type="plus" />
-        <div className="ant-upload-text">Upload</div>
-      </div>
-    );
+    const { getFieldDecorator } = this.props.form;
+    const formItemLayout = {
+      labelCol: {
+        xs: { span: 24 },
+        sm: { span: 8 },
+      },
+      wrapperCol: {
+        xs: { span: 24 },
+        sm: { span: 16 },
+      },
+    };
+    const config = {
+      rules: [{ type: 'object', required: true, message: 'Please select time!' }],
+    };
+    const rangeConfig = {
+      rules: [{ type: 'array', required: true, message: 'Please select time!' }],
+    };
     return (
-      <div className="clearfix">
-        <Upload
-          action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-          listType="picture-card"
-          fileList={fileList}
-          onPreview={this.handlePreview}
-          onChange={this.handleChange}
+      <Form {...formItemLayout} onSubmit={this.handleSubmit}>
+        <Form.Item label="DatePicker">
+          {getFieldDecorator('date-picker', config)(<DatePicker />)}
+        </Form.Item>
+        <Form.Item label="DatePicker[showTime]">
+          {getFieldDecorator('date-time-picker', config)(
+            <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" />,
+          )}
+        </Form.Item>
+        <Form.Item label="MonthPicker">
+          {getFieldDecorator('month-picker', config)(<MonthPicker />)}
+        </Form.Item>
+        <Form.Item label="RangePicker">
+          {getFieldDecorator('range-picker', rangeConfig)(<RangePicker />)}
+        </Form.Item>
+        <Form.Item label="RangePicker[showTime]">
+          {getFieldDecorator('range-time-picker', rangeConfig)(
+            <RangePicker showTime format="YYYY-MM-DD HH:mm:ss" />,
+          )}
+        </Form.Item>
+        <Form.Item label="TimePicker">
+          {getFieldDecorator('time-picker', config)(<TimePicker />)}
+        </Form.Item>
+        <Form.Item
+          wrapperCol={{
+            xs: { span: 24, offset: 0 },
+            sm: { span: 16, offset: 8 },
+          }}
         >
-          {fileList.length >= 8 ? null : uploadButton}
-        </Upload>
-        <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
-          <img alt="example" style={{ width: '100%' }} src={previewImage} />
-        </Modal>
-      </div>
+          <Button type="primary" htmlType="submit">
+            Submit
+          </Button>
+        </Form.Item>
+      </Form>
     );
   }
 }
 
-ReactDOM.render(<PicturesWall />, mountNode);
+const WrappedTimeRelatedForm = Form.create({ name: 'time_related_controls' })(TimeRelatedForm);
+
+ReactDOM.render(<WrappedTimeRelatedForm />, mountNode);

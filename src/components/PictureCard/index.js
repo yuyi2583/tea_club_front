@@ -1,5 +1,6 @@
 import React from "react";
 import { Upload, Modal, Icon } from "antd";
+import PropTypes from "prop-types";
 import {getBase64} from "../../utils/imageUtil";
 
 class PictureCard extends React.Component {
@@ -56,6 +57,17 @@ class PictureCard extends React.Component {
         )
     }
 
+}
+
+
+PictureCard.propTypes = {
+    fileList: PropTypes.array.isRequired,
+    alterInfo:PropTypes.bool,
+    onChange:PropTypes.func.isRequired,
+}
+
+PictureCard.defaultProps = {
+    alterInfo: true
 }
 
 export default PictureCard;
