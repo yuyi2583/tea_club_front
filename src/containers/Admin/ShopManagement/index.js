@@ -2,7 +2,7 @@ import React from "react";
 import { Select, PageHeader, Tooltip, Icon, Button, message } from "antd";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { getClerks } from "../../../redux/modules/clerk";
+import { getByClerks } from "../../../redux/modules/clerk";
 import ShopView from "./components/ShopView";
 import { Route, Link } from "react-router-dom";
 import {
@@ -63,11 +63,13 @@ class ShopManagement extends React.Component {
                         <Route
                             path={match.url}
                             exact
-                            callMessage={this.callMessage}
                             render={props =>
-                                <ShopView {...props} />} />
+                                <ShopView
+                                    {...props}
+                                    callMessage={this.callMessage} />
+                            } />
                         <Route
-                            path={`${match.url}/addShop`}
+                            path={`${match.url}/addShop`}//TODO
                             render={props =>
                                 <AddShop
                                     {...props}
@@ -105,7 +107,7 @@ class ShopManagement extends React.Component {
 
 const mapStateToProps = (state, props) => {
     return {
-        byClerks: getClerks(state),
+        byClerks: getByClerks(state),
         alterInfo: getAlterInfoState(state)
     };
 };

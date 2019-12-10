@@ -15,8 +15,8 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actions as shopActions } from "../../../../../redux/modules/shop";
 import { getRequestQuantity, getError } from "../../../../../redux/modules/app";
-import {Redirect} from "react-router-dom";
-import {map} from "../../../../../router"
+import { Redirect } from "react-router-dom";
+import { map } from "../../../../../router"
 
 const format = 'HH:mm';
 const { confirm } = Modal;
@@ -35,7 +35,7 @@ class AddBox extends React.Component {
         const { fileList } = this.state;
         const { shopId } = this.props.match.params;
         const addBoxInfo = this.props.addBoxInfo;
-        const thiz=this;
+        const thiz = this;
         this.props.form.validateFieldsAndScroll((err, values) => {
             if (!err) {
                 confirm({
@@ -51,15 +51,12 @@ class AddBox extends React.Component {
                             fileList,
                             shopId
                         }
-                        console.log('new box: ', newBoxInfo);
-                        //TODO在stroe中新增包厢内容
                         thiz.props.addBoxInfo(newBoxInfo).then((data) => {
-                            console.log("add box info data", data);
                             if (data.result) {
-                                thiz.props.callMessage("success","新增包厢成功！")
+                                thiz.props.callMessage("success", "新增包厢成功！")
                                 thiz.setState({ redirectToReferrer: true });
                             } else {
-                                thiz.props.callMessage("error","新增包厢失败!" + data.error);
+                                thiz.props.callMessage("error", "新增包厢失败!" + data.error);
                             }
                         });
                     },
@@ -75,8 +72,7 @@ class AddBox extends React.Component {
 
     render() {
         const { from } = this.props.location.state || { from: { pathname: map.admin.AdminHome() + "/shop_management" } };
-        console.log("this.props.location", this.props.location);
-        const {redirectToReferrer}=this.state;
+        const { redirectToReferrer } = this.state;
         if (redirectToReferrer) {
             return <Redirect to={from} />;
         }

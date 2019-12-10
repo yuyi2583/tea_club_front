@@ -20,7 +20,6 @@ class BoxView extends React.Component {
 
 
     componentDidMount() {
-        console.log(this.props);
         if(this.props.location.alterInfo){
             this.props.startAlterInfo();
         }
@@ -88,9 +87,6 @@ class BoxView extends React.Component {
 
     completeAlter = () => {
         const newBoxInfo=this.state;
-        const {match}=this.props;
-        const {shopId,boxId}=match.params;
-        //TODO 修改store中的byBoxes
         this.props.alterBoxInfo(newBoxInfo);
     }
 

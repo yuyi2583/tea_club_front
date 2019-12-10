@@ -20,7 +20,7 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actions as appActions, getError, getRequestQuantity, getModalRequestQuantity } from "../../../../../redux/modules/app";
 import { actions as shopActions, getShop, getShopList, getBoxes, getDisplay } from "../../../../../redux/modules/shop";
-import { actions as clerkActions, getPlainClerks, getClerks } from "../../../../../redux/modules/clerk";
+import { actions as clerkActions, getByClerks, getClerks } from "../../../../../redux/modules/clerk";
 import {
     actions as uiActions,
     getShopId_shopManagement,
@@ -69,8 +69,14 @@ class ShopView extends React.Component {
     completeAlter = () => {
         const newShopInfo = this.state;
         console.log(newShopInfo);
-        //TODO 修改门店信息完成
-        this.props.finishAlterInfo();
+        this.setState({ shopInfo: this.props.shop.shopInfo, selectClerks: new Array(), selectManagers: new Array() });
+        this.props.alterShopInfo(newShopInfo)
+            .then((data) => {
+                this.props.callMessage("success", "修改信息成功！");
+            })
+            .catch((err) => {
+                this.props.callMessage("error", err);
+            });
     }
 
     handleCancelAlter = () => {
@@ -80,8 +86,9 @@ class ShopView extends React.Component {
     }
 
     componentDidMount() {
-
-        this.props.fetchShopList();
+        if (this.props.shop.shopList.length == 0) {
+            this.props.fetchShopList();
+        }
     }
 
 
@@ -262,7 +269,7 @@ class ShopView extends React.Component {
                                                                     this.handleRemoveClerk(id);
                                                                 }}
                                                             >
-                                                                {byClerks[id].position === null ?
+                                                                {byClerks[id].position == null ?
                                                                     (this.state.selectClerks.indexOf(id) !== -1 ?
                                                                         byClerks[id].name + " · " + "服务员" :
                                                                         byClerks[id].name + " · " + "店长")
@@ -278,7 +285,7 @@ class ShopView extends React.Component {
                                             </div>
                                             : shopInfo.clerks.length != 0 && byClerks != null ? shopInfo.clerks.map((id) => (
                                                 <Tooltip key={id} title={"点击查看员工详情"} placement="topLeft">
-                                                    <Link to={`${match.url}/${shopId}/${id}`}>
+                                                    <Link to={`${match.url}/clerkDetail/${shopId}/${id}`}>
                                                         <Tag onClick={this.showClerkInfo} style={{ margin: "10px" }}>
                                                             {byClerks[id].name} · {byClerks[id].position}
                                                         </Tag></Link>
@@ -306,7 +313,7 @@ class ShopView extends React.Component {
                                             <div style={{ display: "flex", justifyContent: "flex-end" }}>
                                                 <Link to={{
                                                     pathname: `${match.url}/addBox/${shopId}`,
-                                                    state:{from:this.props.location}
+                                                    state: { from: this.props.location }
                                                 }}>
                                                     <Button type="primary">新增包厢</Button>
                                                 </Link>
@@ -362,7 +369,7 @@ const mapStateToProps = (state, props) => {
     return {
         shop: getShop(state),
         clerks: getClerks(state),
-        byClerks: getPlainClerks(state),
+        byClerks: getByClerks(state),
         requestQuantity: getRequestQuantity(state),
         error: getError(state),
         shopId: getShopId_shopManagement(state),

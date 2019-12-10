@@ -10,4 +10,5 @@ export default {
     alterBoxInfo:()=>"/mock/alterBoxInfo.json",
     deleteBoxInfo:()=>"/mock/alterBoxInfo.json",
     addBoxInfo:()=>"/mock/addBoxInfo.json",
+    alterShopInfo:()=>"/mock/alterBoxInfo.json",
 }

@@ -5,7 +5,7 @@ import { actions as clerkActions } from "./clerk";
 import { actions as uiActions } from "./ui";
 
 const initialState = {
-    shopList: [],
+    shopList: new Array(),
     shopInfo: null,
     byBoxes: null,//包厢
     byDisplay: null,//门店图片
@@ -21,6 +21,7 @@ export const types = {
     SET_BOX_INFO: "SHOP/SET_BOX_INFO",               //设置包厢信息
     DELETE_BOX_INFO: "SHOP/DELETE_BOX_INFO",         //删除包厢
     ADD_BOX_INFO: "SHOP/ADD_BOX_INFO",               //新增包厢
+    ALTER_SHOP_INFO: "SHOP/ALTER_SHOP_INFO",         //修改门店信息
 };
 
 export const actions = {
@@ -111,10 +112,30 @@ export const actions = {
                 dispatch(appActions.finishRequest());
                 if (!data.error) {
                     dispatch(addBoxInfoSuccess(data.boxInfo));
-                    return Promise.resolve({result:true});
+                    return Promise.resolve({ result: true });
                 } else {
                     dispatch(appActions.setError(data.error));
-                    return Promise.resolve({result:false,error:"cuowu"});
+                    return Promise.resolve({ result: false, error: "cuowu" });
+                }
+            })
+        }
+    },
+    //修改门店信息
+    alterShopInfo: ({ shopInfo, selectClerks, selectManagers }) => {
+        return (dispatch) => {
+            dispatch(appActions.startModalRequest());
+            const params = { shopInfo, selectClerks, selectManagers };
+            return get(url.alterShopInfo(), params).then((data) => {
+                dispatch(appActions.finishModalRequest());
+                if (!data.error) {
+                    dispatch(alterShopInfoSuccess(shopInfo));
+                    dispatch(clerkActions.alterClerkPosition(selectClerks, selectManagers));
+                    dispatch(uiActions.finishAlterInfo());
+                    return Promise.resolve(true);
+                } else {
+                    dispatch(appActions.setError(data.error));
+                    dispatch(uiActions.finishAlterInfo());
+                    return Promise.reject(data.error);
                 }
             })
         }
@@ -135,6 +156,11 @@ const deleteBoxInfoSuccess = (shopId, boxId) => ({
 const addBoxInfoSuccess = (newBoxInfo) => ({
     type: types.ADD_BOX_INFO,
     boxInfo: newBoxInfo
+})
+
+const alterShopInfoSuccess = (shopInfo) => ({
+    type: types.ALTER_SHOP_INFO,
+    shopInfo,
 })
 
 const convertShopInfoToPlainStructure = (shopInfo) => {
@@ -238,9 +264,11 @@ const reducer = (state = initialState, action) => {
             return { ...state, shopInfo: newShopInfo1, byBoxes: newByBoxes1 };
         case types.ADD_BOX_INFO:
             const boxes1 = [...state.shopInfo.boxes, action.boxInfo.id];
-            const newShopInfo2 = { ...state.shopInfo, boxes:boxes1 };
+            const newShopInfo2 = { ...state.shopInfo, boxes: boxes1 };
             const newByBoxes2 = { ...state.byBoxes, [action.boxInfo.id]: action.boxInfo };
             return { ...state, shopInfo: newShopInfo2, byBoxes: newByBoxes2 };
+        case types.ALTER_SHOP_INFO:
+            return { ...state, shopInfo: action.shopInfo };
         default:
             return state;
     }
