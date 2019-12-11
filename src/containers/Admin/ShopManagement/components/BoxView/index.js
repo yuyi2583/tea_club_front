@@ -35,18 +35,6 @@ class BoxView extends React.Component {
         })
     }
 
-    // handleSelectChange=(value)=>{
-    //     this.setState({})
-    // }
-
-    // getSelectChildren=()=>{
-    //     const {byShopList,shop}=this.props;
-    //     const selectChildren=shop.shopList.map((shopId)=>(
-    //         <Option value={shopId}>{byShopList[shopId].name}</Option>
-    //     ))
-    //     return selectChildren;
-    // }
-
     handleInputNumChange = (value) => {
         this.setState({ price: value })
     }

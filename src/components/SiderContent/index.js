@@ -44,6 +44,7 @@ class SiderContent extends React.Component {
 
   handleClick=()=>{
     this.props.selectShop_shopManagement("请选择门店");
+    this.props.finishAlterInfo();
   }
 
   render() {

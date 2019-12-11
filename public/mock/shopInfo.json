@@ -5,7 +5,10 @@
       "address":"No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China",
       "description":"这是门店1",
       "contact":"88271998",
-      "businessHours":"周一到周日 8:00~20:00",
+      "openHours":[
+        {"id":"1","startTime":"09:00","endTime":"20:00","repeat":["1","3","4","5"]},
+        {"id":"2","startTime":"10:00","endTime":"21:00","repeat":["6","7"]}
+      ],
       "display":[
         {
           "uid": "1",

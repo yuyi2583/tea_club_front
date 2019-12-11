@@ -50,13 +50,32 @@ class ShopManagement extends React.Component {
         }
     }
 
+    getSubTitle = () => {
+        const { history } = this.props;
+        let subTitle = null;
+        if (history.location.pathname.indexOf("addShop") != -1) {
+            subTitle = "新增门店";
+        } else if (history.location.pathname.indexOf("boxInfo") != -1) {
+            subTitle = "包厢信息";
+        } else if(history.location.pathname.indexOf("addBox") != -1){
+            subTitle="新增包厢";
+        }else if(history.location.pathname.indexOf("clerkDetail") != -1){
+            subTitle="职员信息";
+        }else {
+            subTitle = null;
+        }
+        return subTitle;
+    }
+
     render() {
         const { byClerks, match, addButtonVisible, history, alterInfo } = this.props;
         const extra = this.getExtra();
+        const subTitle = this.getSubTitle();
         return (
             <div>
                 <PageHeader
                     title="门店管理"
+                    subTitle={subTitle}
                     onBack={this.handleBack}
                     extra={extra}>
                     <div>

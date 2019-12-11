@@ -10,6 +10,7 @@ const initialState = {
     byBoxes: null,//包厢
     byDisplay: null,//门店图片
     byShopList: null,
+    byOpenHours: null,//营业时间
 }
 
 export const types = {
@@ -22,6 +23,7 @@ export const types = {
     DELETE_BOX_INFO: "SHOP/DELETE_BOX_INFO",         //删除包厢
     ADD_BOX_INFO: "SHOP/ADD_BOX_INFO",               //新增包厢
     ALTER_SHOP_INFO: "SHOP/ALTER_SHOP_INFO",         //修改门店信息
+    ADD_SHOP:"SHOP/ADD_SHOP",                       //新增门店
 };
 
 export const actions = {
@@ -33,9 +35,8 @@ export const actions = {
             return get(url.fetchShopInfo(), params).then((data) => {
                 dispatch(appActions.finishRequest());
                 if (!data.error) {
-                    const { shopInfo, byClerks, byBoxes, byDisplay } = convertShopInfoToPlainStructure(data.shopInfo);
-                    const a = {}
-                    dispatch(fetchShopInfoSuccess(shopInfo, byBoxes, byDisplay));
+                    const { shopInfo, byClerks, byBoxes, byDisplay, byOpenHours } = convertShopInfoToPlainStructure(data.shopInfo);
+                    dispatch(fetchShopInfoSuccess(shopInfo, byBoxes, byDisplay, byOpenHours));
                     // dispatch(actions.setDisplay(byDisplay));
                     dispatch(clerkActions.fetchClerks(byClerks))
                 } else {
@@ -121,14 +122,14 @@ export const actions = {
         }
     },
     //修改门店信息
-    alterShopInfo: ({ shopInfo, selectClerks, selectManagers }) => {
+    alterShopInfo: ({ shopInfo, selectClerks, selectManagers ,byOpenHours}) => {
         return (dispatch) => {
             dispatch(appActions.startModalRequest());
-            const params = { shopInfo, selectClerks, selectManagers };
+            const params = { shopInfo, selectClerks, selectManagers ,byOpenHours};
             return get(url.alterShopInfo(), params).then((data) => {
                 dispatch(appActions.finishModalRequest());
                 if (!data.error) {
-                    dispatch(alterShopInfoSuccess(shopInfo));
+                    dispatch(alterShopInfoSuccess(shopInfo,byOpenHours));
                     dispatch(clerkActions.alterClerkPosition(selectClerks, selectManagers));
                     dispatch(uiActions.finishAlterInfo());
                     return Promise.resolve(true);
@@ -139,7 +140,24 @@ export const actions = {
                 }
             })
         }
-    }
+    },
+    //新增门店
+    addShop: (newShop) => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest());
+            const params = { ...newShop};
+            return get(url.addShop(), params).then((data) => {
+                dispatch(appActions.finishRequest());
+                if (!data.error) {
+                    dispatch(fetchShopListSuccess(convertShopListToPlainStructure(data.shopList)));
+                    return Promise.resolve(true);
+                } else {
+                    dispatch(appActions.setError(data.error));
+                    return Promise.reject(data.error);
+                }
+            })
+        }
+    },
 };
 
 const alterBoxInfoSuccess = (newBoxInfo) => ({
@@ -158,9 +176,10 @@ const addBoxInfoSuccess = (newBoxInfo) => ({
     boxInfo: newBoxInfo
 })
 
-const alterShopInfoSuccess = (shopInfo) => ({
+const alterShopInfoSuccess = (shopInfo,byOpenHours) => ({
     type: types.ALTER_SHOP_INFO,
     shopInfo,
+    byOpenHours
 })
 
 const convertShopInfoToPlainStructure = (shopInfo) => {
@@ -170,7 +189,9 @@ const convertShopInfoToPlainStructure = (shopInfo) => {
     let plainBoxes = {};
     let byDisplay = [];
     let plainDisplay = {}
-    const { clerks, boxes, display } = shopInfo;
+    let byOpenHours = [];
+    let plainOpenHours = {};
+    const { clerks, boxes, display, openHours } = shopInfo;
     const shopManager = clerks.filter((item) => item.position.indexOf("店长") != -1);
     shopManager.forEach((item) => {
         byClerk.push(item.id);
@@ -195,11 +216,18 @@ const convertShopInfoToPlainStructure = (shopInfo) => {
             plainDisplay[item.uid] = item;
         }
     })
+    openHours.forEach((item) => {
+        byOpenHours.push(item.id);
+        if (!plainOpenHours[item.id]) {
+            plainOpenHours[item.id] = item;
+        }
+    })
     return {
-        shopInfo: { ...shopInfo, clerks: byClerk, boxes: byBoxes, display: byDisplay },
+        shopInfo: { ...shopInfo, clerks: byClerk, boxes: byBoxes, display: byDisplay, openHours: byOpenHours },
         byClerks: plainClerk,
         byBoxes: plainBoxes,
         byDisplay: plainDisplay,
+        byOpenHours: plainOpenHours
     }
 }
 const convertShopListToPlainStructure = (shopList) => {
@@ -225,17 +253,18 @@ const fetchShopListSuccess = ({ shopList, byShopList }) => ({
     byShopList
 });
 
-const fetchShopInfoSuccess = (shopInfo, byBoxes, byDisplay) => ({
+const fetchShopInfoSuccess = (shopInfo, byBoxes, byDisplay, byOpenHours) => ({
     type: types.FETCH_SHOP_INFO,
     shopInfo,
     byBoxes,
     byDisplay,
+    byOpenHours,
 });
 
 const reducer = (state = initialState, action) => {
     switch (action.type) {
         case types.FETCH_SHOP_INFO:
-            return { ...state, shopInfo: action.shopInfo, byBoxes: action.byBoxes, byDisplay: action.byDisplay };
+            return { ...state, shopInfo: action.shopInfo, byBoxes: action.byBoxes, byDisplay: action.byDisplay, byOpenHours: action.byOpenHours };
         case types.FETCH_SHOP_LIST:
             return { ...state, shopList: action.shopList, byShopList: action.byShopList };
         case types.ADD_SHOP_CLERK:
@@ -268,7 +297,7 @@ const reducer = (state = initialState, action) => {
             const newByBoxes2 = { ...state.byBoxes, [action.boxInfo.id]: action.boxInfo };
             return { ...state, shopInfo: newShopInfo2, byBoxes: newByBoxes2 };
         case types.ALTER_SHOP_INFO:
-            return { ...state, shopInfo: action.shopInfo };
+            return { ...state, shopInfo: action.shopInfo,byOpenHours:action.byOpenHours };
         default:
             return state;
     }
@@ -280,3 +309,4 @@ export const getShop = (state) => state.shop;
 export const getShopList = (state) => state.shop.byShopList;
 export const getBoxes = (state) => state.shop.byBoxes;
 export const getDisplay = (state) => state.shop.byDisplay;
+export const getOpenHours = (state) => state.shop.byOpenHours;

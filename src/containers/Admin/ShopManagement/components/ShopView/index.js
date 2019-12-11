@@ -11,6 +11,7 @@ import {
     Col,
     Tag,
     Icon,
+    Typography,
     Modal
 } from "antd";
 import { Link, Prompt } from "react-router-dom";
@@ -19,7 +20,7 @@ import PictureCard from "../../../../../components/PictureCard";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actions as appActions, getError, getRequestQuantity, getModalRequestQuantity } from "../../../../../redux/modules/app";
-import { actions as shopActions, getShop, getShopList, getBoxes, getDisplay } from "../../../../../redux/modules/shop";
+import { actions as shopActions, getShop, getShopList, getBoxes, getDisplay, getOpenHours } from "../../../../../redux/modules/shop";
 import { actions as clerkActions, getByClerks, getClerks } from "../../../../../redux/modules/clerk";
 import {
     actions as uiActions,
@@ -32,8 +33,11 @@ import {
 } from "../../../../../redux/modules/ui";
 import AddClerkModal from "../AddClerkModal";
 import BoxCard from "../BoxCard";
+import { convertToDay } from "../../../../../utils/commonUtils";
+import AlterOpenHourModal from "../AlterOpenHourModal";
 
 const { Option } = Select;
+const { Text } = Typography;
 
 class ShopView extends React.Component {
     constructor(props) {
@@ -42,9 +46,12 @@ class ShopView extends React.Component {
             shopInfo: { ...this.props.shop.shopInfo },
             selectClerks: [],
             selectManagers: [],
+            alterOpenHour: false,
+            byOpenHours: {}
         }
     }
     onChange = (value) => {
+        console.log("on change",value);
         this.props.fetchShopInfo(value);
         this.props.selectShop_shopManagement(value);
     }
@@ -54,8 +61,13 @@ class ShopView extends React.Component {
 
     static getDerivedStateFromProps(props, state) {
         if (props.shop.shopInfo !== state.shopInfo && !props.alterInfo) {
+            let byOpenHours = new Object();
+            for (var key in props.byOpenHours) {
+                byOpenHours[key] = { ...props.byOpenHours[key], endStatus: "success", startStatus: "success", repeatStatus: "success" }
+            }
             return {
-                shopInfo: { ...props.shop.shopInfo }
+                shopInfo: { ...props.shop.shopInfo },
+                byOpenHours: byOpenHours
             };
         } else {
             return null;
@@ -69,7 +81,7 @@ class ShopView extends React.Component {
     completeAlter = () => {
         const newShopInfo = this.state;
         console.log(newShopInfo);
-        this.setState({ shopInfo: this.props.shop.shopInfo, selectClerks: new Array(), selectManagers: new Array() });
+        this.setState({ shopInfo: this.props.shop.shopInfo, selectClerks: new Array(), selectManagers: new Array(),byOpenHours:this.props.byOpenHours });
         this.props.alterShopInfo(newShopInfo)
             .then((data) => {
                 this.props.callMessage("success", "修改信息成功！");
@@ -146,19 +158,68 @@ class ShopView extends React.Component {
         this.props.fetchAllClerks();
     }
 
-    handleModalOk = () => {
+    handleModalOk = (type = 0) => {
         // this.props.addShopClerk(clerks);
-        const { shopInfo, selectClerks, selectManagers } = this.state;
-        const { clerks } = shopInfo;
-        const newClerks = [...clerks, ...selectClerks, ...selectManagers];
-        const newShopInfo = { ...shopInfo, clerks: newClerks };
-        this.setState({ shopInfo: newShopInfo, selectClerks, selectManagers });
-        this.props.closeModal();
+        if (type === 0) {
+            const { shopInfo, selectClerks, selectManagers } = this.state;
+            const { clerks } = shopInfo;
+            const newClerks = [...clerks, ...selectClerks, ...selectManagers];
+            const newShopInfo = { ...shopInfo, clerks: newClerks };
+            this.setState({ shopInfo: newShopInfo, selectClerks, selectManagers });
+            this.props.closeModal();
+        } else if (type === 1) {
+            const { byOpenHours } = this.state;
+            const {openHours}=this.state.shopInfo;
+            let breakFlag = true;
+            openHours.forEach((item) => {
+                let startStatus = "success";
+                let endStatus = "success";
+                let repeatStatus = "success";
+                if (byOpenHours[item].startTime == null || byOpenHours[item].startTime === "") {
+                    startStatus = "error";
+                    breakFlag = false;
+                } else {
+                    startStatus = "success";
+                }
+                if (byOpenHours[item].endTime == null || byOpenHours[item].endTime === "") {
+                    endStatus = "error";
+                    breakFlag = false;
+                } else {
+                    endStatus = "success";
+                }
+                if (byOpenHours[item].repeat.length === 0) {
+                    repeatStatus = "error";
+                    breakFlag = false;
+                } else {
+                    repeatStatus = "success";
+                }
+                let byOpenHoursItem = {
+                    ...byOpenHours[item],
+                    repeatStatus: repeatStatus,
+                    startStatus: startStatus,
+                    endStatus: endStatus
+                };
+                this.setState({ byOpenHours: { ...byOpenHours, [item]: byOpenHoursItem } });
+            })
+            if (!breakFlag) {
+                return;
+            }
+            this.setState({ alterOpenHour: false });
+        }
+
     }
 
-    handleModalCancel = () => {
-        this.setState({ selectClerks: new Array(), selectManagers: new Array() });
-        this.props.closeModal();
+    handleModalCancel = (type = 0) => {
+        if (type === 0) {
+            this.setState({ selectClerks: new Array(), selectManagers: new Array() });
+            this.props.closeModal();
+        } else if (type === 1) {
+            this.setState({ alterOpenHour: false });
+        }
+    }
+
+    alterOpenHour = () => {
+        this.setState({ alterOpenHour: true });
     }
 
     //新增服务员处理器
@@ -189,11 +250,80 @@ class ShopView extends React.Component {
         };
     }
 
+    getOpenHours = () => {
+        const { byOpenHours } = this.props;
+        const { openHours } = this.props.shop.shopInfo;
+        let openHoursChildrenInProps = openHours.map((item) => {
+            const day = convertToDay(byOpenHours[item].repeat);
+            // const dayChildren=day.map((item)=>)
+            return (
+                <div key={item} style={{ margin: "5px" }}>
+                    <Text>
+                        {byOpenHours[item].startTime}~{byOpenHours[item].endTime}&nbsp;&nbsp;{day}
+                    </Text>
+                </div>
+            )
+        });
+        let openHoursChildrenInState=null;
+        if (this.state.byOpenHours) {
+            const  byOpenHours1  = this.state.byOpenHours;
+            const openHours1  = this.state.shopInfo.openHours;
+            openHoursChildrenInState = openHours1.map((item) => {
+                const day1 = convertToDay(byOpenHours1[item].repeat);
+                // const dayChildren=day.map((item)=>)
+                return (
+                    <div key={item} style={{ margin: "5px" }}>
+                        <Text>
+                            {byOpenHours1[item].startTime}~{byOpenHours1[item].endTime}&nbsp;&nbsp;{day1}
+                        </Text>
+                    </div>
+                )
+            });
+        }
+        return {
+            openHoursChildrenInProps,
+            openHoursChildrenInState
+        };
+    }
+
+    handleStartTimePickerChange = (time, timeString, index) => {
+        const newOpenHour = { ...this.state.byOpenHours[index], startTime: timeString };
+        this.setState({ byOpenHours: { ...this.state.byOpenHours, [index]: newOpenHour } });
+    }
+
+    handleEndTimePickerChange = (time, timeString, index) => {
+        const newOpenHour = { ...this.state.byOpenHours[index], endTime: timeString };
+        this.setState({ byOpenHours: { ...this.state.byOpenHours, [index]: newOpenHour } });
+    }
+
+    handleRepeatChange = (value, index) => {
+        const newOpenHour = { ...this.state.byOpenHours[index], repeat: value };
+        this.setState({ byOpenHours: { ...this.state.byOpenHours, [index]: newOpenHour } });
+    }
+
+    handleAddOpenHour = () => {
+        let openHours = new Array();
+        this.state.shopInfo.openHours.forEach((item) => {
+            openHours.push(item);
+        })
+        openHours.push(openHours[openHours.length - 1] + 1);
+        const byOpenHours = { ...this.state.byOpenHours, [openHours[openHours.length - 1]]: { endTime: null, startTime: null, repeat: new Array(), endStatus: "success", startStatus: "success", repeatStatus: "success" } };
+        const shopInfo = { ...this.state.shopInfo, openHours };
+        this.setState({ shopInfo, byOpenHours })
+    }
+
+    handleRemoveOpenHour = (index) => {
+        const openHours = this.state.shopInfo.openHours.filter((item) => item !== index);
+        const shopInfo = { ...this.state.shopInfo, openHours };
+        this.setState({ shopInfo });
+    }
+
     render() {
         const { shopList, shopInfo } = this.props.shop;
         const { byClerks, match, shopId, byShopList, modalRequestQuantity, clerks,
             requestQuantity, byBoxes, alterInfo, modalVisible, shop } = this.props;
         const { fileListInProps, fileListInState } = this.forDisplay();
+        const { openHoursChildrenInProps, openHoursChildrenInState } = this.props.shop.shopInfo != null && this.getOpenHours();
         return (
             <div>
                 <div>
@@ -201,7 +331,7 @@ class ShopView extends React.Component {
                         showSearch
                         style={{ width: 200 }}
                         optionFilterProp="children"
-                        defaultValue={!shopId || shopId === "请选择门店" ? "请选择门店" : shopId}
+                        value={(!shopId) || shopId === "请选择门店" ? "请选择门店" : shopId}
                         onChange={this.onChange}
                         filterOption={(input, option) =>
                             option.props.children.props.children.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -235,8 +365,12 @@ class ShopView extends React.Component {
                                     </Descriptions.Item>
                                     <Descriptions.Item label="营业时间">
                                         {alterInfo ?
-                                            <Input value={this.state.shopInfo.businessHours} allowClear name="businessHours" onChange={this.handleChange} />
-                                            : shopInfo.businessHours}
+                                            <div>
+                                                <Button type="primary" onClick={this.alterOpenHour}>更改营业时间</Button>
+                                                {openHoursChildrenInState}
+                                            </div>
+                                            :  openHoursChildrenInProps 
+                                        }
                                     </Descriptions.Item>
                                     <Descriptions.Item label="联系方式">
                                         {alterInfo ?
@@ -359,6 +493,18 @@ class ShopView extends React.Component {
                     handleOk={this.handleModalOk}
                     handleCancel={this.handleModalCancel}
                 />
+                <AlterOpenHourModal
+                    visible={this.state.alterOpenHour}
+                    handleStartTimePickerChange={this.handleStartTimePickerChange}
+                    handleEndTimePickerChange={this.handleEndTimePickerChange}
+                    handleRepeatChange={this.handleRepeatChange}
+                    handleAddOpenHour={this.handleAddOpenHour}
+                    handleRemoveOpenHour={this.handleRemoveOpenHour}
+                    openHours={this.state.shopInfo.openHours}
+                    byOpenHours={this.state.byOpenHours}
+                    handleOk={() => this.handleModalOk(1)}
+                    handleCancel={() => this.handleModalCancel(1)}
+                />
                 <Prompt message="当前页面正在输入中，离开此页面您输入的数据不会被保存，是否离开?" when={alterInfo} />
             </div>
         );
@@ -381,7 +527,8 @@ const mapStateToProps = (state, props) => {
         modalRequestQuantity: getModalRequestQuantity(state),
         clientWidth: getClientWidth(state),
         clientHeight: getClientHeight(state),
-        byShopList: getShopList(state)
+        byShopList: getShopList(state),
+        byOpenHours: getOpenHours(state),
     };
 };
 
