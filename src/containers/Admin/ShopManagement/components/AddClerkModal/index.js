@@ -18,7 +18,7 @@ class AddClerkModal extends React.Component {
     };
 
     getChildren = (clerks, byClerks) => {
-        if (clerks) {
+        if (clerks&&byClerks) {
             const clerksWithoutShop = clerks.filter((item) => {
                 if (!byClerks[item].shopId) {
                     return true;

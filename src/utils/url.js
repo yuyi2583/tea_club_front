@@ -12,4 +12,5 @@ export default {
     addBoxInfo:()=>"/mock/addBoxInfo.json",
     alterShopInfo:()=>"/mock/alterBoxInfo.json",
     addShop:()=>"/mock/addShop.json",
+    fetchAllAuthority:()=>"/mock/allAuthority.json",
 }

@@ -3,22 +3,26 @@ import { PageHeader, Button } from "antd";
 import { Route, Link } from "react-router-dom";
 import RoleList from "./components/RoleList";
 import RoleDetail from "./components/RoleDetail";
+import { bindActionCreators } from "redux";
+import { connect } from "react-redux";
+import {actions as uiActions} from "../../../redux/modules/ui";
+import {actions as clerkActions} from "../../../redux/modules/clerk";
 
 class RoleManagement extends React.Component {
     handleBack = () => {
         window.history.back();
     }
 
+    startAlterRoleDetail=()=>{
+        this.props.fetchAllAuthority();
+        this.props.startAlterInfo();
+    }
+
     getExtra = () => {
         const { history, match } = this.props;
         let extra = null;
-        if (history.location.pathname === "/administrator/company/shop_management") {
-            extra = (
-                <Link to={`${match.url}/addShop`}>
-                    <Button type="primary">新增门店</Button>
-                </Link>);
-        } else if (history.location.pathname.indexOf("boxInfo") != -1) {
-            extra = (<Button type="primary" onClick={() => this.props.startAlterInfo()}>修改包厢信息</Button>);
+        if (history.location.pathname.indexOf("role_detail") != -1) {
+            extra = (<Button type="primary" onClick={this.startAlterRoleDetail }>修改职员信息</Button>);
         } else {
             extra = null;
         }
@@ -74,4 +78,16 @@ class RoleManagement extends React.Component {
     }
 }
 
-export default RoleManagement;
+const mapStateToProps = (state, props) => {
+    return {
+       
+    };
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        ...bindActionCreators(uiActions, dispatch),
+        ...bindActionCreators(clerkActions, dispatch),
+    };
+};
+export default connect(mapStateToProps,mapDispatchToProps)(RoleManagement);

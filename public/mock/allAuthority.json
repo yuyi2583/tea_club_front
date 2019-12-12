@@ -1,8 +1,5 @@
 {
-    "user": {
-      "userId":"123",
-      "userName":"123",
-      "authority":[
+    "authority":[
         {"id":"1","name":"company_info","component":"Admin/CompanyInfo","title":"公司信息管理","description":"这是公司信息管理","belong":{"id":"1","name":"company","title":"公司管理","icon":"book"}},
         {"id":"2","name":"shop_management","component":"Admin/ShopManagement","title":"门店管理","description":"这是门店管理","belong":{"id":"1","name":"company","title":"公司管理","icon":"book"}},
         {"id":"3","name":"role_information","component":"Admin/RoleManagement","title":"人员信息管理","description":"这是人员信息管理","belong":{"id":"2","name":"role","title":"角色管理","icon":"user"}},
@@ -11,8 +8,7 @@
         {"id":"6","name":"h6","component":"Admin/CompanyInfo","title":"h6","description":"这是h6","belong":{"id":"4","name":"t4","title":"t4","icon":"mail"}},
         {"id":"7","name":"h7","component":"Admin/CompanyInfo","title":"h7","description":"这是h7","belong":{"id":"4","name":"t4","title":"t4","icon":"mail"}},
         {"id":"8","name":"h8","component":"Admin/CompanyInfo","title":"h8","description":"这是h8","belong":{"id":"4","name":"t4","title":"t4","icon":"mail"}}
-      ]
-    },
+    ],
     "retCode": "200",
     "error":""
 }
