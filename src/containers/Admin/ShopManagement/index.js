@@ -88,7 +88,7 @@ class ShopManagement extends React.Component {
                                     callMessage={this.callMessage} />
                             } />
                         <Route
-                            path={`${match.url}/addShop`}//TODO
+                            path={`${match.url}/addShop`}
                             render={props =>
                                 <AddShop
                                     {...props}

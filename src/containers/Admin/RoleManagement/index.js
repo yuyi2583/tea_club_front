@@ -1,7 +1,8 @@
 import React from "react";
-import { PageHeader ,Button} from "antd";
-import { Route,Link } from "react-router-dom";
+import { PageHeader, Button } from "antd";
+import { Route, Link } from "react-router-dom";
 import RoleList from "./components/RoleList";
+import RoleDetail from "./components/RoleDetail";
 
 class RoleManagement extends React.Component {
     handleBack = () => {
@@ -27,8 +28,8 @@ class RoleManagement extends React.Component {
     getSubTitle = () => {
         const { history } = this.props;
         let subTitle = null;
-        if (history.location.pathname.indexOf("addShop") != -1) {
-            subTitle = "新增门店";
+        if (history.location.pathname.indexOf("role_detail") != -1) {
+            subTitle = "职员详情";
         } else if (history.location.pathname.indexOf("boxInfo") != -1) {
             subTitle = "包厢信息";
         } else if (history.location.pathname.indexOf("addBox") != -1) {
@@ -56,8 +57,18 @@ class RoleManagement extends React.Component {
                     exact
                     render={props =>
                         <RoleList
-                            {...props}/>
-                    } />
+                            {...props} />
+                    }
+                />
+                <Route
+                    path={`${match.url}/role_detail/:clerkId`}
+                    exact
+                    render={props =>
+                        <RoleDetail
+                            {...props}
+                        />
+                    }
+                />
             </PageHeader>
         );
     }

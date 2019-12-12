@@ -1,7 +1,7 @@
 import React from "react";
 import { Upload, Modal, Icon } from "antd";
 import PropTypes from "prop-types";
-import {getBase64} from "../../utils/imageUtil";
+import { getBase64 } from "../../utils/imageUtil";
 
 class PictureCard extends React.Component {
     constructor(props) {
@@ -25,12 +25,12 @@ class PictureCard extends React.Component {
 
     handleCancel = () => this.setState({ previewVisible: false });
 
-    handleDisplayChange=({fileList})=>{
+    handleDisplayChange = ({ fileList }) => {
         this.props.onChange(fileList);
     }
 
     render() {
-        const {fileList,alterInfo}=this.props;
+        const { fileList, alterInfo, max } = this.props;
         const { previewVisible, previewImage } = this.state;
         const uploadButton = (
             <div>
@@ -48,7 +48,7 @@ class PictureCard extends React.Component {
                     disabled={alterInfo ? false : true}
                     onChange={this.handleDisplayChange}
                 >
-                    {fileList.length >= 4 ? null : alterInfo ? uploadButton : null}
+                    {fileList.length >= max ? null : alterInfo ? uploadButton : null}
                 </Upload>
                 <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
                     <img alt="example" style={{ width: '100%' }} src={previewImage} />
@@ -62,12 +62,14 @@ class PictureCard extends React.Component {
 
 PictureCard.propTypes = {
     fileList: PropTypes.array.isRequired,
-    alterInfo:PropTypes.bool,
-    onChange:PropTypes.func.isRequired,
+    alterInfo: PropTypes.bool,
+    onChange: PropTypes.func.isRequired,
+    max: PropTypes.number,
 }
 
 PictureCard.defaultProps = {
-    alterInfo: true
+    alterInfo: true,
+    max: 4
 }
 
 export default PictureCard;
