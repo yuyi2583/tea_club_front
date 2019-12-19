@@ -66,7 +66,7 @@ class App extends React.Component {
                                         )} />
                                     })}
                                     {authority.map((item) => {
-                                        return <Route key={item.id} path={item.pathname} render={(props) => (
+                                        return <Route key={item.uid} path={item.pathname} render={(props) => (
                                             !item.auth ? <item.component {...props} authority={authority}/> :
                                                 // this.props.auth.userId ? 
                                                 true ?

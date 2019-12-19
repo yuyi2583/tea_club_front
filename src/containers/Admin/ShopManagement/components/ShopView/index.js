@@ -80,7 +80,19 @@ class ShopView extends React.Component {
 
     completeAlter = () => {
         const newShopInfo = this.state;
+        const{shopInfo}=newShopInfo;
         console.log(newShopInfo);
+        let flag=true;
+        for(var key in shopInfo){
+            if(shopInfo[key]==null||shopInfo[key]===""){
+                this.props.callMessage("error","输入框不能为空");
+                flag=false;
+                return;
+            }
+        }
+        // if(!flag){
+        //     return;
+        // }
         this.setState({ shopInfo: this.props.shop.shopInfo, selectClerks: new Array(), selectManagers: new Array(),byOpenHours:this.props.byOpenHours });
         this.props.alterShopInfo(newShopInfo)
             .then((data) => {
@@ -337,7 +349,7 @@ class ShopView extends React.Component {
                             option.props.children.props.children.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                         }>
                         {shop.shopList.map((shopId) => {
-                            return <Option value={byShopList[shopId].id} key={byShopList[shopId].id}>{byShopList[shopId].name}</Option>
+                            return <Option value={byShopList[shopId].uid} key={byShopList[shopId].uid}>{byShopList[shopId].name}</Option>
                         })}
                     </Select>
                     {shopId === "" || shopId === "请选择门店" ? null : <Button onClick={this.startAlterInfo} style={{ marginBottom: "20px", float: "right" }}>修改门店信息</Button>}
@@ -407,7 +419,7 @@ class ShopView extends React.Component {
                                                                     (this.state.selectClerks.indexOf(id) !== -1 ?
                                                                         byClerks[id].name + " · " + "服务员" :
                                                                         byClerks[id].name + " · " + "店长")
-                                                                    : (byClerks[id].name + " · " + byClerks[id].position)
+                                                                    : (byClerks[id].name + " · " + byClerks[id].position.name)
                                                                 }
                                                             </Tag>
                                                         </span>))
@@ -421,7 +433,7 @@ class ShopView extends React.Component {
                                                 <Tooltip key={id} title={"点击查看员工详情"} placement="topLeft">
                                                     <Link to={`${match.url}/clerkDetail/${shopId}/${id}`}>
                                                         <Tag onClick={this.showClerkInfo} style={{ margin: "10px" }}>
-                                                            {byClerks[id].name} · {byClerks[id].position}
+                                                            {byClerks[id].name} · {byClerks[id].position.name}
                                                         </Tag></Link>
                                                 </Tooltip>
                                             )) : <Empty />}

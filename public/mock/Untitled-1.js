@@ -1,37 +1,27 @@
-import { Tree, Icon } from 'antd';
+import { Select } from 'antd';
 
-const { TreeNode } = Tree;
+const { Option } = Select;
 
-class Demo extends React.Component {
-  onSelect = (selectedKeys, info) => {
-    console.log('selected', selectedKeys, info);
-  };
-
-  render() {
-    return (
-      <Tree
-        showLine
-        switcherIcon={<Icon type="down" />}
-        defaultExpandedKeys={['0-0-0']}
-        onSelect={this.onSelect}
-      >
-        <TreeNode title="parent 1" key="0-0">
-          <TreeNode title="parent 1-0" key="0-0-0">
-            <TreeNode title="leaf" key="0-0-0-0" />
-            <TreeNode title="leaf" key="0-0-0-1" />
-            <TreeNode title="leaf" key="0-0-0-2" />
-          </TreeNode>
-          <TreeNode title="parent 1-1" key="0-0-1">
-            <TreeNode title="leaf" key="0-0-1-0" />
-          </TreeNode>
-          <TreeNode title="parent 1-2" key="0-0-2">
-            <TreeNode title="leaf" key="0-0-2-0" />
-            <TreeNode title="leaf" key="0-0-2-1" />
-          </TreeNode>
-        </TreeNode>
-      </Tree>
-    );
-  }
+function handleChange(value) {
+  console.log(`selected ${value}`);
 }
 
-ReactDOM.render(<Demo />, mountNode);
+ReactDOM.render(
+  <div>
+    <Select defaultValue="lucy" style={{ width: 120 }} onChange={handleChange}>
+      <Option value="jack">Jack</Option>
+      <Option value="lucy">Lucy</Option>
+      <Option value="disabled" disabled>
+        Disabled
+      </Option>
+      <Option value="Yiminghe">yiminghe</Option>
+    </Select>
+    <Select defaultValue="lucy" style={{ width: 120 }} disabled>
+      <Option value="lucy">Lucy</Option>
+    </Select>
+    <Select defaultValue="lucy" style={{ width: 120 }} loading>
+      <Option value="lucy">Lucy</Option>
+    </Select>
+  </div>,
+  mountNode,
+);

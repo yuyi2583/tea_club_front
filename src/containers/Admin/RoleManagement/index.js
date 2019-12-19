@@ -7,6 +7,7 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import {actions as uiActions} from "../../../redux/modules/ui";
 import {actions as clerkActions} from "../../../redux/modules/clerk";
+import {actions as shopActions} from "../../../redux/modules/shop";
 
 class RoleManagement extends React.Component {
     handleBack = () => {
@@ -15,6 +16,8 @@ class RoleManagement extends React.Component {
 
     startAlterRoleDetail=()=>{
         this.props.fetchAllAuthority();
+        this.props.fetchShopList();
+        this.props.fetchAllPosition();
         this.props.startAlterInfo();
     }
 
@@ -88,6 +91,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         ...bindActionCreators(uiActions, dispatch),
         ...bindActionCreators(clerkActions, dispatch),
+        ...bindActionCreators(shopActions, dispatch),
     };
 };
 export default connect(mapStateToProps,mapDispatchToProps)(RoleManagement);

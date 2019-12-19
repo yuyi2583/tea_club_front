@@ -33,7 +33,7 @@ class SiderContent extends React.Component {
   componentDidMount() {
     const { authorityBelong } = this.props;
     authorityBelong.forEach((item)=>{
-      this.rootSubmenuKeys.push(item.id);
+      this.rootSubmenuKeys.push(item.uid);
     })
     // this.setState({openKeys:authorityBelong[0].id});
     // console.log(authorityBelong[0]);
@@ -69,9 +69,9 @@ class SiderContent extends React.Component {
                       <span>{belong.title}</span>
                     </span>
                   }>
-                    {authority.filter((item)=>item.belong===belong.id).map((item)=>{
+                    {authority.filter((item)=>item.belong===belong.uid).map((item)=>{
                       return (
-                        <Menu.Item key={item.id} onClick={this.handleClick}>
+                        <Menu.Item key={item.uid} onClick={this.handleClick}>
                           <Link to={{
                             pathname:item.pathname,
                           }}>{item.title}</Link>

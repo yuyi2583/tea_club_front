@@ -1,13 +1,13 @@
 {
     "authority":[
-        {"id":"1","name":"company_info","component":"Admin/CompanyInfo","title":"公司信息管理","description":"这是公司信息管理","belong":{"id":"1","name":"company","title":"公司管理","icon":"book"}},
-        {"id":"2","name":"shop_management","component":"Admin/ShopManagement","title":"门店管理","description":"这是门店管理","belong":{"id":"1","name":"company","title":"公司管理","icon":"book"}},
-        {"id":"3","name":"role_information","component":"Admin/RoleManagement","title":"人员信息管理","description":"这是人员信息管理","belong":{"id":"2","name":"role","title":"角色管理","icon":"user"}},
-        {"id":"4","name":"add_role","component":"Admin/CompanyInfo","title":"新增人员","description":"这是新增人员","belong":{"id":"2","name":"role","title":"角色管理","icon":"user"}},
-        {"id":"5","name":"h5","component":"Admin/CompanyInfo","title":"h5","description":"这是h5","belong":{"id":"3","name":"t3","title":"t3","icon":"mail"}},
-        {"id":"6","name":"h6","component":"Admin/CompanyInfo","title":"h6","description":"这是h6","belong":{"id":"4","name":"t4","title":"t4","icon":"mail"}},
-        {"id":"7","name":"h7","component":"Admin/CompanyInfo","title":"h7","description":"这是h7","belong":{"id":"4","name":"t4","title":"t4","icon":"mail"}},
-        {"id":"8","name":"h8","component":"Admin/CompanyInfo","title":"h8","description":"这是h8","belong":{"id":"4","name":"t4","title":"t4","icon":"mail"}}
+        {"uid":"1","name":"company_info","component":"Admin/CompanyInfo","title":"公司信息管理","description":"这是公司信息管理","belong":{"uid":"1","name":"company","title":"公司管理","icon":"book"}},
+        {"uid":"2","name":"shop_management","component":"Admin/ShopManagement","title":"门店管理","description":"这是门店管理","belong":{"uid":"1","name":"company","title":"公司管理","icon":"book"}},
+        {"uid":"3","name":"role_information","component":"Admin/RoleManagement","title":"人员信息管理","description":"这是人员信息管理","belong":{"uid":"2","name":"role","title":"角色管理","icon":"user"}},
+        {"uid":"4","name":"add_role","component":"Admin/CompanyInfo","title":"新增人员","description":"这是新增人员","belong":{"uid":"2","name":"role","title":"角色管理","icon":"user"}},
+        {"uid":"5","name":"h5","component":"Admin/CompanyInfo","title":"h5","description":"这是h5","belong":{"uid":"3","name":"t3","title":"t3","icon":"mail"}},
+        {"uid":"6","name":"h6","component":"Admin/CompanyInfo","title":"h6","description":"这是h6","belong":{"uid":"4","name":"t4","title":"t4","icon":"mail"}},
+        {"uid":"7","name":"h7","component":"Admin/CompanyInfo","title":"h7","description":"这是h7","belong":{"uid":"4","name":"t4","title":"t4","icon":"mail"}},
+        {"uid":"8","name":"h8","component":"Admin/CompanyInfo","title":"h8","description":"这是h8","belong":{"uid":"4","name":"t4","title":"t4","icon":"mail"}}
     ],
     "retCode": "200",
     "error":""

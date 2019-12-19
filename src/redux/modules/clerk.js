@@ -9,6 +9,8 @@ const initialState = {
     byBelong: null,
     allAuthority: null,
     allBelong: null,
+    allPosition: null,
+    byAllPosition: null,
 };
 
 export const types = {
@@ -16,6 +18,7 @@ export const types = {
     FETCH_SHOP_CLERKS: "CLERK/FETCH_SHOP_CLERKS",        //获取门店员工信息
     ALTER_CLERK_POSITION: "CLERK/ALTER_CLERK_POSITION",      //修改员工职位信息
     FETCH_ALL_AUTHORITY: "CLERK/FETCH_ALL_AUTHORITY",        //获取所有权限信息
+    FETCH_ALL_POSITION: "CLERK/FETCH_ALL_POSITION",          //获取所有职位信息
 }
 
 export const actions = {
@@ -55,8 +58,28 @@ export const actions = {
                 }
             })
         }
+    },
+    //获取所有职位信息
+    fetchAllPosition: () => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest());
+            return get(url.fetchAllPosition()).then((data) => {
+                dispatch(appActions.finishRequest());
+                if (!data.error) {
+                    dispatch(fetchAllPositionSuccess(convertPositionToPlainStructure(data.positions)));
+                } else {
+                    dispatch(actions.setError(data.error));
+                }
+            })
+        }
     }
 }
+
+const fetchAllPositionSuccess = ({ allPosition, byAllPosition }) => ({
+    type: types.FETCH_ALL_POSITION,
+    allPosition,
+    byAllPosition
+})
 
 const fetchAllAuthoritySuccess = ({ authority, byAuthority, byBelongSecond, belong }) => ({
     type: types.FETCH_ALL_AUTHORITY,
@@ -74,16 +97,32 @@ const fetchAllClerksSuccess = ({ clerks, byClerks, byAuthorityTop, byBelongTop }
     byBelong: byBelongTop,
 })
 
+const convertPositionToPlainStructure = (data) => {
+    console.log("all positins",data);
+    let allPosition = [];
+    let byAllPosition = {};
+    data.forEach((item) => {
+        allPosition.push(item.uid);
+        if (!byAllPosition[item.uid]) {
+            byAllPosition[item.uid] = item;
+        }
+    });
+    return {
+        allPosition,
+        byAllPosition
+    }
+}
+
 const convertClerksToPlainStructure = (data) => {
     let clerks = [];
     let byClerks = {};
     let byAuthorityTop = new Object();
     let byBelongTop = new Object();
     data.forEach((item) => {
-        clerks.push(item.id);
-        if (!byClerks[item.id]) {
+        clerks.push(item.uid);
+        if (!byClerks[item.uid]) {
             const { authority, byAuthority, byBelongSecond, belong } = convertAuthorityToPlainStructure(item.authority);
-            byClerks[item.id] = { ...item, authority, belong };
+            byClerks[item.uid] = { ...item, authority, belong };
             byAuthorityTop = { ...byAuthorityTop, ...byAuthority };
             byBelongTop = { ...byBelongTop, ...byBelongSecond };
         }
@@ -102,13 +141,13 @@ const convertAuthorityToPlainStructure = (data) => {
     let byBelongSecond = new Object();
     let belong = [];
     data.forEach((item) => {
-        authority.push(item.id);
-        if (belong.indexOf(item.belong.id) === -1) {
-            belong.push(item.belong.id);
+        authority.push(item.uid);
+        if (belong.indexOf(item.belong.uid) === -1) {
+            belong.push(item.belong.uid);
         }
-        if (!byAuthority[item.id]) {
+        if (!byAuthority[item.uid]) {
             const { belong, byBelong } = convertAuthorityBelongToPlainStructure(item.belong);
-            byAuthority[item.id] = { ...item, belong };
+            byAuthority[item.uid] = { ...item, belong };
             byBelongSecond = { ...byBelongSecond, ...byBelong };
         }
     });
@@ -121,10 +160,10 @@ const convertAuthorityToPlainStructure = (data) => {
 }
 
 const convertAuthorityBelongToPlainStructure = (data) => {
-    let belong = data.id;
+    let belong = data.uid;
     let byBelong = {};
-    if (!byBelong[data.id]) {
-        byBelong[data.id] = data;
+    if (!byBelong[data.uid]) {
+        byBelong[data.uid] = data;
     }
     return {
         belong,
@@ -163,6 +202,8 @@ const reducer = (state = initialState, action) => {
             return { ...state, byClerks: newByClerks };
         case types.FETCH_ALL_AUTHORITY:
             return { ...state, allAuthority: action.allAuthority, allBelong: action.allBelong, byAuthority: action.byAuthority, byBelong: action.byBelong };
+        case types.FETCH_ALL_POSITION:
+            return { ...state, allPosition: action.allPosition, byAllPosition: action.byAllPosition };
         default:
             return state;
     }
@@ -174,3 +215,7 @@ export const getByClerks = (state) => state.clerk.byClerks;
 export const getClerks = (state) => state.clerk.clerks;
 export const getByAuthority = (state) => state.clerk.byAuthority;
 export const getByBelong = (state) => state.clerk.byBelong;
+export const getAllBelong = (state) => state.clerk.allBelong;
+export const getAllAuthority = (state) => state.clerk.allAuthority;
+export const getAllPosition = (state) => state.clerk.allPosition;
+export const getByAllPosition = (state) => state.clerk.byAllPosition;

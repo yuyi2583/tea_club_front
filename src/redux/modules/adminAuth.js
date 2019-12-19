@@ -71,13 +71,13 @@ const convertToPlainStructure=(data)=>{
     let byAuthority={};
     let byAuthorityBelong={};
     authority.forEach((item)=>{
-        byAuthority[item.id]={
+        byAuthority[item.uid]={
             ...item,
-            belong:item.belong.id,
+            belong:item.belong.uid,
             pathname:map.admin.AdminHome()+"/"+item.belong.name+"/"+item.name
         };
-        if(!byAuthorityBelong[item.belong.id]){
-            byAuthorityBelong[item.belong.id]=item.belong;
+        if(!byAuthorityBelong[item.belong.uid]){
+            byAuthorityBelong[item.belong.uid]=item.belong;
         }
     });
     byAuthority=dynamicRoute(byAuthority);

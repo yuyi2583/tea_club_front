@@ -8,7 +8,7 @@ class BoxCard extends React.Component {
 
     deleteBox = () => {
         const { alterInfo, boxInfo, match, shopId } = this.props;
-        this.props.deleteBoxInfo(shopId,boxInfo.id);
+        this.props.deleteBoxInfo(shopId,boxInfo.uid);
     }
 
     render() {
@@ -34,7 +34,7 @@ class BoxCard extends React.Component {
                             <Icon type="delete" key="delete" onClick={this.deleteBox} />
                         </Tooltip>,
                         <Link to={{
-                            pathname: `${match.url}/boxInfo/${shopId}/${boxInfo.id}`,
+                            pathname: `${match.url}/boxInfo/${shopId}/${boxInfo.uid}`,
                             alterInfo: true
                         }}>
                             <Tooltip title="修改包厢信息"><Icon type="edit" key="edit" /></Tooltip>
@@ -43,7 +43,7 @@ class BoxCard extends React.Component {
                 >
                     <Meta
                         avatar={
-                            <Link to={`${match.url}/boxInfo/${shopId}/${boxInfo.id}`}>
+                            <Link to={`${match.url}/boxInfo/${shopId}/${boxInfo.uid}`}>
                                 <Tooltip title="点击查看包厢信息">
                                     <Icon type="info-circle" key="info-circle" />
                                 </Tooltip>

@@ -192,22 +192,22 @@ const convertShopInfoToPlainStructure = (shopInfo) => {
     let byOpenHours = [];
     let plainOpenHours = {};
     const { clerks, boxes, display, openHours } = shopInfo;
-    const shopManager = clerks.filter((item) => item.position.indexOf("店长") != -1);
+    const shopManager = clerks.filter((item) => item.position.name.indexOf("店长") != -1);
     shopManager.forEach((item) => {
-        byClerk.push(item.id);
+        byClerk.push(item.uid);
     })
     clerks.forEach((item) => {
-        if (item.position.indexOf("店长") == -1) {
-            byClerk.push(item.id);
+        if (item.position.name.indexOf("店长") == -1) {
+            byClerk.push(item.uid);
         }
-        if (!plainClerk[item.id]) {
-            plainClerk[item.id] = item;
+        if (!plainClerk[item.uid]) {
+            plainClerk[item.uid] = item;
         }
     });
     boxes.forEach((item) => {
-        byBoxes.push(item.id);
-        if (!plainBoxes[item.id]) {
-            plainBoxes[item.id] = item;
+        byBoxes.push(item.uid);
+        if (!plainBoxes[item.uid]) {
+            plainBoxes[item.uid] = item;
         }
     });
     display.forEach((item) => {
@@ -217,9 +217,9 @@ const convertShopInfoToPlainStructure = (shopInfo) => {
         }
     })
     openHours.forEach((item) => {
-        byOpenHours.push(item.id);
-        if (!plainOpenHours[item.id]) {
-            plainOpenHours[item.id] = item;
+        byOpenHours.push(item.uid);
+        if (!plainOpenHours[item.uid]) {
+            plainOpenHours[item.uid] = item;
         }
     })
     return {
@@ -234,9 +234,9 @@ const convertShopListToPlainStructure = (shopList) => {
     let byShopList = [];
     let plainShopList = {}
     shopList.forEach((item) => {
-        byShopList.push(item.id);
-        if (!plainShopList[item.id]) {
-            plainShopList[item.id] = {
+        byShopList.push(item.uid);
+        if (!plainShopList[item.uid]) {
+            plainShopList[item.uid] = {
                 ...item
             }
         }
@@ -279,22 +279,22 @@ const reducer = (state = initialState, action) => {
             const shopinfo = { ...state.shopInfo, display: action.display };
             return { ...state, shopInfo: shopinfo };
         case types.SET_BOX_INFO:
-            const newByBoxes = { ...state.byBoxes, [action.newBoxInfo.id]: action.newBoxInfo };
+            const newByBoxes = { ...state.byBoxes, [action.newBoxInfo.uid]: action.newBoxInfo };
             return { ...state, byBoxes: newByBoxes };
         case types.DELETE_BOX_INFO:
             const boxes = state.shopInfo.boxes.filter((boxId) => boxId != action.boxId);
             const newShopInfo1 = { ...state.shopInfo, boxes };
             let newByBoxes1 = new Object();
             for (var key in state.byBoxes) {
-                if (state.byBoxes[key].id !== action.boxId && !newByBoxes1[key]) {
+                if (state.byBoxes[key].uid !== action.boxId && !newByBoxes1[key]) {
                     newByBoxes1[key] = state.byBoxes[key];
                 }
             }
             return { ...state, shopInfo: newShopInfo1, byBoxes: newByBoxes1 };
         case types.ADD_BOX_INFO:
-            const boxes1 = [...state.shopInfo.boxes, action.boxInfo.id];
+            const boxes1 = [...state.shopInfo.boxes, action.boxInfo.uid];
             const newShopInfo2 = { ...state.shopInfo, boxes: boxes1 };
-            const newByBoxes2 = { ...state.byBoxes, [action.boxInfo.id]: action.boxInfo };
+            const newByBoxes2 = { ...state.byBoxes, [action.boxInfo.uid]: action.boxInfo };
             return { ...state, shopInfo: newShopInfo2, byBoxes: newByBoxes2 };
         case types.ALTER_SHOP_INFO:
             return { ...state, shopInfo: action.shopInfo,byOpenHours:action.byOpenHours };

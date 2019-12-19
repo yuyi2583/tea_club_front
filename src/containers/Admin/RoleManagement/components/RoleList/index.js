@@ -7,6 +7,7 @@ import { actions as clerkActions, getByClerks, getClerks } from "../../../../../
 import { actions as appActions, getRequestQuantity } from "../../../../../redux/modules/app";
 import Highlighter from 'react-highlight-words';
 import { actions as shopActions, getShopList } from "../../../../../redux/modules/shop";
+import {sex} from "../../../../../utils/common";
 
 class RoleList extends React.Component {
     state = {
@@ -88,11 +89,16 @@ class RoleList extends React.Component {
         const { clerks, byClerks, byShopList } = this.props;
         let dataSource = new Array();
         clerks != null && clerks.length > 0 && byShopList != null && clerks.forEach((item) => {
+            // debugger;
+            if(!byClerks[item]){
+                return;
+            }
             const dataItem = {
                 ...byClerks[item],
                 key: item,
                 shopId: byClerks[item].shopId ? byShopList[byClerks[item].shopId].name : "暂未分配门店",
-                position: byClerks[item].position ? byClerks[item].position : "暂未分配职位"
+                position: byClerks[item].position ? byClerks[item].position.name : "暂未分配职位",
+                sex:sex[byClerks[item].sex],
             };
             dataSource.push(dataItem);
         })
@@ -142,11 +148,11 @@ class RoleList extends React.Component {
                 render: (text, record) => (
                     <span>
                         <Tooltip title={`查看${record.name}的详细信息`}>
-                            <Link to={`${match.url}/role_detail/${record.id}`}>查看</Link>
+                            <Link to={`${match.url}/role_detail/${record.uid}`}>查看</Link>
                         </Tooltip>
                         <Divider type="vertical" />
                         <Tooltip title={`将${record.name}从系统中删除`}>
-                            <a onClick={() => this.deleteRole(record.id)}>删除</a>
+                            <a onClick={() => this.deleteRole(record.uid)}>删除</a>
                         </Tooltip>
                     </span>
                 ),
