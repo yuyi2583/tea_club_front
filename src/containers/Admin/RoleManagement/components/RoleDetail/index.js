@@ -237,7 +237,7 @@ class RoleDetail extends React.Component {
                                     showSearch
                                     style={{ width: 200 }}
                                     optionFilterProp="children"
-                                    defaultValue={this.state.position.uid}
+                                    defaultValue={this.state.position!=undefined&&this.state.position.uid}
                                     onChange={this.onSelectPositionChange}
                                     filterOption={(input, option) =>
                                         option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
