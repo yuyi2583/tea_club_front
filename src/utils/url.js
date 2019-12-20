@@ -14,4 +14,5 @@ export default {
     addShop:()=>"/mock/addShop.json",
     fetchAllAuthority:()=>"/mock/allAuthority.json",
     fetchAllPosition:()=>"/mock/allPosition.json",
+    alterClerkInfo:()=>"/mock/alterClerkInfo.json",
 }

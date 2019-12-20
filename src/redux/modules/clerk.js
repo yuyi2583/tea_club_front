@@ -1,6 +1,7 @@
 import { actions as appActions } from "./app";
 import url from "../../utils/url";
 import { get } from "../../utils/request";
+import {actions as uiActions} from "./ui";
 
 const initialState = {
     clerks: null,
@@ -19,6 +20,7 @@ export const types = {
     ALTER_CLERK_POSITION: "CLERK/ALTER_CLERK_POSITION",      //修改员工职位信息
     FETCH_ALL_AUTHORITY: "CLERK/FETCH_ALL_AUTHORITY",        //获取所有权限信息
     FETCH_ALL_POSITION: "CLERK/FETCH_ALL_POSITION",          //获取所有职位信息
+    ALTER_CLERK_INFO:"CLERK/ALTER_CLERK_INFO",              //修改职员信息
 }
 
 export const actions = {
@@ -40,6 +42,7 @@ export const actions = {
         type: types.FETCH_SHOP_CLERKS,
         byClerks
     }),
+    //用于门店管理中门店员工职位修改
     alterClerkPosition: (clerks = new Array(), managers = new Array()) => ({
         type: types.ALTER_CLERK_POSITION,
         clerks,
@@ -72,8 +75,39 @@ export const actions = {
                 }
             })
         }
+    },
+    //修改职员信息
+    alterClerkInfo:(newClerkInfo)=>{
+        return (dispatch) => {
+            dispatch(appActions.startRequest());
+            const params={...newClerkInfo};
+            return get(url.alterClerkInfo(),params).then((data) => {
+                dispatch(appActions.finishRequest());
+                if (!data.error) {
+                    let newInfo=new Object();
+                    for(var key in params){
+                        if(key==="selectedAuthority"||key==="validateStatus"){
+                            continue;
+                        }
+                        newInfo[key]=params[key];
+                    }
+                    dispatch(alterClerkInfoSuccess(newInfo));
+                    dispatch(uiActions.finishAlterInfo());
+                    return Promise.resolve();
+                } else {
+                    dispatch(actions.setError(data.error));
+                    dispatch(uiActions.finishAlterInfo());
+                    return Promise.reject(data.error);
+                }
+            })
+        }
     }
 }
+
+const alterClerkInfoSuccess=(newClerkInfo)=>({
+    type:types.ALTER_CLERK_INFO,
+    newClerkInfo
+})
 
 const fetchAllPositionSuccess = ({ allPosition, byAllPosition }) => ({
     type: types.FETCH_ALL_POSITION,
@@ -204,6 +238,9 @@ const reducer = (state = initialState, action) => {
             return { ...state, allAuthority: action.allAuthority, allBelong: action.allBelong, byAuthority: action.byAuthority, byBelong: action.byBelong };
         case types.FETCH_ALL_POSITION:
             return { ...state, allPosition: action.allPosition, byAllPosition: action.byAllPosition };
+            case types.ALTER_CLERK_INFO:
+                const byClerks1={...state.byClerks,[action.newClerkInfo.uid]:action.newClerkInfo};
+                return {...state,byClerks:byClerks1};
         default:
             return state;
     }

@@ -1,5 +1,5 @@
 import React from "react";
-import { Descriptions, Tree, Icon, Row, Col, Typography, Button, Spin, Input, Select, Empty } from "antd";
+import { Descriptions, Tree, Icon, Row, Col, Typography, Button, Spin, Input, Select, Empty, Form } from "antd";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import {
@@ -19,6 +19,7 @@ import { actions as uiActions, getAlterInfoState } from "../../../../../redux/mo
 import PictureCard from "../../../../../components/PictureCard";
 import TableTransfer from "../../../../../components/TableTransfer";
 import { sex } from "../../../../../utils/common";
+import { validateContact, validateId } from "../../../../../utils/stringUtil";
 
 const { TreeNode } = Tree;
 const { Title, Paragraph } = Typography;
@@ -46,6 +47,12 @@ class RoleDetail extends React.Component {
         super(props);
         this.state = {
             selectedAuthority: null,
+            validateStatus: {
+                name: "success",
+                contact: "success",
+                identityId: "success",
+                address: "success",
+            }
         }
     }
 
@@ -83,61 +90,94 @@ class RoleDetail extends React.Component {
     }
 
     fileListOnChange = (fileList) => {
-        console.log("file list on change", fileList);
+        // console.log("file list on change", fileList);
         this.setState({ avatar: fileList.length === 0 ? null : fileList[0].url })
     }
 
 
     onSelect = (selectedKeys, info) => {
-        console.log('selected', selectedKeys, info);
+        // console.log('selected', selectedKeys, info);
         if (info.node.props.uid) {
             this.setState({ selectedAuthority: info.node.props.uid });
         }
     };
 
     completeAlter = () => {
-        const newRoleDetail=this.state;
-        console.log("complete alter role detail",newRoleDetail);
-        for(var key in newRoleDetail){
-            if(key==="selectedAuthority"){
-                continue;
-                //TODO 
+        const newRoleDetail = this.state;
+        const {validateStatus}=this.state;
+        // console.log("complete alter role detail", newRoleDetail);
+        for (var key in validateStatus) {
+            if (validateStatus[key]!=="success") {
+                this.props.callMessage("error","您输入的信息有误!");
+                return;
             }
-            console.log("key in new role detail",key);
+            // console.log("key in new role detail", key);
         }
+        this.props.alterClerkInfo(newRoleDetail)
+        .then(()=>{
+            this.props.callMessage("success","修改成功！");
+        })
+        .catch((err)=>{
+            this.props.callMessage("error",err);
+        });
     }
 
     handleCancelAlter = () => {
-        console.log("cancel alter role detail");
+        // console.log("cancel alter role detail");
         this.props.finishAlterInfo();
     }
 
 
     onTransferChange = nextTargetKeys => {
-        console.log("next target kes", nextTargetKeys);
-        this.setState({ authority: nextTargetKeys });
+        // console.log("next target kes", nextTargetKeys);
+        const {byAuthority}=this.props;
+        let belong=new Array();
+        nextTargetKeys.forEach((item)=>{
+            if(belong.indexOf(byAuthority[item].belong)===-1){
+                belong.push(byAuthority[item].belong);
+            }
+        })
+        this.setState({ authority: nextTargetKeys,belong });
     };
 
     handleInputChange = (e) => {
-        const name = e.target.name;
+        const { name, value } = e.target;
+        // console.log("input change:", name, "value length:", value.length);
+        const validateStatus = {
+            ...this.state.validateStatus,
+            [name]: value.length === 0 ? "error" : this.validateInput(name, value) ? "success" : "warning"
+        };
         this.setState({
-            [name]: e.target.value
+            [name]: e.target.value,
+            validateStatus
         })
     }
 
+    //验证输入格式
+    validateInput = (name, value) => {
+        switch (name) {
+            case "contact":
+                return validateContact(value);
+            case "identityId":
+                return validateId(value);
+            default:
+                return true;
+        }
+    }
+
     handleSelectSexChange = (value) => {
-        console.log("select sex", value);
+        // console.log("select sex", value);
         this.setState({ sex: value });
     }
 
     onSelectPositionChange = (value) => {
-        console.log("select position", value);
+        // console.log("select position", value);
         const { byallPosition } = this.props;
         this.setState({ position: byallPosition[value] });
     }
 
     onSelectShopChange = (value) => {
-        console.log("select shop", value);
+        // console.log("select shop", value);
         this.setState({ shopId: value });
     }
 
@@ -147,7 +187,7 @@ class RoleDetail extends React.Component {
         const { clerkId } = match.params;
         const fileListInProps = this.getFileList(byClerks[clerkId].avatar);
         const fileListInState = this.getFileList(this.state.avatar);
-        const { selectedAuthority, authority } = this.state;
+        const { selectedAuthority, authority, validateStatus } = this.state;
         const dataSource = this.getTableTransferDatasource();
         return (
             <div style={{ margin: "20px 0" }}>
@@ -156,7 +196,11 @@ class RoleDetail extends React.Component {
                         <Descriptions.Item label="姓名">
                             {!alterInfo ?
                                 byClerks[clerkId].name
-                                : <Input value={this.state.name} allowClear name="name" onChange={this.handleInputChange} />
+                                : <Form.Item
+                                    validateStatus={validateStatus.name}
+                                    help={validateStatus.name === "success" ? null : "请输入姓名！"}>
+                                    <Input value={this.state.name} allowClear name="name" onChange={this.handleInputChange} />
+                                </Form.Item>
                             }
                         </Descriptions.Item>
                         <Descriptions.Item label="性别">
@@ -256,13 +300,23 @@ class RoleDetail extends React.Component {
                         <Descriptions.Item label="联系方式">
                             {!alterInfo ?
                                 byClerks[clerkId].contact
-                                : <Input value={this.state.contact} allowClear name="contact" onChange={this.handleInputChange} />
+                                : <Form.Item
+                                    validateStatus={validateStatus.contact}
+                                    help={validateStatus.contact === "success" ?
+                                        null : validateStatus.contact === "warning" ? "手机号不合法！" : "请输入联系方式！"}>
+                                    <Input value={this.state.contact} allowClear name="contact" onChange={this.handleInputChange} />
+                                </Form.Item>
                             }
                         </Descriptions.Item>
                         <Descriptions.Item label="身份证号">
                             {!alterInfo ?
                                 byClerks[clerkId].identityId
-                                : <Input value={this.state.identityId} allowClear name="identityId" onChange={this.handleInputChange} />
+                                : <Form.Item
+                                    validateStatus={validateStatus.identityId}
+                                    help={validateStatus.identityId === "success" ?
+                                        null : validateStatus.identityId === "warning" ? "身份证号不合法" : "请输入身份证号！"}>
+                                    <Input value={this.state.identityId} allowClear name="identityId" onChange={this.handleInputChange} />
+                                </Form.Item>
                             }
                         </Descriptions.Item>
                         <Descriptions.Item label="照片">
@@ -292,7 +346,11 @@ class RoleDetail extends React.Component {
                         <Descriptions.Item label="家庭住址">
                             {!alterInfo ?
                                 byClerks[clerkId].address
-                                : <Input value={this.state.address} allowClear name="address" onChange={this.handleInputChange} />
+                                : <Form.Item
+                                    validateStatus={validateStatus.address}
+                                    help={validateStatus.address === "success" ? null : "请输入地址！"}>
+                                    <Input value={this.state.address} allowClear name="address" onChange={this.handleInputChange} />
+                                </Form.Item>
                             }
                         </Descriptions.Item>
                     </Descriptions>

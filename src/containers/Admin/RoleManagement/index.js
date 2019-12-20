@@ -1,5 +1,5 @@
 import React from "react";
-import { PageHeader, Button } from "antd";
+import { PageHeader, Button,message } from "antd";
 import { Route, Link } from "react-router-dom";
 import RoleList from "./components/RoleList";
 import RoleDetail from "./components/RoleDetail";
@@ -49,6 +49,20 @@ class RoleManagement extends React.Component {
         return subTitle;
     }
 
+    callMessage = (type="success", content="操作成功！") => {
+        switch (type) {
+            case "success":
+                message.success(content);
+                break;
+            case "error":
+                message.error(content);
+                break;
+            case "warning":
+                message.warning(content);
+                break;
+        }
+    }
+
     render() {
         const subTitle = this.getSubTitle();
         const extra = this.getExtra();
@@ -64,7 +78,8 @@ class RoleManagement extends React.Component {
                     exact
                     render={props =>
                         <RoleList
-                            {...props} />
+                            {...props}
+                            callMessage={this.callMessage} />
                     }
                 />
                 <Route
@@ -73,6 +88,7 @@ class RoleManagement extends React.Component {
                     render={props =>
                         <RoleDetail
                             {...props}
+                            callMessage={this.callMessage} 
                         />
                     }
                 />
