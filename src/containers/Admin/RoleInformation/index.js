@@ -9,7 +9,7 @@ import {actions as uiActions} from "../../../redux/modules/ui";
 import {actions as clerkActions} from "../../../redux/modules/clerk";
 import {actions as shopActions} from "../../../redux/modules/shop";
 
-class RoleManagement extends React.Component {
+class RoleInformation extends React.Component {
     handleBack = () => {
         window.history.back();
     }
@@ -110,4 +110,4 @@ const mapDispatchToProps = (dispatch) => {
         ...bindActionCreators(shopActions, dispatch),
     };
 };
-export default connect(mapStateToProps,mapDispatchToProps)(RoleManagement);
+export default connect(mapStateToProps,mapDispatchToProps)(RoleInformation);

@@ -5,8 +5,8 @@
       "authority":[
         {"uid":"1","name":"company_info","component":"Admin/CompanyInfo","title":"公司信息管理","description":"这是公司信息管理","belong":{"uid":"1","name":"company","title":"公司管理","icon":"book"}},
         {"uid":"2","name":"shop_management","component":"Admin/ShopManagement","title":"门店管理","description":"这是门店管理","belong":{"uid":"1","name":"company","title":"公司管理","icon":"book"}},
-        {"uid":"3","name":"role_information","component":"Admin/RoleManagement","title":"人员信息管理","description":"这是人员信息管理","belong":{"uid":"2","name":"role","title":"角色管理","icon":"user"}},
-        {"uid":"4","name":"add_role","component":"Admin/CompanyInfo","title":"新增人员","description":"这是新增人员","belong":{"uid":"2","name":"role","title":"角色管理","icon":"user"}},
+        {"uid":"3","name":"role_information","component":"Admin/RoleInformation","title":"人员信息管理","description":"这是人员信息管理","belong":{"uid":"2","name":"role","title":"角色管理","icon":"user"}},
+        {"uid":"4","name":"add_role","component":"Admin/AddRole","title":"新增人员","description":"这是新增人员","belong":{"uid":"2","name":"role","title":"角色管理","icon":"user"}},
         {"uid":"5","name":"h5","component":"Admin/CompanyInfo","title":"h5","description":"这是h5","belong":{"uid":"3","name":"t3","title":"活动管理","icon":"mail"}},
         {"uid":"6","name":"h6","component":"Admin/CompanyInfo","title":"h6","description":"这是h6","belong":{"uid":"4","name":"t4","title":"商品管理","icon":"mail"}},
         {"uid":"7","name":"h7","component":"Admin/CompanyInfo","title":"h7","description":"这是h7","belong":{"uid":"5","name":"t4","title":"客户管理","icon":"mail"}},

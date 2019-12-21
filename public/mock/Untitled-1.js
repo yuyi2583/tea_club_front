@@ -1,27 +1,68 @@
-import { Select } from 'antd';
+import { TreeSelect } from 'antd';
 
-const { Option } = Select;
+const { SHOW_PARENT } = TreeSelect;
 
-function handleChange(value) {
-  console.log(`selected ${value}`);
+const treeData = [
+  {
+    title: 'Node1',
+    value: '0-0',
+    key: '0-0',
+    children: [
+      {
+        title: 'Child Node1',
+        value: '0-0-0',
+        key: '0-0-0',
+      },
+    ],
+  },
+  {
+    title: 'Node2',
+    value: '0-1',
+    key: '0-1',
+    children: [
+      {
+        title: 'Child Node3',
+        value: '0-1-0',
+        key: '0-1-0',
+      },
+      {
+        title: 'Child Node4',
+        value: '0-1-1',
+        key: '0-1-1',
+      },
+      {
+        title: 'Child Node5',
+        value: '0-1-2',
+        key: '0-1-2',
+      },
+    ],
+  },
+];
+
+class Demo extends React.Component {
+  state = {
+    value: ['0-0-0'],
+  };
+
+  onChange = value => {
+    console.log('onChange ', value);
+    this.setState({ value });
+  };
+
+  render() {
+    const tProps = {
+      treeData,
+      value: this.state.value,
+      onChange: this.onChange,
+      treeCheckable: true,
+      showCheckedStrategy: SHOW_PARENT,
+      searchPlaceholder: 'Please select',
+      style: {
+        width: '100%',
+      },
+    };
+    return <TreeSelect {...tProps} />;
+  }
 }
 
-ReactDOM.render(
-  <div>
-    <Select defaultValue="lucy" style={{ width: 120 }} onChange={handleChange}>
-      <Option value="jack">Jack</Option>
-      <Option value="lucy">Lucy</Option>
-      <Option value="disabled" disabled>
-        Disabled
-      </Option>
-      <Option value="Yiminghe">yiminghe</Option>
-    </Select>
-    <Select defaultValue="lucy" style={{ width: 120 }} disabled>
-      <Option value="lucy">Lucy</Option>
-    </Select>
-    <Select defaultValue="lucy" style={{ width: 120 }} loading>
-      <Option value="lucy">Lucy</Option>
-    </Select>
-  </div>,
-  mountNode,
-);
+ReactDOM.render(<Demo />, mountNode);
