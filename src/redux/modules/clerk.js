@@ -1,7 +1,7 @@
 import { actions as appActions } from "./app";
 import url from "../../utils/url";
 import { get } from "../../utils/request";
-import {actions as uiActions} from "./ui";
+import { actions as uiActions } from "./ui";
 
 const initialState = {
     clerks: null,
@@ -20,7 +20,8 @@ export const types = {
     ALTER_CLERK_POSITION: "CLERK/ALTER_CLERK_POSITION",      //修改员工职位信息
     FETCH_ALL_AUTHORITY: "CLERK/FETCH_ALL_AUTHORITY",        //获取所有权限信息
     FETCH_ALL_POSITION: "CLERK/FETCH_ALL_POSITION",          //获取所有职位信息
-    ALTER_CLERK_INFO:"CLERK/ALTER_CLERK_INFO",              //修改职员信息
+    ALTER_CLERK_INFO: "CLERK/ALTER_CLERK_INFO",              //修改职员信息
+    DELETE_CLERK: "CLERK/DELETE_CLERK",                      //删除职员
 }
 
 export const actions = {
@@ -77,19 +78,19 @@ export const actions = {
         }
     },
     //修改职员信息
-    alterClerkInfo:(newClerkInfo)=>{
+    alterClerkInfo: (newClerkInfo) => {
         return (dispatch) => {
             dispatch(appActions.startRequest());
-            const params={...newClerkInfo};
-            return get(url.alterClerkInfo(),params).then((data) => {
+            const params = { ...newClerkInfo };
+            return get(url.alterClerkInfo(), params).then((data) => {
                 dispatch(appActions.finishRequest());
                 if (!data.error) {
-                    let newInfo=new Object();
-                    for(var key in params){
-                        if(key==="selectedAuthority"||key==="validateStatus"){
+                    let newInfo = new Object();
+                    for (var key in params) {
+                        if (key === "selectedAuthority" || key === "validateStatus") {
                             continue;
                         }
-                        newInfo[key]=params[key];
+                        newInfo[key] = params[key];
                     }
                     dispatch(alterClerkInfoSuccess(newInfo));
                     dispatch(uiActions.finishAlterInfo());
@@ -101,11 +102,33 @@ export const actions = {
                 }
             })
         }
+    },
+    //删除职员
+    deleteClerk: (clerkId) => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest());
+            const params = { id:clerkId };
+            return get(url.deleteClerk(), params).then((data) => {
+                dispatch(appActions.finishRequest());
+                if (!data.error) {
+                    dispatch(deleteClerkSuccess(clerkId));
+                    return Promise.resolve();
+                } else {
+                    dispatch(actions.setError(data.error));
+                    return Promise.reject(data.error);
+                }
+            })
+        }
     }
 }
 
-const alterClerkInfoSuccess=(newClerkInfo)=>({
-    type:types.ALTER_CLERK_INFO,
+const deleteClerkSuccess=(id)=>({
+    type:types.DELETE_CLERK,
+    id
+})
+
+const alterClerkInfoSuccess = (newClerkInfo) => ({
+    type: types.ALTER_CLERK_INFO,
     newClerkInfo
 })
 
@@ -132,7 +155,7 @@ const fetchAllClerksSuccess = ({ clerks, byClerks, byAuthorityTop, byBelongTop }
 })
 
 const convertPositionToPlainStructure = (data) => {
-    console.log("all positins",data);
+    console.log("all positins", data);
     let allPosition = [];
     let byAllPosition = {};
     data.forEach((item) => {
@@ -238,9 +261,17 @@ const reducer = (state = initialState, action) => {
             return { ...state, allAuthority: action.allAuthority, allBelong: action.allBelong, byAuthority: action.byAuthority, byBelong: action.byBelong };
         case types.FETCH_ALL_POSITION:
             return { ...state, allPosition: action.allPosition, byAllPosition: action.byAllPosition };
-            case types.ALTER_CLERK_INFO:
-                const byClerks1={...state.byClerks,[action.newClerkInfo.uid]:action.newClerkInfo};
-                return {...state,byClerks:byClerks1};
+        case types.ALTER_CLERK_INFO:
+            const byClerks1 = { ...state.byClerks, [action.newClerkInfo.uid]: action.newClerkInfo };
+            return { ...state, byClerks: byClerks1 };
+            case types.DELETE_CLERK:
+                let byClerks2=new Object();
+                for(var key in state.byClerks){
+                    if(key!==action.id){
+                        byClerks2[key]=state.byClerks[key];
+                    }
+                }
+                return {...state,byClerks:byClerks2,clerks:state.clerks.filter(item=>item!==action.id)};
         default:
             return state;
     }

@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, Table, Input, Button, Icon, Divider, Tooltip } from "antd";
+import { Card, Table, Input, Button, Icon, Divider, Tooltip, Modal } from "antd";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
@@ -7,7 +7,9 @@ import { actions as clerkActions, getByClerks, getClerks } from "../../../../../
 import { actions as appActions, getRequestQuantity } from "../../../../../redux/modules/app";
 import Highlighter from 'react-highlight-words';
 import { actions as shopActions, getShopList } from "../../../../../redux/modules/shop";
-import {sex} from "../../../../../utils/common";
+import { sex } from "../../../../../utils/common";
+
+const { confirm } = Modal;
 
 class RoleList extends React.Component {
     state = {
@@ -90,7 +92,7 @@ class RoleList extends React.Component {
         let dataSource = new Array();
         clerks != null && clerks.length > 0 && byShopList != null && clerks.forEach((item) => {
             // debugger;
-            if(!byClerks[item]){
+            if (!byClerks[item]) {
                 return;
             }
             const dataItem = {
@@ -98,7 +100,7 @@ class RoleList extends React.Component {
                 key: item,
                 shopId: byClerks[item].shopId ? byShopList[byClerks[item].shopId].name : "暂未分配门店",
                 position: byClerks[item].position ? byClerks[item].position.name : "暂未分配职位",
-                sex:sex[byClerks[item].sex],
+                sex: sex[byClerks[item].sex],
             };
             dataSource.push(dataItem);
         })
@@ -162,7 +164,18 @@ class RoleList extends React.Component {
 
     deleteRole = (clerkId) => {
         console.log("delete clerk id", clerkId);
-        //TODO
+        const {byClerks}=this.props;
+        const thiz=this;
+        confirm({
+            title: "确认",
+            content: `确定要删除${byClerks[clerkId].name}吗?`,
+            onOk() {
+                thiz.props.deleteClerk(clerkId);
+            },
+            onCancel() {
+                console.log('Cancel');
+            },
+        });
     }
 
     render() {

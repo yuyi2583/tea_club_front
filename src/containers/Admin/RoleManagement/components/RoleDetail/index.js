@@ -20,6 +20,7 @@ import PictureCard from "../../../../../components/PictureCard";
 import TableTransfer from "../../../../../components/TableTransfer";
 import { sex } from "../../../../../utils/common";
 import { validateContact, validateId } from "../../../../../utils/stringUtil";
+import {Prompt} from "react-router-dom";
 
 const { TreeNode } = Tree;
 const { Title, Paragraph } = Typography;
@@ -365,6 +366,7 @@ class RoleDetail extends React.Component {
                         </Row>
                     }
                 </Spin>
+                <Prompt message="当前页面正在输入中，离开此页面您输入的数据不会被保存，是否离开?" when={alterInfo} />
             </div >
         )
     }

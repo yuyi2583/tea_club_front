@@ -15,4 +15,5 @@ export default {
     fetchAllAuthority:()=>"/mock/allAuthority.json",
     fetchAllPosition:()=>"/mock/allPosition.json",
     alterClerkInfo:()=>"/mock/alterClerkInfo.json",
+    deleteClerk:()=>"/mock/alterClerkInfo.json",
 }
