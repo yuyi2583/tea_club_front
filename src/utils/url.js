@@ -16,4 +16,5 @@ export default {
     fetchAllPosition:()=>"/mock/allPosition.json",
     alterClerkInfo:()=>"/mock/alterClerkInfo.json",
     deleteClerk:()=>"/mock/alterClerkInfo.json",
+    addClerk:()=>"/mock/addClerk.json",
 }

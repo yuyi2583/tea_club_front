@@ -22,6 +22,7 @@ export const types = {
     FETCH_ALL_POSITION: "CLERK/FETCH_ALL_POSITION",          //获取所有职位信息
     ALTER_CLERK_INFO: "CLERK/ALTER_CLERK_INFO",              //修改职员信息
     DELETE_CLERK: "CLERK/DELETE_CLERK",                      //删除职员
+    ADD_CLERK: "CLERK/ADD_CLERK",                            //添加职员
 }
 
 export const actions = {
@@ -107,7 +108,7 @@ export const actions = {
     deleteClerk: (clerkId) => {
         return (dispatch) => {
             dispatch(appActions.startRequest());
-            const params = { id:clerkId };
+            const params = { id: clerkId };
             return get(url.deleteClerk(), params).then((data) => {
                 dispatch(appActions.finishRequest());
                 if (!data.error) {
@@ -119,11 +120,36 @@ export const actions = {
                 }
             })
         }
+    },
+    //添加职员
+    addClerk: (clerk) => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest());
+            const params = { clerk };
+            return get(url.addClerk(), params).then((data) => {
+                dispatch(appActions.finishRequest());
+                if (!data.error) {
+                    dispatch(addClerkSuccess(convertClerksToPlainStructure(data.clerk)));
+                    return Promise.resolve(data.clerk.uid);
+                } else {
+                    dispatch(actions.setError(data.error));
+                    return Promise.reject(data.error);
+                }
+            })
+        }
     }
 }
 
-const deleteClerkSuccess=(id)=>({
-    type:types.DELETE_CLERK,
+const addClerkSuccess = ({ clerks, byClerks, byAuthorityTop, byBelongTop }) => ({
+    type: types.ADD_CLERK,
+    clerks,
+    byClerks,
+    byAuthority: byAuthorityTop,
+    byBelong: byBelongTop,
+})
+
+const deleteClerkSuccess = (id) => ({
+    type: types.DELETE_CLERK,
     id
 })
 
@@ -171,19 +197,30 @@ const convertPositionToPlainStructure = (data) => {
 }
 
 const convertClerksToPlainStructure = (data) => {
+    console.log("length of data",data.length);
     let clerks = [];
     let byClerks = {};
     let byAuthorityTop = new Object();
     let byBelongTop = new Object();
-    data.forEach((item) => {
-        clerks.push(item.uid);
-        if (!byClerks[item.uid]) {
-            const { authority, byAuthority, byBelongSecond, belong } = convertAuthorityToPlainStructure(item.authority);
-            byClerks[item.uid] = { ...item, authority, belong };
+    if(data.length==undefined){
+        clerks.push(data.uid);
+        if (!byClerks[data.uid]) {
+            const { authority, byAuthority, byBelongSecond, belong } = convertAuthorityToPlainStructure(data.authority);
+            byClerks[data.uid] = { ...data, authority, belong };
             byAuthorityTop = { ...byAuthorityTop, ...byAuthority };
             byBelongTop = { ...byBelongTop, ...byBelongSecond };
         }
-    });
+    }else{
+        data.forEach((item) => {
+            clerks.push(item.uid);
+            if (!byClerks[item.uid]) {
+                const { authority, byAuthority, byBelongSecond, belong } = convertAuthorityToPlainStructure(item.authority);
+                byClerks[item.uid] = { ...item, authority, belong };
+                byAuthorityTop = { ...byAuthorityTop, ...byAuthority };
+                byBelongTop = { ...byBelongTop, ...byBelongSecond };
+            }
+        });
+    }
     return {
         clerks,
         byClerks,
@@ -264,14 +301,22 @@ const reducer = (state = initialState, action) => {
         case types.ALTER_CLERK_INFO:
             const byClerks1 = { ...state.byClerks, [action.newClerkInfo.uid]: action.newClerkInfo };
             return { ...state, byClerks: byClerks1 };
-            case types.DELETE_CLERK:
-                let byClerks2=new Object();
-                for(var key in state.byClerks){
-                    if(key!==action.id){
-                        byClerks2[key]=state.byClerks[key];
-                    }
+        case types.DELETE_CLERK:
+            let byClerks2 = new Object();
+            for (var key in state.byClerks) {
+                if (key !== action.id) {
+                    byClerks2[key] = state.byClerks[key];
                 }
-                return {...state,byClerks:byClerks2,clerks:state.clerks.filter(item=>item!==action.id)};
+            }
+            return { ...state, byClerks: byClerks2, clerks: state.clerks.filter(item => item !== action.id) };
+        case types.ADD_CLERK:
+            return {
+                ...state,
+                clerks: action.clerks,
+                byClerks: action.byClerks,
+                byAuthority: action.byAuthority,
+                byBelong: action.byBelong
+            };
         default:
             return state;
     }

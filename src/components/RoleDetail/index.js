@@ -12,14 +12,14 @@ import {
     getAllBelong,
     getAllPosition,
     getByAllPosition
-} from "../../../../../redux/modules/clerk";
-import { actions as appActions, getRequestQuantity } from "../../../../../redux/modules/app";
-import { actions as shopActions, getShopList, getShop } from "../../../../../redux/modules/shop";
-import { actions as uiActions, getAlterInfoState } from "../../../../../redux/modules/ui";
-import PictureCard from "../../../../../components/PictureCard";
-import TableTransfer from "../../../../../components/TableTransfer";
-import { sex } from "../../../../../utils/common";
-import { validateContact, validateId } from "../../../../../utils/stringUtil";
+} from "../../redux/modules/clerk";
+import { actions as appActions, getRequestQuantity } from "../../redux/modules/app";
+import { actions as shopActions, getShopList, getShop } from "../../redux/modules/shop";
+import { actions as uiActions, getAlterInfoState } from "../../redux/modules/ui";
+import PictureCard from "../PictureCard";
+import TableTransfer from "../TableTransfer";
+import { sex } from "../../utils/common";
+import { validateContact, validateId } from "../../utils/stringUtil";
 import {Prompt} from "react-router-dom";
 
 const { TreeNode } = Tree;
@@ -67,6 +67,7 @@ class RoleDetail extends React.Component {
     }
 
     componentDidMount() {
+        console.log("this in role detal",this);
         const { byClerks, match, } = this.props;
         const { clerkId } = match.params;
         this.setState({ ...byClerks[clerkId] });

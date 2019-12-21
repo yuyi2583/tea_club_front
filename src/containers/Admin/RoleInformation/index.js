@@ -2,7 +2,7 @@ import React from "react";
 import { PageHeader, Button,message } from "antd";
 import { Route, Link } from "react-router-dom";
 import RoleList from "./components/RoleList";
-import RoleDetail from "./components/RoleDetail";
+import RoleDetail from "../../../components/RoleDetail";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import {actions as uiActions} from "../../../redux/modules/ui";
@@ -37,12 +37,6 @@ class RoleInformation extends React.Component {
         let subTitle = null;
         if (history.location.pathname.indexOf("role_detail") != -1) {
             subTitle = "职员详情";
-        } else if (history.location.pathname.indexOf("boxInfo") != -1) {
-            subTitle = "包厢信息";
-        } else if (history.location.pathname.indexOf("addBox") != -1) {
-            subTitle = "新增包厢";
-        } else if (history.location.pathname.indexOf("clerkDetail") != -1) {
-            subTitle = "职员信息";
         } else {
             subTitle = null;
         }
