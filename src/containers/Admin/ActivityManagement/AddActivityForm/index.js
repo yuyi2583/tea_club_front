@@ -5,12 +5,13 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actions as shopActions, getShop, getShopList } from "../../../../redux/modules/shop";
 import { actions as clerkActions, getAllPosition, getByAllPosition, getByAuthority, getByBelong } from "../../../../redux/modules/clerk";
-import { getRequestQuantity } from "../../../../redux/modules/app";
+import { actions as productActions, getProductType, getByProductType } from "../../../../redux/modules/product";
+import { getRequestQuantity, getModalRequestQuantity } from "../../../../redux/modules/app";
 import { Redirect } from "react-router-dom";
 import { map } from "../../../../router";
-import { getExtra, getSubTitle } from "./method";
 import { handleBack, callMessage, activityType } from "../../../../utils/common";
 import "./style.css";
+import DemoTreeSelect from "../../../../Untitled-1";
 
 
 const { Option } = Select;
@@ -99,11 +100,10 @@ class AddActivity extends React.Component {
         switch (activityType) {
             case "1":
                 return (
-                    // <div className="inline-input">
                     <span>
                         <Form.Item className="inline-input">
                             {getFieldDecorator('activityRule1', {
-                                rules: [{ required: true, message: '请输入联系方式!' }],
+                                rules: [{ required: true, message: '请输入优惠规则!' }],
                             })(<InputNumber
                                 formatter={value => `满 ${value}`}
                                 min={0}
@@ -111,17 +111,31 @@ class AddActivity extends React.Component {
                         </Form.Item>
                         <Form.Item className="inline-input">
                             {getFieldDecorator('activityRule2', {
-                                rules: [{ required: true, message: '请输入联系方式!' }],
+                                rules: [{ required: true, message: '请输入优惠规则!' }],
                             })(<InputNumber
                                 formatter={value => `减 ${value}`}
                                 min={0}
                                 allowClear style={{ width: "100px" }} />)}
                         </Form.Item>
                     </span>
-                    // </div>
                 );
             case "2":
-                return (<span>2</span>);
+                return (
+                    <span>
+                        <Form.Item className="inline-input">
+                            {getFieldDecorator("activityRule2", {
+                                rules: [{ required: true, message: "请输入优惠规则!" }],
+                                initialValue: 30,
+                            })(<InputNumber
+                                formatter={value => `${value}%折扣`}
+                                min={0}
+                                allowClear
+                                style={{ width: "100px" }} />
+                            )
+                            }
+                        </Form.Item>
+                    </span>
+                );
             default:
                 return (
                     <span>
@@ -134,9 +148,6 @@ class AddActivity extends React.Component {
     }
 
     render() {
-        const subTitle = getSubTitle(this.props);
-        const extra = getExtra(this.props);
-        const { match } = this.props;
         const { from } = this.state;
         if (from != null) {
             return <Redirect to={from} />;
@@ -166,15 +177,13 @@ class AddActivity extends React.Component {
             },
         };
         const { fileList } = this.state;
-        const { requestQuantity, shop, byShopList, allPositions, byAllPositions, byAuthority, byBelong } = this.props;
+        const { requestQuantity, productType,byProductType } = this.props;
         // const treeData = getTreeData(byBelong, byAuthority);
         return (
             <div>
                 <PageHeader
                     title="添加活动"
-                    subTitle={subTitle}
-                    onBack={() => handleBack()}
-                    extra={extra}>
+                    onBack={() => handleBack()}>
                     <Spin spinning={requestQuantity > 0}>
                         <Form {...formItemLayout} onSubmit={this.handleSubmit}>
                             <Form.Item label="活动名称">
@@ -219,13 +228,12 @@ class AddActivity extends React.Component {
                                         {getFieldDecorator('avtivityApplyForProduct', {
                                             rules: [{ required: true, message: '请选择优惠产品范围!' }],
                                         })(
-                                            <Select
-                                                placeholder="请选择优惠产品范围"
-                                                style={{ width: 200 }}
-                                                onChange={this.handleSelectActivityTypeChange}>
-                                                <Option value="1">{activityType["1"]}</Option>
-                                                <Option value="2">{activityType["2"]}</Option>
-                                            </Select>
+                                            <DemoTreeSelect
+                                                fetchProductType={this.props.fetchProductType}
+                                                requestQuantity={this.props.requestModalQuantity}
+                                                productType={productType}
+                                                byProductType={byProductType}
+                                            />
                                         )}
                                     </Form.Item>
                                     <Form.Item className="inline-input">
@@ -239,6 +247,16 @@ class AddActivity extends React.Component {
                                                 <Option value="1">{activityType["1"]}</Option>
                                                 <Option value="2">{activityType["2"]}</Option>
                                             </Select>
+                                            // <TreeSelect
+                                            //     treeDataSimpleMode
+                                            //     style={{ width: '200' }}
+                                            //     value={this.state.value}
+                                            //     dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                                            //     placeholder="Please select"
+                                            //     onChange={this.onChange}
+                                            //     loadData={this.onLoadData}
+                                            //     treeData={treeData}
+                                            // />
                                         )}
                                     </Form.Item>
                                 </div>
@@ -265,11 +283,11 @@ class AddActivity extends React.Component {
                                     rules: [{ required: true, message: '请选择活动优先级!' }],
                                 })(
                                     <Select
-                                    placeholder="请选择活动优先级"
-                                    onChange={this.handleSelectActivityTypeChange}>
-                                    <Option value="1">{activityType["1"]}</Option>
-                                    <Option value="2">{activityType["2"]}</Option>
-                                </Select>)
+                                        placeholder="请选择活动优先级"
+                                        onChange={this.handleSelectActivityTypeChange}>
+                                        <Option value="1">{activityType["1"]}</Option>
+                                        <Option value="2">{activityType["2"]}</Option>
+                                    </Select>)
                                 }
                             </Form.Item>
                             <Form.Item label="活动展示照片">
@@ -299,6 +317,10 @@ const mapStateToProps = (state, props) => {
         byAllPositions: getByAllPosition(state),
         byAuthority: getByAuthority(state),
         byBelong: getByBelong(state),
+        productType: getProductType(state),
+        byProductType: getByProductType(state),
+        requestQuantity: getRequestQuantity(state),
+        requestModalQuantity: getModalRequestQuantity(state),
     };
 };
 
@@ -306,6 +328,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         ...bindActionCreators(clerkActions, dispatch),
         ...bindActionCreators(shopActions, dispatch),
+        ...bindActionCreators(productActions, dispatch),
     };
 };
 

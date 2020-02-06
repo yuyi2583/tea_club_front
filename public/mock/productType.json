@@ -1,0 +1,11 @@
+{
+    "productType":[
+        {"uid":1,"type":"红茶"},
+        {"uid":2,"type":"绿茶"},
+        {"uid":3,"type":"乌龙茶"},
+        {"uid":4,"type":"普洱茶"},
+        {"uid":5,"type":"白茶"}
+    ],
+    "retCode": "200",
+    "error": ""
+}

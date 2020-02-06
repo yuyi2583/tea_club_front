@@ -1,14 +1,14 @@
 {
-    "boxInfo":{
-        "uid":"1d",
-        "shopId":"1",
-        "name":"包厢12",
-        "boxNum":"1012",
-        "price":50,
-        "startTime":"09:00",
-        "endTime":"20:00",
-        "description":"这是包厢12",
-        "img":[
+    "boxInfo": {
+        "uid": "1d",
+        "shopId": "1",
+        "name": "包厢12",
+        "boxNum": "1012",
+        "price": 50,
+        "startTime": "09:00",
+        "endTime": "20:00",
+        "description": "这是包厢12",
+        "img": [
             {
                 "uid": "1",
                 "name": "image.png",
@@ -29,6 +29,6 @@
             }
         ]
     },
-      "retCode": "200",
-    "error":""
+    "retCode": "200",
+    "error": ""
 }

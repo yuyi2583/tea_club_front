@@ -1,6 +1,7 @@
 import url from "../../utils/url";
 import { get } from "../../utils/request";
 import { actions as uiActions } from "./ui";
+import { requestType } from "../../utils/common";
 
 const initialState = {
     requestQuantity: 0,     //当前应用中正在进行的API请求数
@@ -24,21 +25,29 @@ export const types = {
 
 //action creators
 export const actions = {
-    startRequest: () => ({
-        type: types.START_REQUEST
-    }),
-    finishRequest: () => ({
-        type: types.FINISH_REQUEST
-    }),
+    startRequest: (reqType = requestType.appRequest) => {
+        switch (reqType) {
+            case requestType.modalRequest:
+                return startModalRequest();
+                break;
+            default:
+                return startAppRequest();
+                break;
+        }
+    },
+    finishRequest: (reqType = requestType.appRequest) => {
+        switch (reqType) {
+            case requestType.modalRequest:
+                return finishModalRequest();
+                break;
+            default:
+                return finishAppRequest();
+                break;
+        }
+    },
     setError: (error) => ({
         type: types.SET_ERROR,
         error
-    }),
-    startModalRequest: () => ({
-        type: types.START_MODAL_REQUEST,
-    }),
-    finishModalRequest: () => ({
-        type: types.FINISH_MODAL_REQUEST,
     }),
     removeError: () => ({
         type: types.REMOVE_ERROR
@@ -81,6 +90,21 @@ export const actions = {
         type: types.REMOVE_COMPANY_INFO
     }),
 }
+
+const startModalRequest = () => ({
+    type: types.START_MODAL_REQUEST,
+});
+const finishModalRequest = () => ({
+    type: types.FINISH_MODAL_REQUEST,
+});
+
+const startAppRequest = () => ({
+    type: types.START_REQUEST
+});
+
+const finishAppRequest = () => ({
+    type: types.FINISH_REQUEST
+});
 
 //reducers
 const reducer = (state = initialState, action) => {
