@@ -8,7 +8,7 @@ class Demo extends React.Component {
     treeData: [
       { id: 1, pId: 0, value: '1', title: 'Expand to load' },
       { id: 2, pId: 0, value: '2', title: 'Expand to load' },
-      { id: 3, pId: 0, value: '3', title: 'Tree Node', isLeaf: true },
+      { id: 3, pId: 2, value: '3', title: 'Tree Node', isLeaf: true },
     ],
   };
 
@@ -28,34 +28,31 @@ class Demo extends React.Component {
   onLoadData = treeNode =>
     new Promise(resolve => {
       const { id } = treeNode.props;
-      setTimeout(() => {
-        this.setState({
-          treeData: this.state.treeData.concat([
-            this.genTreeNode(id, false),
-            this.genTreeNode(id, true),
-          ]),
-        });
+      this.props.fetchProductDetail(id).then(() => {
         resolve();
-      }, 300);
+      });
     });
 
   onChange = value => {
-    console.log(value);
+    console.log("on change", value);
     this.setState({ value });
   };
 
-  convertToStandardTreeData=({productType,byProductType})=>{
-    let treeData=new Array();
-    productType.forEach((uid)=>{
-      treeData.push({id:uid,pId:-1,value:uid,title:byProductType[uid].type});
+  convertToStandardTreeData = ({ productType, byProductType, productDetail, byProductDetail }) => {
+    let treeData = new Array();
+    productType.forEach((uid) => {
+      treeData.push({ id: uid, pId: -1, value: uid, title: byProductType[uid].type });
     });
+    productDetail.forEach((uid) => {
+      treeData.push({ id: uid, pId: byProductDetail[uid].type, value: uid, title: byProductDetail[uid].name, isLeaf: true });
+    })
     return treeData;
   }
 
   render() {
-    // const {treeData}=this.state;
-    const  treeData  =this.convertToStandardTreeData(this.props);
-    
+    // const { treeData } = this.state;
+    const treeData = this.convertToStandardTreeData(this.props);
+
     return (
       <TreeSelect
         onFocus={() => this.props.fetchProductType(requestType.modalRequest)}

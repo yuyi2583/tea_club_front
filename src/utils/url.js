@@ -18,4 +18,5 @@ export default {
     deleteClerk:()=>"/mock/alterClerkInfo.json",
     addClerk:()=>"/mock/addClerk.json",
     fetchProductType:()=>"/mock/productType.json",
+    fetchProductDetailByType:()=>"/mock/productDetailByType.json",
 }

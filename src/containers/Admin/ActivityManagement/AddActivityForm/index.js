@@ -5,14 +5,16 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actions as shopActions, getShop, getShopList } from "../../../../redux/modules/shop";
 import { actions as clerkActions, getAllPosition, getByAllPosition, getByAuthority, getByBelong } from "../../../../redux/modules/clerk";
-import { actions as productActions, getProductType, getByProductType } from "../../../../redux/modules/product";
+import { actions as productActions, getProductType, getByProductType, getByProductDetail, getProductDetail } from "../../../../redux/modules/product";
 import { getRequestQuantity, getModalRequestQuantity } from "../../../../redux/modules/app";
 import { Redirect } from "react-router-dom";
 import { map } from "../../../../router";
 import { handleBack, callMessage, activityType } from "../../../../utils/common";
 import "./style.css";
-import DemoTreeSelect from "../../../../Untitled-1";
+import method from "./method/";
+import {requestType} from "../../../../utils/common";
 
+const {avtivityApplyForProduct}=method;
 
 const { Option } = Select;
 const { confirm } = Modal;
@@ -26,11 +28,18 @@ class AddActivity extends React.Component {
             fileList: new Array(),
             from: null,
             activityType: "",
+            treeData: [
+                { id: 1, pId: 0, value: '1', title: 'Expand to load' },
+                { id: 2, pId: 0, value: '2', title: 'Expand to load' },
+                { id: 3, pId: 2, value: '3', title: 'Tree Node', isLeaf: true },
+            ],
         }
     }
 
     componentDidMount() {
         console.log("this", this);
+        console.log("method", method);
+
         this.props.fetchShopList();
         this.props.fetchAllPosition();
         this.props.fetchAllAuthority();
@@ -152,7 +161,7 @@ class AddActivity extends React.Component {
         if (from != null) {
             return <Redirect to={from} />;
         }
-        const { getFieldDecorator } = this.props.form;
+        const { getFieldDecorator, setFieldsValue} = this.props.form;
         const activityRuleInput = this.getActivityRuleInput();
         const formItemLayout = {
             labelCol: {
@@ -177,7 +186,8 @@ class AddActivity extends React.Component {
             },
         };
         const { fileList } = this.state;
-        const { requestQuantity, productType,byProductType } = this.props;
+        const treeData=avtivityApplyForProduct.convertToStandardTreeData(this.props);
+        const { requestQuantity, productType, byProductType, productDetail, byProductDetail } = this.props;
         // const treeData = getTreeData(byBelong, byAuthority);
         return (
             <div>
@@ -227,12 +237,17 @@ class AddActivity extends React.Component {
                                     <Form.Item className="inline-input">
                                         {getFieldDecorator('avtivityApplyForProduct', {
                                             rules: [{ required: true, message: '请选择优惠产品范围!' }],
-                                        })(
-                                            <DemoTreeSelect
-                                                fetchProductType={this.props.fetchProductType}
-                                                requestQuantity={this.props.requestModalQuantity}
-                                                productType={productType}
-                                                byProductType={byProductType}
+                                        },)(
+                                            <TreeSelect
+                                                onFocus={() => this.props.fetchProductType(requestType.modalRequest)}
+                                                treeDataSimpleMode
+                                                style={{ width: '200px' }}
+                                                dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                                                placeholder="请选择优惠产品范围"
+                                                treeCheckable={true}
+                                                onChange={(value)=>avtivityApplyForProduct.onChange(value,setFieldsValue)}
+                                                loadData={(treeNode)=>avtivityApplyForProduct.onLoadData(treeNode,this.props)}
+                                                treeData={treeData}
                                             />
                                         )}
                                     </Form.Item>
@@ -321,6 +336,8 @@ const mapStateToProps = (state, props) => {
         byProductType: getByProductType(state),
         requestQuantity: getRequestQuantity(state),
         requestModalQuantity: getModalRequestQuantity(state),
+        productDetail: getProductDetail(state),
+        byProductDetail: getByProductDetail(state),
     };
 };
 
