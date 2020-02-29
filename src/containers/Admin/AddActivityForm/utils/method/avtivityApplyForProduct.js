@@ -1,3 +1,6 @@
+/**
+ * 选择优惠产品范围方法
+ */
 export default {
     convertToStandardTreeData: ({ productType, byProductType, productDetail, byProductDetail }) => {
         let treeData = new Array();

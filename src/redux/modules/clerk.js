@@ -31,7 +31,6 @@ export const actions = {
         return (dispatch) => {
             return get(url.fetchAllClerks()).then((data) => {
                 dispatch(appActions.finishRequest());
-                dispatch(appActions.finishModalRequest());
                 if (!data.error) {
                     dispatch(fetchAllClerksSuccess(convertClerksToPlainStructure(data.clerks)));
                 } else {

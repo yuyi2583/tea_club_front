@@ -5,6 +5,8 @@ import ui from "./ui";
 import shop from "./shop";
 import clerk from "./clerk";
 import product from "./product";
+import customer from "./customer";
+import activity from "./activity";
 
 
 // 合并所有模块的reducer成一个根reducer
@@ -15,6 +17,8 @@ const rootReducer = combineReducers({
     shop,
     clerk,
     product,
+    customer,
+    activity
 });
 
 export default rootReducer;

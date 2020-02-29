@@ -5,14 +5,16 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actions as shopActions, getShop, getShopList } from "../../../../redux/modules/shop";
 import { actions as clerkActions, getAllPosition, getByAllPosition, getByAuthority, getByBelong } from "../../../../redux/modules/clerk";
+import { actions as activityActions, getActivities, getByActivities } from "../../../../redux/modules/activity";
 import { getRequestQuantity } from "../../../../redux/modules/app";
 import { Redirect } from "react-router-dom";
 import { map } from "../../../../router";
-import { sex } from "../../../../utils/common";
-import { getExtra, getSubTitle } from "./method";
+import { sex, activityStatus } from "../../../../utils/common";
 import { Link } from "react-router-dom";
 import Highlighter from 'react-highlight-words';
 import { handleBack, callMessage, activityType } from "../../../../utils/common";
+import { timeStampConvertToFormatTime } from "../../../../utils/timeUtil";
+import { stringWithEllipsis } from "../../../../utils/stringUtil";
 
 const { Option } = Select;
 const { confirm } = Modal;
@@ -25,10 +27,9 @@ class ActivityList extends React.Component {
         searchedColumn: '',
     };
     componentDidMount() {
-        // this.props.startRequest();
-        // this.props.fetchShopList();
-        // this.props.fetchAllClerks();
+        this.props.fetchActivities();
     }
+
     getColumnSearchProps = dataIndex => ({
         filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
             <div style={{ padding: 8 }}>
@@ -52,7 +53,7 @@ class ActivityList extends React.Component {
                     搜索
             </Button>
                 <Button onClick={() => this.handleReset(clearFilters)} size="small" style={{ width: 90 }}>
-                    充值
+                    重置
             </Button>
             </div>
         ),
@@ -96,19 +97,25 @@ class ActivityList extends React.Component {
     };
 
     getDataSource = () => {
-        const { clerks, byClerks, byShopList } = this.props;
+        const { activities, byActivities } = this.props;
         let dataSource = new Array();
-        clerks != null && clerks.length > 0 && byShopList != null && clerks.forEach((item) => {
-            // debugger;
-            if (!byClerks[item]) {
+        let time = new Date().getTime();
+        activities.length > 0 && activities.forEach((item) => {
+            if (!byActivities[item]) {
                 return;
             }
+            let status = activityStatus["upcoming"];
+            if (time > byActivities[item].startTime && time < byActivities[item].endTime) {
+                status = activityStatus["ongoing"];
+            } else if (time > byActivities[item].endTime) {
+                status = activityStatus["expired"];
+            }
             const dataItem = {
-                ...byClerks[item],
                 key: item,
-                shopId: byClerks[item].shopId ? byShopList[byClerks[item].shopId].name : "暂未分配门店",
-                position: byClerks[item].position ? byClerks[item].position.name : "暂未分配职位",
-                sex: sex[byClerks[item].sex],
+                ...byActivities[item],
+                description: stringWithEllipsis(byActivities[item].description, 30),
+                status:byActivities[item].status!=null&&byActivities[item].status!=undefined?activityStatus[byActivities[item].status]:status,
+                duration: timeStampConvertToFormatTime(byActivities[item].startTime) + "~" + timeStampConvertToFormatTime(byActivities[item].endTime)
             };
             dataSource.push(dataItem);
         })
@@ -122,28 +129,28 @@ class ActivityList extends React.Component {
                 title: '活动名称',
                 dataIndex: 'name',
                 key: 'name',
-                width: '15%',
+                width: '20%',
                 ...this.getColumnSearchProps('name'),
             },
             {
                 title: '活动描述',
                 dataIndex: 'description',
                 key: 'description',
-                width: '30%',
+                width: '25%',
                 ...this.getColumnSearchProps('description'),
             },
             {
                 title: '持续时间',
                 dataIndex: 'duration',
                 key: 'duration',
-                width: '20%',
+                width: '30%',
                 ...this.getColumnSearchProps('duration'),
             },
             {
-                title: '优先级',
-                dataIndex: 'priority',
-                key: 'priority',
-                ...this.getColumnSearchProps('priority'),
+                title: '活动状态',
+                dataIndex: 'status',
+                key: 'status',
+                ...this.getColumnSearchProps('duration'),
             },
             {
                 title: "操作",
@@ -152,13 +159,11 @@ class ActivityList extends React.Component {
                 render: (text, record) => (
                     <span>
                         <Tooltip title={`查看详细信息`}>
-                            {/* <Link to={`${match.url}/role_detail/${record.uid}`}>查看</Link> */}
-                            查看
+                            <Link to={`${match.url}/activity/${record.uid}`}>查看</Link>
                         </Tooltip>
                         <Divider type="vertical" />
-                        <Tooltip title={`系统中删除`}>
-                            {/* <a onClick={() => this.deleteRole(record.uid)}>删除</a> */}
-                            删除
+                        <Tooltip title={`终止活动`}>
+                            <a onClick={() => this.terminalActivity(record.uid)}>终止</a>
                         </Tooltip>
                     </span>
                 ),
@@ -166,15 +171,15 @@ class ActivityList extends React.Component {
         ];
     }
 
-    deleteRole = (clerkId) => {
-        console.log("delete clerk id", clerkId);
-        const { byClerks } = this.props;
+    terminalActivity = (uid) => {
+        console.log("terminal id", uid);
+        const { byActivities } = this.props;
         const thiz = this;
         confirm({
             title: "确认",
-            content: `确定要删除${byClerks[clerkId].name}吗?`,
+            content: `确定要终止${byActivities[uid].name}吗?`,
             onOk() {
-                thiz.props.deleteClerk(clerkId);
+                thiz.props.terminalActivity(uid);
             },
             onCancel() {
                 console.log('Cancel');
@@ -183,25 +188,17 @@ class ActivityList extends React.Component {
     }
 
     render() {
-        const extra = getExtra(this.props);
-        const subTitle = getSubTitle(this.props);
         const data = this.getDataSource();
         const columns = this.getColmuns();
         const { requestQuantity } = this.props;
         return (
             <div>
-                <PageHeader
-                    title="活动管理"
-                    subTitle={subTitle}
-                    onBack={() => handleBack()}
-                    extra={extra}>
-                    <Spin spinning={requestQuantity > 0}>
-                        <Table
-                            columns={columns}
-                            loading={requestQuantity > 0}
-                            dataSource={data} />
-                    </Spin>
-                </PageHeader>
+                <Spin spinning={requestQuantity > 0}>
+                    <Table
+                        columns={columns}
+                        loading={requestQuantity > 0}
+                        dataSource={data} />
+                </Spin>
             </div>
         )
     }
@@ -217,6 +214,8 @@ const mapStateToProps = (state, props) => {
         byAllPositions: getByAllPosition(state),
         byAuthority: getByAuthority(state),
         byBelong: getByBelong(state),
+        activities: getActivities(state),
+        byActivities: getByActivities(state),
     };
 };
 
@@ -224,6 +223,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         ...bindActionCreators(clerkActions, dispatch),
         ...bindActionCreators(shopActions, dispatch),
+        ...bindActionCreators(activityActions, dispatch)
     };
 };
 

@@ -1,10 +1,11 @@
 import React from "react";
-import { PageHeader, message,Button } from "antd";
+import { PageHeader, message, Button } from "antd";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actions as uiActions } from "../../../redux/modules/ui";
 import { Route } from "react-router-dom";
-import AddActivity from "./AddActivityForm";
+import ActivityDetail from "./ActivityDetail";
+import ActivityList from "./ActivityList";
 
 
 class ActivityManagement extends React.Component {
@@ -49,6 +50,11 @@ class ActivityManagement extends React.Component {
         }
     }
 
+    componentDidMount() {
+
+        const { history } = this.props;
+        console.log("history in activity management", history);
+    }
     render() {
         const subTitle = this.getSubTitle();
         const extra = this.getExtra();
@@ -64,9 +70,19 @@ class ActivityManagement extends React.Component {
                         path={match.url}
                         exact
                         render={props =>
-                            <AddActivity
+                            <ActivityList
                                 {...props}
                                 callMessage={this.callMessage} />
+                        }
+                    />
+                    <Route
+                        path={`${match.url}/activity/:activityId`}
+                        exact
+                        render={props =>
+                            <ActivityDetail
+                                {...props}
+                                callMessage={this.callMessage}
+                            />
                         }
                     />
                 </PageHeader>

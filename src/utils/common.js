@@ -32,3 +32,9 @@ export const requestType = {
     "appRequest": 0,
     "modalRequest": 1,
 }
+
+export const activityStatus={
+    "upcoming":"未开始",
+    "ongoing":"进行中",
+    "expired":"已结束"
+}

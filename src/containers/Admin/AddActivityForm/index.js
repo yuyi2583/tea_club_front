@@ -1,20 +1,23 @@
 import React from "react";
 import { PageHeader, Button, InputNumber, Form, DatePicker, Input, Select, Spin, TreeSelect, Modal } from "antd";
-import PictureCard from "../../../../components/PictureCard";
+import PictureCard from "../../../components/PictureCard";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { actions as shopActions, getShop, getShopList } from "../../../../redux/modules/shop";
-import { actions as clerkActions, getAllPosition, getByAllPosition, getByAuthority, getByBelong } from "../../../../redux/modules/clerk";
-import { actions as productActions, getProductType, getByProductType, getByProductDetail, getProductDetail } from "../../../../redux/modules/product";
-import { getRequestQuantity, getModalRequestQuantity } from "../../../../redux/modules/app";
+import { actions as shopActions, getShop, getShopList } from "../../../redux/modules/shop";
+import { actions as clerkActions, getAllPosition, getByAllPosition, getByAuthority, getByBelong } from "../../../redux/modules/clerk";
+import { actions as productActions, getProductType, getByProductType, getByProductDetail, getProductDetail } from "../../../redux/modules/product";
+import { getRequestQuantity, getModalRequestQuantity } from "../../../redux/modules/app";
+import { actions as customerActions, getByCustomerType, getCustomerType } from "../../../redux/modules/customer";
+import { actions as activityActions, getActivities, getByActivities } from "../../../redux/modules/activity";
 import { Redirect } from "react-router-dom";
-import { map } from "../../../../router";
-import { handleBack, callMessage, activityType } from "../../../../utils/common";
+import { map } from "../../../router";
+import { handleBack, callMessage, activityType } from "../../../utils/common";
 import "./style.css";
-import method from "./method/";
-import {requestType} from "../../../../utils/common";
+import method from "./utils/method";
+import { requestType } from "../../../utils/common";
+import common from "./utils/common";
 
-const {avtivityApplyForProduct}=method;
+const { avtivityApplyForProduct } = method;
 
 const { Option } = Select;
 const { confirm } = Modal;
@@ -28,18 +31,10 @@ class AddActivity extends React.Component {
             fileList: new Array(),
             from: null,
             activityType: "",
-            treeData: [
-                { id: 1, pId: 0, value: '1', title: 'Expand to load' },
-                { id: 2, pId: 0, value: '2', title: 'Expand to load' },
-                { id: 3, pId: 2, value: '3', title: 'Tree Node', isLeaf: true },
-            ],
         }
     }
 
     componentDidMount() {
-        console.log("this", this);
-        console.log("method", method);
-
         this.props.fetchShopList();
         this.props.fetchAllPosition();
         this.props.fetchAllAuthority();
@@ -51,6 +46,8 @@ class AddActivity extends React.Component {
         const { byAuthority } = this.props;
         const thiz = this;
         this.props.form.validateFieldsAndScroll((err, values) => {
+            console.log("values",values);
+            
             if (!err) {
                 confirm({
                     title: '确认新增?',
@@ -111,7 +108,7 @@ class AddActivity extends React.Component {
                 return (
                     <span>
                         <Form.Item className="inline-input">
-                            {getFieldDecorator('activityRule1', {
+                            {getFieldDecorator('activityInReduction1', {
                                 rules: [{ required: true, message: '请输入优惠规则!' }],
                             })(<InputNumber
                                 formatter={value => `满 ${value}`}
@@ -119,7 +116,7 @@ class AddActivity extends React.Component {
                                 style={{ width: "100px", marginRight: "10px" }} />)}
                         </Form.Item>
                         <Form.Item className="inline-input">
-                            {getFieldDecorator('activityRule2', {
+                            {getFieldDecorator('activityInReduction2', {
                                 rules: [{ required: true, message: '请输入优惠规则!' }],
                             })(<InputNumber
                                 formatter={value => `减 ${value}`}
@@ -132,7 +129,7 @@ class AddActivity extends React.Component {
                 return (
                     <span>
                         <Form.Item className="inline-input">
-                            {getFieldDecorator("activityRule2", {
+                            {getFieldDecorator("activityRuleInDiscount", {
                                 rules: [{ required: true, message: "请输入优惠规则!" }],
                                 initialValue: 30,
                             })(<InputNumber
@@ -161,34 +158,13 @@ class AddActivity extends React.Component {
         if (from != null) {
             return <Redirect to={from} />;
         }
-        const { getFieldDecorator, setFieldsValue} = this.props.form;
+        const { getFieldDecorator, setFieldsValue } = this.props.form;
         const activityRuleInput = this.getActivityRuleInput();
-        const formItemLayout = {
-            labelCol: {
-                xs: { span: 2 },
-                sm: { span: 8 },
-            },
-            wrapperCol: {
-                xs: { span: 6 },
-                sm: { span: 12 },
-            },
-        };
-        const tailFormItemLayout = {
-            wrapperCol: {
-                xs: {
-                    span: 8,
-                    offset: 8,
-                },
-                sm: {
-                    span: 8,
-                    offset: 8,
-                },
-            },
-        };
+        const { formItemLayout, tailFormItemLayout } = common;
         const { fileList } = this.state;
-        const treeData=avtivityApplyForProduct.convertToStandardTreeData(this.props);
-        const { requestQuantity, productType, byProductType, productDetail, byProductDetail } = this.props;
-        // const treeData = getTreeData(byBelong, byAuthority);
+        const treeData = avtivityApplyForProduct.convertToStandardTreeData(this.props);
+        const { requestQuantity, requestModalQuantity, customerType, byCustomerType,
+            activities, byActivities } = this.props;
         return (
             <div>
                 <PageHeader
@@ -237,41 +213,37 @@ class AddActivity extends React.Component {
                                     <Form.Item className="inline-input">
                                         {getFieldDecorator('avtivityApplyForProduct', {
                                             rules: [{ required: true, message: '请选择优惠产品范围!' }],
-                                        },)(
+                                        })(
                                             <TreeSelect
                                                 onFocus={() => this.props.fetchProductType(requestType.modalRequest)}
                                                 treeDataSimpleMode
+                                                loading={requestModalQuantity>0}
                                                 style={{ width: '200px' }}
                                                 dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
                                                 placeholder="请选择优惠产品范围"
                                                 treeCheckable={true}
-                                                onChange={(value)=>avtivityApplyForProduct.onChange(value,setFieldsValue)}
-                                                loadData={(treeNode)=>avtivityApplyForProduct.onLoadData(treeNode,this.props)}
+                                                // onChange={(value) => avtivityApplyForProduct.onChange(value, setFieldsValue)}
+                                                loadData={(treeNode) => avtivityApplyForProduct.onLoadData(treeNode, this.props)}
                                                 treeData={treeData}
                                             />
                                         )}
                                     </Form.Item>
                                     <Form.Item className="inline-input">
-                                        {getFieldDecorator('avtivityApplyForConsumer', {
+                                        {getFieldDecorator('avtivityApplyForCustomer', {
                                             rules: [{ required: true, message: '请选择享受优惠客户范围!' }],
                                         })(
                                             <Select
+                                                mode="multiple"
+                                                loading={requestModalQuantity>0}
                                                 placeholder="请选择享受优惠客户范围"
+                                                onFocus={() => this.props.fetchCustomerType(requestType.modalRequest)}
                                                 style={{ width: 200 }}
-                                                onChange={this.handleSelectActivityTypeChange}>
-                                                <Option value="1">{activityType["1"]}</Option>
-                                                <Option value="2">{activityType["2"]}</Option>
+                                                // onChange={this.handleSelectActivityTypeChange}
+                                                >
+                                                {
+                                                    customerType.map((uid) => <Option value={uid} key={uid}>{byCustomerType[uid].name}</Option>)
+                                                }
                                             </Select>
-                                            // <TreeSelect
-                                            //     treeDataSimpleMode
-                                            //     style={{ width: '200' }}
-                                            //     value={this.state.value}
-                                            //     dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-                                            //     placeholder="Please select"
-                                            //     onChange={this.onChange}
-                                            //     loadData={this.onLoadData}
-                                            //     treeData={treeData}
-                                            // />
                                         )}
                                     </Form.Item>
                                 </div>
@@ -288,12 +260,17 @@ class AddActivity extends React.Component {
                                     rules: [{ required: true, message: '请选择互斥活动!' }],
                                 })(<Select
                                     placeholder="请选择与此活动互斥的互动"
-                                    onChange={this.handleSelectActivityTypeChange}>
-                                    <Option value="1">{activityType["1"]}</Option>
-                                    <Option value="2">{activityType["2"]}</Option>
+                                    mode="multiple"
+                                    loading={requestModalQuantity>0}
+                                    onFocus={() => this.props.fetchActivities(requestType.modalRequest)}
+                                    // onChange={this.handleSelectActivityTypeChange}
+                                    >
+                                    {
+                                        activities.map((uid)=><Option value={uid} key={uid} >{byActivities[uid].name}</Option>)
+                                    }
                                 </Select>)}
                             </Form.Item>
-                            <Form.Item label="活动优先级">
+                            {/* <Form.Item label="活动优先级">
                                 {getFieldDecorator('priority', {
                                     rules: [{ required: true, message: '请选择活动优先级!' }],
                                 })(
@@ -304,7 +281,7 @@ class AddActivity extends React.Component {
                                         <Option value="2">{activityType["2"]}</Option>
                                     </Select>)
                                 }
-                            </Form.Item>
+                            </Form.Item> */}
                             <Form.Item label="活动展示照片">
                                 <PictureCard
                                     fileList={fileList}
@@ -327,7 +304,6 @@ const mapStateToProps = (state, props) => {
     return {
         shop: getShop(state),
         byShopList: getShopList(state),
-        requestQuantity: getRequestQuantity(state),
         allPositions: getAllPosition(state),
         byAllPositions: getByAllPosition(state),
         byAuthority: getByAuthority(state),
@@ -338,6 +314,10 @@ const mapStateToProps = (state, props) => {
         requestModalQuantity: getModalRequestQuantity(state),
         productDetail: getProductDetail(state),
         byProductDetail: getByProductDetail(state),
+        customerType: getCustomerType(state),
+        byCustomerType: getByCustomerType(state),
+        activities: getActivities(state),
+        byActivities: getByActivities(state),
     };
 };
 
@@ -346,6 +326,8 @@ const mapDispatchToProps = (dispatch) => {
         ...bindActionCreators(clerkActions, dispatch),
         ...bindActionCreators(shopActions, dispatch),
         ...bindActionCreators(productActions, dispatch),
+        ...bindActionCreators(customerActions, dispatch),
+        ...bindActionCreators(activityActions, dispatch),
     };
 };
 

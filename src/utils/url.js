@@ -19,4 +19,7 @@ export default {
     addClerk:()=>"/mock/addClerk.json",
     fetchProductType:()=>"/mock/productType.json",
     fetchProductDetailByType:()=>"/mock/productDetailByType.json",
+    fetchCustomerType:()=>"/mock/customerType.json",
+    fetchActivities:()=>"/mock/activities.json",
+    terminalActivity:()=>"/mock/alterBoxInfo.json"
 }
