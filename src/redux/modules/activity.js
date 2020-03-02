@@ -82,7 +82,7 @@ const reducer = (state = initialState, action) => {
             byActivities = new Object();
             state.activities.forEach((uid) => {
                 if (uid == action.uid) {
-                    byActivities[uid] = { ...state.byActivities[uid], status: "expired" };
+                    byActivities[uid] = { ...state.byActivities[uid], enforceTerminal: true };
                 } else {
                     byActivities[uid] = state.byActivities[uid];
                 }

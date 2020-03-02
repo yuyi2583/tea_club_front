@@ -1,9 +1,9 @@
 {
     "activities": [
-        {"uid":"1123asdf","name":"activity1","description":"this is activity1 asdfasdfasdfasdfasdfasfd","startTime":1582788518635,"endTime":1582788541414},
-        {"uid":"2","name":"activity2","description":"this is activity2","startTime":1582788518635,"endTime":1582788541414},
-        {"uid":"3","name":"activity3","description":"this is activity3","startTime":1582788518635,"endTime":1582788541414},
-        {"uid":"4","name":"activity4","description":"this is activity4","startTime":1582788518635,"endTime":1582788541414}
+        {"uid":"1123asdf","name":"activity1","description":"this is activity1 asdfasdfasdfasdfasdfasfd","startTime":1583138590403,"endTime":1583148590403,"enforceTerminal":true},
+        {"uid":"2","name":"activity2","description":"this is activity2","startTime":1583138590403,"endTime":1583148590403,"enforceTerminal":false},
+        {"uid":"3","name":"activity3","description":"this is activity3","startTime":1583138590403,"endTime":1583148590403,"enforceTerminal":false},
+        {"uid":"4","name":"activity4","description":"this is activity4","startTime":1583138590403,"endTime":1583148590403,"enforceTerminal":false}
     ],
     "retCode": "200",
     "error":""

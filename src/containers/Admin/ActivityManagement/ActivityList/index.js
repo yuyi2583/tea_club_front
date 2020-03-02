@@ -10,6 +10,7 @@ import { getRequestQuantity } from "../../../../redux/modules/app";
 import { Redirect } from "react-router-dom";
 import { map } from "../../../../router";
 import { sex, activityStatus } from "../../../../utils/common";
+import { judgeStatus } from "./method";
 import { Link } from "react-router-dom";
 import Highlighter from 'react-highlight-words';
 import { handleBack, callMessage, activityType } from "../../../../utils/common";
@@ -99,22 +100,16 @@ class ActivityList extends React.Component {
     getDataSource = () => {
         const { activities, byActivities } = this.props;
         let dataSource = new Array();
-        let time = new Date().getTime();
         activities.length > 0 && activities.forEach((item) => {
-            if (!byActivities[item]) {
+            let status = judgeStatus(byActivities[item]);
+            if (status == null) {
                 return;
-            }
-            let status = activityStatus["upcoming"];
-            if (time > byActivities[item].startTime && time < byActivities[item].endTime) {
-                status = activityStatus["ongoing"];
-            } else if (time > byActivities[item].endTime) {
-                status = activityStatus["expired"];
             }
             const dataItem = {
                 key: item,
                 ...byActivities[item],
                 description: stringWithEllipsis(byActivities[item].description, 30),
-                status:byActivities[item].status!=null&&byActivities[item].status!=undefined?activityStatus[byActivities[item].status]:status,
+                status: byActivities[item].status != null && byActivities[item].status != undefined ? activityStatus[byActivities[item].status] : status,
                 duration: timeStampConvertToFormatTime(byActivities[item].startTime) + "~" + timeStampConvertToFormatTime(byActivities[item].endTime)
             };
             dataSource.push(dataItem);
@@ -163,7 +158,9 @@ class ActivityList extends React.Component {
                         </Tooltip>
                         <Divider type="vertical" />
                         <Tooltip title={`终止活动`}>
-                            <a onClick={() => this.terminalActivity(record.uid)}>终止</a>
+                            {record.enforceTerminal || judgeStatus(record) == "expired" ? null :
+                                <a onClick={() => this.terminalActivity(record.uid)}>终止</a>
+                            }
                         </Tooltip>
                     </span>
                 ),
