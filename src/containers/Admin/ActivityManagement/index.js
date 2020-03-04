@@ -3,6 +3,8 @@ import { PageHeader, message, Button } from "antd";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actions as uiActions } from "../../../redux/modules/ui";
+import { actions as productActions, getProductType, getByProductType } from "../../../redux/modules/product";
+import { actions as customerActions, getCustomerType, getByCustomerType } from "../../../redux/modules/customer";
 import { Route } from "react-router-dom";
 import ActivityDetail from "./ActivityDetail";
 import ActivityList from "./ActivityList";
@@ -51,14 +53,15 @@ class ActivityManagement extends React.Component {
     }
 
     componentDidMount() {
-
+        this.props.fetchProductType();
+        this.props.fetchCustomerType();
         const { history } = this.props;
         console.log("history in activity management", history);
     }
     render() {
         const subTitle = this.getSubTitle();
         const extra = this.getExtra();
-        const { match } = this.props;
+        const { match,productType,byCustomerType,customerType,byProductType } = this.props;
         return (
             <div>
                 <PageHeader
@@ -81,6 +84,10 @@ class ActivityManagement extends React.Component {
                         render={props =>
                             <ActivityDetail
                                 {...props}
+                                productType={productType}
+                                byProductType={byProductType}
+                                customerType={customerType}
+                                byCustomerType={byCustomerType}
                                 callMessage={this.callMessage}
                             />
                         }
@@ -94,13 +101,18 @@ class ActivityManagement extends React.Component {
 
 const mapStateToProps = (state, props) => {
     return {
-
+        productType: getProductType(state),
+        byProductType: getByProductType(state),
+        customerType: getCustomerType(state),
+        byCustomerType: getByCustomerType(state),
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
         ...bindActionCreators(uiActions, dispatch),
+        ...bindActionCreators(productActions, dispatch),
+        ...bindActionCreators(customerActions, dispatch),
     };
 };
 

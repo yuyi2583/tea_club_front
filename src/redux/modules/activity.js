@@ -6,6 +6,8 @@ import { requestType } from "../../utils/common";
 const initialState = {
     activities: new Array(),
     byActivities: new Object(),
+    // activityRules: new Array(),
+    byActivityRules: new Object(),
 }
 
 export const types = {
@@ -49,15 +51,24 @@ export const actions = {
 const convetActivitiesToPlainStructure = (data) => {
     let activities = new Array();
     let byActivities = new Object();
+    let byActivityRules = new Object();
     data.forEach((item) => {
+        let activityRules = new Array();
+        item.activityRules.forEach((rule) => {
+            activityRules.push(rule.uid);
+            if (!byActivityRules[rule.uid]) {
+                byActivityRules[rule.uid] = rule;
+            }
+        })
         activities.push(item.uid);
         if (!byActivities[item.uid]) {
-            byActivities[item.uid] = item;
+            byActivities[item.uid] = { ...item, activityRules };
         }
     });
     return {
         activities,
         byActivities,
+        byActivityRules,
     }
 }
 
@@ -66,17 +77,18 @@ const terminalActivitySuccess = (uid) => ({
     uid,
 })
 
-const fetchActivitiesSuccess = ({ activities, byActivities }) => ({
+const fetchActivitiesSuccess = ({ activities, byActivities, byActivityRules }) => ({
     type: types.FETCH_ACTIVITIES,
     activities,
     byActivities,
+    byActivityRules,
 })
 
 const reducer = (state = initialState, action) => {
     let byActivities;
     switch (action.type) {
         case types.FETCH_ACTIVITIES:
-            return { ...state, activities: action.activities, byActivities: action.byActivities };
+            return { ...state, activities: action.activities, byActivities: action.byActivities, byActivityRules: action.byActivityRules };
         case types.TERMINAL_ACTIVITY:
             // debugger
             byActivities = new Object();
@@ -97,3 +109,4 @@ export default reducer;
 
 export const getActivities = (state) => state.activity.activities;
 export const getByActivities = (state) => state.activity.byActivities;
+export const getByActivityRules = (state) => state.activity.byActivityRules;
