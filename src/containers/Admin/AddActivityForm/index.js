@@ -18,7 +18,7 @@ import { requestType } from "../../../utils/common";
 import common from "./utils/common";
 import { MinusCircleOutline, PlusCircleOutline } from '@ant-design/icons';
 import ActivityRuleInput from "../../../components/ActivityRuleInput";
-import Test from "../../test";
+import DynamicFieldSet from "../../../components/DynamicFieldSet";;
 
 const { avtivityApplyForProduct } = method;
 
@@ -139,7 +139,7 @@ class AddActivity extends React.Component {
                                 )}
                             </Form.Item>
                             <Form.Item label="优惠规则" required>
-                                <Test form={this.props.form}>
+                                <DynamicFieldSet form={this.props.form} content={"添加优惠规则"}>
                                     <ActivityRuleInput
                                         form={this.props.form}
                                         fetchProductType={this.props.fetchProductType}
@@ -149,7 +149,7 @@ class AddActivity extends React.Component {
                                         treeData={treeData}
                                         customerType={customerType}
                                         byCustomerType={byCustomerType} />
-                                </Test>
+                                </DynamicFieldSet>
                             </Form.Item>
                             <Form.Item label="活动持续时间">
                                 {getFieldDecorator('duration', {
