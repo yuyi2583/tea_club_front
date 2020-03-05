@@ -11,7 +11,8 @@
         {"uid":"6","name":"activities","component":"Admin/ActivityManagement","title":"活动管理","description":"这是活动管理","belong":{"uid":"3","name":"activity_management","title":"活动管理","icon":"calendar"}},
         {"uid":"7","name":"activity","component":"Admin/ActivityManagement/ActivityList","title":"活动详情","description":"这是活动详情","belong":{"uid":"4","name":"activity_management","title":"产品管理","icon":"calendar"}},
         {"uid":"8","name":"h7","component":"Admin/CompanyInfo","title":"h7","description":"这是h7","belong":{"uid":"5","name":"t4","title":"客户管理","icon":"mail"}},
-        {"uid":"9","name":"h8","component":"Admin/CompanyInfo","title":"h8","description":"这是h8","belong":{"uid":"6","name":"t4","title":"财务管理","icon":"mail"}}
+        {"uid":"9","name":"h8","component":"Admin/CompanyInfo","title":"h8","description":"这是h8","belong":{"uid":"6","name":"t4","title":"财务管理","icon":"mail"}},
+        {"uid":"10","name":"test","component":"test.js","title":"test","description":"这是test","belong":{"uid":"7","name":"test","title":"test","icon":"mail"}}
       ]
     },
     "retCode": "200",

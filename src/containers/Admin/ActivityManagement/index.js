@@ -18,12 +18,16 @@ class ActivityManagement extends React.Component {
     getExtra = () => {
         const { history, match } = this.props;
         let extra = null;
-        if (history.location.pathname.indexOf("role_detail") != -1) {
-            extra = (<Button type="primary" onClick={this.startAlterRoleDetail}>修改职员信息</Button>);
+        if (history.location.pathname.indexOf("/activity/") != -1) {
+            extra = (<Button type="primary" onClick={this.startAlterActivityDetail}>修改活动信息</Button>);
         } else {
             extra = null;
         }
         return extra;
+    }
+
+    startAlterActivityDetail=()=>{
+        this.props.startAlterInfo();
     }
 
     getSubTitle = () => {
