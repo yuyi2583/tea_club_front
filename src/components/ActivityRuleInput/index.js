@@ -10,14 +10,11 @@ const index = DynamicFieldSetContext;
 class ActivityRuleInput extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            // activityType: "",
-        }
+        this.state = {}
     }
 
     getActivityRuleInput = () => {
-        const index = this.context
-        console.log("props in rule input", this.props);
+        const index = this.context;
         let activityType;
         if (index == -1) {
             activityType = this.state.activityType;
@@ -77,7 +74,6 @@ class ActivityRuleInput extends React.Component {
     }
 
     handleSelectActivityTypeChange = (value) => {
-        console.log(value);
         const index = this.context
         if (index == -1) {
             this.setState({ activityType: value });

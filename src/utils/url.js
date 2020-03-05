@@ -21,5 +21,6 @@ export default {
     fetchProductDetailByType:()=>"/mock/productDetailByType.json",
     fetchCustomerType:()=>"/mock/customerType.json",
     fetchActivities:()=>"/mock/activities.json",
-    terminalActivity:()=>"/mock/alterBoxInfo.json"
+    terminalActivity:()=>"/mock/alterBoxInfo.json",
+    addActivity:()=>"/mock/activities.json",
 }

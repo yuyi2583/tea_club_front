@@ -38,9 +38,9 @@ class AddActivity extends React.Component {
     }
 
     componentDidMount() {
-        this.props.fetchShopList();
-        this.props.fetchAllPosition();
-        this.props.fetchAllAuthority();
+        // this.props.fetchShopList();
+        // this.props.fetchAllPosition();
+        // this.props.fetchAllAuthority();
     }
 
     handleSubmit = e => {
@@ -49,8 +49,6 @@ class AddActivity extends React.Component {
         const { byAuthority } = this.props;
         const thiz = this;
         this.props.form.validateFieldsAndScroll((err, values) => {
-            console.log("values", values);
-
             if (!err) {
                 confirm({
                     title: '确认新增?',
@@ -59,32 +57,35 @@ class AddActivity extends React.Component {
                     },
                     onOk() {
                         console.log("submit values", values);
-                        const { authority } = values;
-                        let actualAuthority = new Array();
-                        authority != undefined && authority.forEach((item) => {
-                            if (item.indexOf("belong") !== -1) {
-                                const id = item.split(",")[0];
-                                for (var key in byAuthority) {
-                                    if (byAuthority[key].belong === id) {
-                                        actualAuthority.push(byAuthority[key].uid);
-                                    }
+                        const index=values.keys;
+                        let activityRules=new Array();
+                        let activityInfo=new Object();
+                        index.forEach(item=>{
+                            let rule=new Object();
+                            for(let key in values){
+                                let splitKey=key.split("_");
+                                if(splitKey.length==1){
+                                    activityInfo[key]=values[key];
+                                    continue;
                                 }
-                            } else {
-                                const id = item.split(",")[0];
-                                actualAuthority.push(id);
+                                if(splitKey[1].indexOf(item)!=-1){
+                                    rule[splitKey[0]]=values[key];
+                                    // delete values[key];
+                                }
                             }
-                        });
-                        const newClerk = { ...values, authority: actualAuthority, fileList };
-                        console.log("actual submit value", newClerk);
-                        thiz.props.addClerk(newClerk)
-                            .then((clerkId) => {
-                                thiz.props.callMessage("success", "新增职员完成！")
+                            activityRules.push(rule);
+                        })
+                        activityInfo["activityRules"]=activityRules;
+                        console.log("actual submit value", activityInfo);
+                        thiz.props.addActivity(activityInfo)
+                            .then(() => {
+                                callMessage("success", "新增活动成功！")
                                 thiz.setState({
-                                    from: map.admin.AdminHome() + `/role/add_role/new_role_detail/${clerkId}`
+                                    from: map.admin.AdminHome() + `/activity_management/activities`
                                 });
                             })
                             .catch((err) => {
-                                thiz.props.callMessage("error", "新增职员失败！" + err)
+                                callMessage("error", "新增活动失败！" + err)
                             })
                     },
                 });
@@ -225,7 +226,7 @@ const mapStateToProps = (state, props) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        ...bindActionCreators(clerkActions, dispatch),
+        // ...bindActionCreators(clerkActions, dispatch),
         ...bindActionCreators(shopActions, dispatch),
         ...bindActionCreators(productActions, dispatch),
         ...bindActionCreators(customerActions, dispatch),

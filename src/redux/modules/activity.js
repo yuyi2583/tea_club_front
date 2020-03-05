@@ -13,6 +13,7 @@ const initialState = {
 export const types = {
     FETCH_ACTIVITIES: "ACTIVITY/FETCH_ACTIVITIES", //
     TERMINAL_ACTIVITY: "ACTIVITY/TERMINAL_ACTIVITY",
+    ADD_ACTIVITY:"ACTIVITY/ADD_ACTIVITY",
 };
 
 export const actions = {
@@ -46,6 +47,22 @@ export const actions = {
             });
         }
     },
+    addActivity:(activity) => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest());
+            const params = { activity };
+            return get(url.addActivity(), params).then((data) => {
+                dispatch(appActions.finishRequest());
+                if (!data.error) {
+                    dispatch(addActivitySuccess(convetActivitiesToPlainStructure(data.activities)));
+                    return Promise.resolve();
+                } else {
+                    dispatch(actions.setError(data.error));
+                    return Promise.reject(data.error);
+                }
+            })
+        }
+    }
 }
 
 const convetActivitiesToPlainStructure = (data) => {
@@ -75,6 +92,13 @@ const convetActivitiesToPlainStructure = (data) => {
 const terminalActivitySuccess = (uid) => ({
     type: types.TERMINAL_ACTIVITY,
     uid,
+});
+
+const addActivitySuccess=({ activities, byActivities, byActivityRules })=>({
+    type: types.ADD_ACTIVITY,
+    activities,
+    byActivities,
+    byActivityRules,
 })
 
 const fetchActivitiesSuccess = ({ activities, byActivities, byActivityRules }) => ({
@@ -82,7 +106,7 @@ const fetchActivitiesSuccess = ({ activities, byActivities, byActivityRules }) =
     activities,
     byActivities,
     byActivityRules,
-})
+});
 
 const reducer = (state = initialState, action) => {
     let byActivities;
