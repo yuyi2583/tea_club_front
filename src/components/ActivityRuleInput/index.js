@@ -80,27 +80,39 @@ class ActivityRuleInput extends React.Component {
         } else {
             this.setState({ ["activityType_" + index]: value })
         }
+        console.log("new field value", this.props.form.getFieldsValue());
 
     }
 
     componentDidMount() {
         const index = this.context
-        if (index != -1) {
-            this.setState({ ["activityType_" + index]: "" });
-        } else {
-            this.setState({ activityType: "" });
+        const { getFieldDecorator, getFieldsValue } = this.props.form;
+        const { content } = this.props;
+        if (content != null) {
+            for (let key in content) {
+                getFieldDecorator([key + "_" + index], { initialValue: content[key] });
+                if (key.indexOf("activityType") != -1) {
+                    if (index != -1) {
+                        this.setState({ ["activityType_" + index]: content[key] });
+                    } else {
+                        this.setState({ activityType: content[key] });
+                    }
+                }
+            }
         }
+        console.log("field value", getFieldsValue());
+
     }
 
     render() {
         const activityRuleInput = this.getActivityRuleInput();
         const { getFieldDecorator } = this.props.form;
-        const index = this.context
+        const index = this.context;
         return (
             <div>
                 <div>
                     <Form.Item className="inline-input">
-                        {getFieldDecorator('avtivityType_' + index, {
+                        {getFieldDecorator('activityType_' + index, {
                             rules: [{ required: true, message: '请选择优惠类型!' }],
                         })(
                             <Select
@@ -116,7 +128,7 @@ class ActivityRuleInput extends React.Component {
                 </div>
                 <div>
                     <Form.Item className="inline-input">
-                        {getFieldDecorator('avtivityApplyForProduct_' + index, {
+                        {getFieldDecorator('activityApplyForProduct_' + index, {
                             rules: [{ required: true, message: '请选择优惠产品范围!' }],
                         })(
                             <TreeSelect
@@ -127,14 +139,14 @@ class ActivityRuleInput extends React.Component {
                                 dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
                                 placeholder="请选择优惠产品范围"
                                 treeCheckable={true}
-                                // onChange={(value) => avtivityApplyForProduct.onChange(value, setFieldsValue)}
-                                loadData={(treeNode) => this.props.avtivityApplyForProduct.onLoadData(treeNode, this.props)}
+                                // onChange={(value) => activityApplyForProduct.onChange(value, setFieldsValue)}
+                                loadData={(treeNode) => this.props.activityApplyForProduct.onLoadData(treeNode, this.props)}
                                 treeData={this.props.treeData}
                             />
                         )}
                     </Form.Item>
                     <Form.Item className="inline-input">
-                        {getFieldDecorator('avtivityApplyForCustomer_' + index, {
+                        {getFieldDecorator('activityApplyForCustomer_' + index, {
                             rules: [{ required: true, message: '请选择享受优惠客户范围!' }],
                         })(
                             <Select
@@ -160,8 +172,16 @@ class ActivityRuleInput extends React.Component {
 ActivityRuleInput.contextType = DynamicFieldSetContext;
 
 ActivityRuleInput.propTypes = {
+    content: PropTypes.shape({
+        activityType: PropTypes.string,
+        activityInReduction1: PropTypes.number,
+        activityInReduction2: PropTypes.number,
+        activityApplyForProduct: PropTypes.array,
+        activityApplyForCustomer: PropTypes.array,
+        activityRuleInDiscount: PropTypes.number
+    }),
     form: PropTypes.object.isRequired,
-    avtivityApplyForProduct: PropTypes.object.isRequired,
+    activityApplyForProduct: PropTypes.object.isRequired,
     fetchProductType: PropTypes.func.isRequired,
     fetchCustomerType: PropTypes.func.isRequired,
     requestModalQuantity: PropTypes.number.isRequired,
@@ -172,7 +192,8 @@ ActivityRuleInput.propTypes = {
 }
 
 ActivityRuleInput.defaultProps = {
-    index: -1
+    index: -1,
+    content: null,
 }
 
 

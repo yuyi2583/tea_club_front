@@ -1,7 +1,10 @@
 import React from "react";
 import { Form, Icon, Button, Row, Col } from 'antd';
+import PropTypes from "prop-types";
 
 let id = 0;
+let initialValue = new Array();
+
 export const DynamicFieldSetContext = React.createContext(-1);
 
 
@@ -19,58 +22,123 @@ class DynamicFieldSet extends React.Component {
     form.setFieldsValue({
       keys: keys.filter(key => key !== k),
     });
+    const key = form.getFieldValue('keys');
+    console.log("remove keys", key);
   };
 
   add = () => {
     const { form } = this.props;
     // can use data-binding to get
-    const keys = form.getFieldValue('keys');
+    const keys = form.getFieldValue("keys");
+    console.log("keys", keys);
     const nextKeys = keys.concat(id++);
+    console.log("add keys", nextKeys);
+
     // can use data-binding to set
     // important! notify form to detect changes
     form.setFieldsValue({
       keys: nextKeys,
     });
+    console.log("field value", form.getFieldValue("keys"));
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    this.props.form.validateFields((err, values) => {
-      if (!err) {
-        const { keys, names } = values;
+  initialKeys = () => {
+    const children = this.props.children;
+    const { getFieldDecorator } = this.props.form;
+    if (id == 0) {
+      if (children != undefined) {
+        React.Children.forEach(children, (child, index) => {
+          initialValue.push(id++);
+        });
+      } else {
+        initialValue.push(id++);
       }
-    });
-  };
+    }
+    getFieldDecorator('keys', { initialValue });
+  }
+
+  getFormItems = () => {
+    const { getFieldDecorator, getFieldValue } = this.props.form;
+    const { template } = this.props;
+    const keys = getFieldValue('keys');
+    console.log("keys in render", keys);
+    const children = this.props.children;
+    console.log("children", children);
+    let items;
+    if (children == undefined) {//没有子元素，需要使用模板
+      items = keys.map((k, index) => {
+        return (
+          <Row key={k}>
+            <Col span={20}>
+              <DynamicFieldSetContext.Provider value={k}>
+                {template}
+              </DynamicFieldSetContext.Provider>
+            </Col>
+            {keys.length > 1 ? (
+              <Col span={4}>
+                <Icon
+                  className="dynamic-delete-button"
+                  type="minus-circle-o"
+                  onClick={() => this.remove(k)}
+                />
+              </Col>) : null}
+          </Row>
+        )
+      });
+    } else {
+      items = keys.map((k, index) => {
+        if (k < children.length || children.length == undefined) {
+          return (
+            <Row key={k}>
+              <Col span={20}>
+                <DynamicFieldSetContext.Provider value={k}>
+                  {children.length == undefined ? children : children[k]}
+                </DynamicFieldSetContext.Provider>
+              </Col>
+              {keys.length > 1 ? (
+                <Col span={4}>
+                  <Icon
+                    className="dynamic-delete-button"
+                    type="minus-circle-o"
+                    onClick={() => this.remove(k)}
+                  />
+                </Col>) : null}
+            </Row>
+          )
+        } else {
+          return (
+            <Row key={k}>
+              <Col span={20}>
+                <DynamicFieldSetContext.Provider value={k}>
+                  {template}
+                </DynamicFieldSetContext.Provider>
+              </Col>
+              {keys.length > 1 ? (
+                <Col span={4}>
+                  <Icon
+                    className="dynamic-delete-button"
+                    type="minus-circle-o"
+                    onClick={() => this.remove(k)}
+                  />
+                </Col>) : null}
+            </Row>
+          )
+        }
+      })
+    }
+    return items;
+  }
 
   render() {
-    const { getFieldDecorator, getFieldValue } = this.props.form;
     const formItemLayoutWithOutLabel = {
       wrapperCol: {
         xs: { span: 24, offset: 0 },
         sm: { span: 20, offset: 4 },
       },
     };
-    getFieldDecorator('keys', { initialValue: [] });
-    const keys = getFieldValue('keys');
-    const formItems = keys.map((k, index) => {
-      return (
-        <Row key={k}>
-          <Col span={20}>
-            <DynamicFieldSetContext.Provider value={k}>
-              {this.props.children}
-            </DynamicFieldSetContext.Provider>
-          </Col>
-          {keys.length > 1 ? (
-            <Col span={4}>
-              <Icon
-                className="dynamic-delete-button"
-                type="minus-circle-o"
-                onClick={() => this.remove(k)}
-              />
-            </Col>) : null}
-        </Row>
-      )
-    });
+    // getFieldDecorator('keys', { initialValue: [0] });
+    this.initialKeys();
+    const formItems = this.getFormItems();
     return (
       <div>
         {formItems}
@@ -82,6 +150,10 @@ class DynamicFieldSet extends React.Component {
       </div>
     );
   }
+}
+
+DynamicFieldSet.propTypes = {
+  template: PropTypes.element.isRequired
 }
 
 export default DynamicFieldSet;

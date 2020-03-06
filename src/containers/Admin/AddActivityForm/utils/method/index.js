@@ -1,5 +1,5 @@
-import avtivityApplyForProduct from "./avtivityApplyForProduct";
+import activityApplyForProduct from "./activityApplyForProduct";
 
 export default{
-    avtivityApplyForProduct,
+    activityApplyForProduct,
 }

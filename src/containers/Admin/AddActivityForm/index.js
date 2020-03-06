@@ -20,7 +20,7 @@ import { MinusCircleOutline, PlusCircleOutline } from '@ant-design/icons';
 import ActivityRuleInput from "../../../components/ActivityRuleInput";
 import DynamicFieldSet from "../../../components/DynamicFieldSet";;
 
-const { avtivityApplyForProduct } = method;
+const { activityApplyForProduct } = method;
 
 const { Option } = Select;
 const { confirm } = Modal;
@@ -37,12 +37,6 @@ class AddActivity extends React.Component {
         }
     }
 
-    componentDidMount() {
-        // this.props.fetchShopList();
-        // this.props.fetchAllPosition();
-        // this.props.fetchAllAuthority();
-    }
-
     handleSubmit = e => {
         e.preventDefault();
         const { fileList } = this.state;;
@@ -52,30 +46,30 @@ class AddActivity extends React.Component {
             if (!err) {
                 confirm({
                     title: '确认新增?',
-                    content: '输入数据是否无误，确认新增该包厢信息',
+                    content: '输入数据是否无误，确认新增该活动信息',
                     onCancel() {
                     },
                     onOk() {
                         console.log("submit values", values);
-                        const index=values.keys;
-                        let activityRules=new Array();
-                        let activityInfo=new Object();
-                        index.forEach(item=>{
-                            let rule=new Object();
-                            for(let key in values){
-                                let splitKey=key.split("_");
-                                if(splitKey.length==1){
-                                    activityInfo[key]=values[key];
+                        const index = values.keys;
+                        let activityRules = new Array();
+                        let activityInfo = new Object();
+                        index.forEach(item => {
+                            let rule = new Object();
+                            for (let key in values) {
+                                let splitKey = key.split("_");
+                                if (splitKey.length == 1) {
+                                    activityInfo[key] = values[key];
                                     continue;
                                 }
-                                if(splitKey[1].indexOf(item)!=-1){
-                                    rule[splitKey[0]]=values[key];
+                                if (splitKey[1].indexOf(item) != -1) {
+                                    rule[splitKey[0]] = values[key];
                                     // delete values[key];
                                 }
                             }
                             activityRules.push(rule);
                         })
-                        activityInfo["activityRules"]=activityRules;
+                        activityInfo["activityRules"] = activityRules;
                         console.log("actual submit value", activityInfo);
                         thiz.props.addActivity(activityInfo)
                             .then(() => {
@@ -107,7 +101,7 @@ class AddActivity extends React.Component {
         const { getFieldDecorator, getFieldValue } = this.props.form;
         const { formItemLayout, tailFormItemLayout } = common;
         const { fileList } = this.state;
-        const treeData = avtivityApplyForProduct.convertToStandardTreeData(this.props);
+        const treeData = activityApplyForProduct.convertToStandardTreeData(this.props);
         const { requestQuantity, requestModalQuantity, customerType, byCustomerType,
             activities, byActivities } = this.props;
         return (
@@ -140,17 +134,17 @@ class AddActivity extends React.Component {
                                 )}
                             </Form.Item>
                             <Form.Item label="优惠规则" required>
-                                <DynamicFieldSet form={this.props.form} content={"添加优惠规则"}>
-                                    <ActivityRuleInput
+                                <DynamicFieldSet form={this.props.form} content={"添加优惠规则"}
+                                    template={<ActivityRuleInput
                                         form={this.props.form}
                                         fetchProductType={this.props.fetchProductType}
-                                        avtivityApplyForProduct={avtivityApplyForProduct}
+                                        activityApplyForProduct={activityApplyForProduct}
                                         fetchCustomerType={this.props.fetchCustomerType}
                                         requestModalQuantity={requestModalQuantity}
                                         treeData={treeData}
                                         customerType={customerType}
-                                        byCustomerType={byCustomerType} />
-                                </DynamicFieldSet>
+                                        byCustomerType={byCustomerType} />}
+                                />
                             </Form.Item>
                             <Form.Item label="活动持续时间">
                                 {getFieldDecorator('duration', {

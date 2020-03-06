@@ -12,6 +12,7 @@ import { timeStampConvertToFormatTime } from "../../../../utils/timeUtil";
 import moment from 'moment';
 import { activityType } from "../../../../utils/common";
 import PictureCard from "../../../../components/PictureCard";
+import ActivityRuleInput from "../../../../components/ActivityRuleInput";
 
 const { MonthPicker, RangePicker } = DatePicker;
 const { Paragraph } = Typography;
@@ -86,7 +87,7 @@ class ActivityDetail extends React.Component {
                                     timeStampConvertToFormatTime(byActivities[activityId].startTime) + " ~ " + timeStampConvertToFormatTime(byActivities[activityId].endTime)
                                     : <RangePicker
                                         showTime
-                                        defaultValue={[moment(byActivities[activityId].startTime, dateFormat), moment(byActivities[activityId].startTime, dateFormat)]}
+                                        defaultValue={[moment( timeStampConvertToFormatTime(byActivities[activityId].startTime) , dateFormat), moment(timeStampConvertToFormatTime(byActivities[activityId].endTime), dateFormat)]}
                                         format={dateFormat} />
                             }
                         </Descriptions.Item>
