@@ -11,14 +11,14 @@ import { actions as customerActions, getByCustomerType, getCustomerType } from "
 import { actions as activityActions, getActivities, getByActivities } from "../../../redux/modules/activity";
 import { Redirect } from "react-router-dom";
 import { map } from "../../../router";
-import { handleBack, callMessage, activityType } from "../../../utils/common";
+import { handleBack, callMessage } from "../../../utils/common";
 import "./style.css";
 import method from "./utils/method";
 import { requestType } from "../../../utils/common";
 import common from "./utils/common";
-import { MinusCircleOutline, PlusCircleOutline } from '@ant-design/icons';
 import ActivityRuleInput from "../../../components/ActivityRuleInput";
-import DynamicFieldSet from "../../../components/DynamicFieldSet";;
+import DynamicFieldSet from "../../../components/DynamicFieldSet";
+import {timeStringConvertToTimeStamp} from "../../../utils/timeUtil";
 
 const { activityApplyForProduct } = method;
 
@@ -70,6 +70,8 @@ class AddActivity extends React.Component {
                             activityRules.push(rule);
                         })
                         activityInfo["activityRules"] = activityRules;
+                        activityInfo["startTime"] = timeStringConvertToTimeStamp(values["duration"][0].format("YYYY-MM-DD HH:mm:ss"));
+                        activityInfo["endTime"] = timeStringConvertToTimeStamp(values["duration"][1].format("YYYY-MM-DD HH:mm:ss"));
                         console.log("actual submit value", activityInfo);
                         thiz.props.addActivity(activityInfo)
                             .then(() => {
@@ -98,7 +100,7 @@ class AddActivity extends React.Component {
         if (from != null) {
             return <Redirect to={from} />;
         }
-        const { getFieldDecorator, getFieldValue } = this.props.form;
+        const { getFieldDecorator } = this.props.form;
         const { formItemLayout, tailFormItemLayout } = common;
         const { fileList } = this.state;
         const treeData = activityApplyForProduct.convertToStandardTreeData(this.props);
@@ -220,7 +222,6 @@ const mapStateToProps = (state, props) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        // ...bindActionCreators(clerkActions, dispatch),
         ...bindActionCreators(shopActions, dispatch),
         ...bindActionCreators(productActions, dispatch),
         ...bindActionCreators(customerActions, dispatch),

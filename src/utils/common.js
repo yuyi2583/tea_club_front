@@ -38,3 +38,5 @@ export const activityStatus={
     "ongoing":"进行中",
     "expired":"已结束"
 }
+
+

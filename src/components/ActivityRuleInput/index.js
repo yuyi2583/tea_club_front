@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, Select, TreeSelect, InputNumber } from "antd";
+import { Form, Select, TreeSelect, InputNumber, Row, Col } from "antd";
 import { activityType, requestType } from "../../utils/common";
 import PropTypes from "prop-types";
 import { DynamicFieldSetContext } from "../../components/DynamicFieldSet";
@@ -26,24 +26,28 @@ class ActivityRuleInput extends React.Component {
         switch (activityType) {
             case "1":
                 return (
-                    <span>
-                        <Form.Item className="inline-input">
-                            {getFieldDecorator('activityInReduction1_' + index, {
-                                rules: [{ required: true, message: '请输入优惠规则!' }],
-                            })(<InputNumber
-                                formatter={value => `满 ${value}`}
-                                min={0}
-                                style={{ width: "100px", marginRight: "10px" }} />)}
-                        </Form.Item>
-                        <Form.Item className="inline-input">
-                            {getFieldDecorator('activityInReduction2_' + index, {
-                                rules: [{ required: true, message: '请输入优惠规则!' }],
-                            })(<InputNumber
-                                formatter={value => `减 ${value}`}
-                                min={0}
-                                allowClear style={{ width: "100px" }} />)}
-                        </Form.Item>
-                    </span>
+                    <Row>
+                        <Col span={12}>
+                            <Form.Item className="inline-input">
+                                {getFieldDecorator('activityInReduction1_' + index, {
+                                    rules: [{ required: true, message: '请输入优惠规则!' }],
+                                })(<InputNumber
+                                    formatter={value => `满 ${value}`}
+                                    min={0}
+                                    style={{ width: "100px", marginRight: "10px" }} />)}
+                            </Form.Item>
+                        </Col>
+                        <Col span={12}>
+                            <Form.Item className="inline-input">
+                                {getFieldDecorator('activityInReduction2_' + index, {
+                                    rules: [{ required: true, message: '请输入优惠规则!' }],
+                                })(<InputNumber
+                                    formatter={value => `减 ${value}`}
+                                    min={0}
+                                    allowClear style={{ width: "100px" }} />)}
+                            </Form.Item>
+                        </Col>
+                    </Row>
                 );
             case "2":
                 return (
@@ -56,6 +60,7 @@ class ActivityRuleInput extends React.Component {
                                 formatter={value => `${value}%折扣`}
                                 min={0}
                                 allowClear
+                                max={100}
                                 style={{ width: "100px" }} />
                             )
                             }
@@ -110,60 +115,68 @@ class ActivityRuleInput extends React.Component {
         const index = this.context;
         return (
             <div>
-                <div>
-                    <Form.Item className="inline-input">
-                        {getFieldDecorator('activityType_' + index, {
-                            rules: [{ required: true, message: '请选择优惠类型!' }],
-                        })(
-                            <Select
-                                placeholder="请选择优惠类型"
-                                style={{ width: 150 }}
-                                onChange={this.handleSelectActivityTypeChange}>
-                                <Option value="1">{activityType["1"]}</Option>
-                                <Option value="2">{activityType["2"]}</Option>
-                            </Select>
-                        )}
-                    </Form.Item>
-                    {activityRuleInput}
-                </div>
-                <div>
-                    <Form.Item className="inline-input">
-                        {getFieldDecorator('activityApplyForProduct_' + index, {
-                            rules: [{ required: true, message: '请选择优惠产品范围!' }],
-                        })(
-                            <TreeSelect
-                                onFocus={() => this.props.fetchProductType(requestType.modalRequest)}
-                                treeDataSimpleMode
-                                loading={this.props.requestModalQuantity > 0}
-                                style={{ width: '200px' }}
-                                dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-                                placeholder="请选择优惠产品范围"
-                                treeCheckable={true}
-                                // onChange={(value) => activityApplyForProduct.onChange(value, setFieldsValue)}
-                                loadData={(treeNode) => this.props.activityApplyForProduct.onLoadData(treeNode, this.props)}
-                                treeData={this.props.treeData}
-                            />
-                        )}
-                    </Form.Item>
-                    <Form.Item className="inline-input">
-                        {getFieldDecorator('activityApplyForCustomer_' + index, {
-                            rules: [{ required: true, message: '请选择享受优惠客户范围!' }],
-                        })(
-                            <Select
-                                mode="multiple"
-                                loading={this.props.requestModalQuantity > 0}
-                                placeholder="请选择享受优惠客户范围"
-                                onFocus={() => this.props.fetchCustomerType(requestType.modalRequest)}
-                                style={{ width: 200 }}
-                            // onChange={this.handleSelectActivityTypeChange}
-                            >
-                                {
-                                    this.props.customerType.map((uid) => <Option value={uid} key={uid}>{this.props.byCustomerType[uid].name}</Option>)
-                                }
-                            </Select>
-                        )}
-                    </Form.Item>
-                </div>
+                <Row>
+                    <Col span={12}>
+                        <Form.Item className="inline-input">
+                            {getFieldDecorator('activityType_' + index, {
+                                rules: [{ required: true, message: '请选择优惠类型!' }],
+                            })(
+                                <Select
+                                    placeholder="请选择优惠类型"
+                                    style={{ width: 150 }}
+                                    onChange={this.handleSelectActivityTypeChange}>
+                                    <Option value="1">{activityType["1"]}</Option>
+                                    <Option value="2">{activityType["2"]}</Option>
+                                </Select>
+                            )}
+                        </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                        {activityRuleInput}
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span={12}>
+                        <Form.Item className="inline-input">
+                            {getFieldDecorator('activityApplyForProduct_' + index, {
+                                rules: [{ required: true, message: '请选择优惠产品范围!' }],
+                            })(
+                                <TreeSelect
+                                    onFocus={() => this.props.fetchProductType(requestType.modalRequest)}
+                                    treeDataSimpleMode
+                                    loading={this.props.requestModalQuantity > 0}
+                                    style={{ width: '200px' }}
+                                    dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                                    placeholder="请选择优惠产品范围"
+                                    treeCheckable={true}
+                                    // onChange={(value) => activityApplyForProduct.onChange(value, setFieldsValue)}
+                                    loadData={(treeNode) => this.props.activityApplyForProduct.onLoadData(treeNode, this.props)}
+                                    treeData={this.props.treeData}
+                                />
+                            )}
+                        </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                        <Form.Item className="inline-input">
+                            {getFieldDecorator('activityApplyForCustomer_' + index, {
+                                rules: [{ required: true, message: '请选择享受优惠客户范围!' }],
+                            })(
+                                <Select
+                                    mode="multiple"
+                                    loading={this.props.requestModalQuantity > 0}
+                                    placeholder="请选择享受优惠客户范围"
+                                    onFocus={() => this.props.fetchCustomerType(requestType.modalRequest)}
+                                    style={{ width: 200 }}
+                                // onChange={this.handleSelectActivityTypeChange}
+                                >
+                                    {
+                                        this.props.customerType.map((uid) => <Option value={uid} key={uid}>{this.props.byCustomerType[uid].name}</Option>)
+                                    }
+                                </Select>
+                            )}
+                        </Form.Item>
+                    </Col>
+                </Row>
             </div>
         );
     }

@@ -13,7 +13,8 @@ const initialState = {
 export const types = {
     FETCH_ACTIVITIES: "ACTIVITY/FETCH_ACTIVITIES", //
     TERMINAL_ACTIVITY: "ACTIVITY/TERMINAL_ACTIVITY",
-    ADD_ACTIVITY:"ACTIVITY/ADD_ACTIVITY",
+    ADD_ACTIVITY: "ACTIVITY/ADD_ACTIVITY",
+    ALTER_ACTIVITY: "ACTIVITY/ALTER_ACTIVITY",
 };
 
 export const actions = {
@@ -47,7 +48,23 @@ export const actions = {
             });
         }
     },
-    addActivity:(activity) => {
+    addActivity: (activity) => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest());
+            const params = { activity };
+            return get(url.addActivity(), params).then((data) => {
+                dispatch(appActions.finishRequest());
+                if (!data.error) {
+                    dispatch(addActivitySuccess(convetActivitiesToPlainStructure(data.activities)));
+                    return Promise.resolve();
+                } else {
+                    dispatch(actions.setError(data.error));
+                    return Promise.reject(data.error);
+                }
+            })
+        }
+    },
+    alterActivityInfo: (activity) => {
         return (dispatch) => {
             dispatch(appActions.startRequest());
             const params = { activity };
@@ -94,12 +111,19 @@ const terminalActivitySuccess = (uid) => ({
     uid,
 });
 
-const addActivitySuccess=({ activities, byActivities, byActivityRules })=>({
+const addActivitySuccess = ({ activities, byActivities, byActivityRules }) => ({
     type: types.ADD_ACTIVITY,
     activities,
     byActivities,
     byActivityRules,
-})
+});
+
+const alterActivitySuccess = ({ activities, byActivities, byActivityRules }) => ({
+    type: types.ALTER_ACTIVITY,
+    activities,
+    byActivities,
+    byActivityRules,
+});
 
 const fetchActivitiesSuccess = ({ activities, byActivities, byActivityRules }) => ({
     type: types.FETCH_ACTIVITIES,
@@ -112,6 +136,8 @@ const reducer = (state = initialState, action) => {
     let byActivities;
     switch (action.type) {
         case types.FETCH_ACTIVITIES:
+        case types.ADD_ACTIVITY:
+        case types.ALTER_ACTIVITY:
             return { ...state, activities: action.activities, byActivities: action.byActivities, byActivityRules: action.byActivityRules };
         case types.TERMINAL_ACTIVITY:
             // debugger

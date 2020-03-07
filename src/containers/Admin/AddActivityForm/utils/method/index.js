@@ -1,4 +1,4 @@
-import activityApplyForProduct from "./activityApplyForProduct";
+import {activityApplyForProduct} from "../../../../../utils/commonUtils";
 
 export default{
     activityApplyForProduct,

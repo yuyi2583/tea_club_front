@@ -58,7 +58,7 @@ class DynamicFieldSet extends React.Component {
   }
 
   getFormItems = () => {
-    const { getFieldDecorator, getFieldValue } = this.props.form;
+    const { getFieldValue } = this.props.form;
     const { template } = this.props;
     const keys = getFieldValue('keys');
     console.log("keys in render", keys);
@@ -66,7 +66,7 @@ class DynamicFieldSet extends React.Component {
     console.log("children", children);
     let items;
     if (children == undefined) {//没有子元素，需要使用模板
-      items = keys.map((k, index) => {
+      items = keys.map((k) => {
         return (
           <Row key={k}>
             <Col span={20}>
@@ -136,7 +136,6 @@ class DynamicFieldSet extends React.Component {
         sm: { span: 20, offset: 4 },
       },
     };
-    // getFieldDecorator('keys', { initialValue: [0] });
     this.initialKeys();
     const formItems = this.getFormItems();
     return (
@@ -153,7 +152,8 @@ class DynamicFieldSet extends React.Component {
 }
 
 DynamicFieldSet.propTypes = {
-  template: PropTypes.element.isRequired
+  template: PropTypes.element.isRequired,
+  form: PropTypes.object.isRequired,
 }
 
 export default DynamicFieldSet;
