@@ -6,12 +6,11 @@ import { connect } from "react-redux";
 import { actions as shopActions, getShop, getShopList } from "../../../redux/modules/shop";
 import { actions as clerkActions, getAllPosition, getByAllPosition, getByAuthority, getByBelong } from "../../../redux/modules/clerk";
 import { actions as productActions, getProductType, getByProductType, getByProductDetail, getProductDetail } from "../../../redux/modules/product";
-import { getRequestQuantity, getModalRequestQuantity } from "../../../redux/modules/app";
+// import { getRequestQuantity, getModalRequestQuantity } from "../../../redux/modules/app";
 import { actions as customerActions, getByCustomerType, getCustomerType } from "../../../redux/modules/customer";
 import { actions as activityActions, getActivities, getByActivities } from "../../../redux/modules/activity";
 import { Redirect } from "react-router-dom";
 import { map } from "../../../router";
-import { handleBack, callMessage } from "../../../utils/common";
 import "./style.css";
 import method from "./utils/method";
 import { requestType } from "../../../utils/common";
@@ -75,13 +74,13 @@ class AddActivity extends React.Component {
                         console.log("actual submit value", activityInfo);
                         thiz.props.addActivity(activityInfo)
                             .then(() => {
-                                callMessage("success", "新增活动成功！")
+                                this.props.callMessage("success", "新增活动成功！")
                                 thiz.setState({
                                     from: map.admin.AdminHome() + `/activity_management/activities`
                                 });
                             })
                             .catch((err) => {
-                                callMessage("error", "新增活动失败！" + err)
+                                this.props.callMessage("error", "新增活动失败！" + err)
                             })
                     },
                 });
@@ -104,13 +103,13 @@ class AddActivity extends React.Component {
         const { formItemLayout, tailFormItemLayout } = common;
         const { fileList } = this.state;
         const treeData = activityApplyForProduct.convertToStandardTreeData(this.props);
-        const { requestQuantity, requestModalQuantity, customerType, byCustomerType,
+        const { requestQuantity, modalRequestQuantity, customerType, byCustomerType,
             activities, byActivities } = this.props;
         return (
             <div>
                 <PageHeader
                     title="添加活动"
-                    onBack={() => handleBack()}>
+                    onBack={() => this.props.handleBack()}>
                     <Spin spinning={requestQuantity > 0}>
                         <Form {...formItemLayout} onSubmit={this.handleSubmit}>
                             <Form.Item label="活动名称">
@@ -142,7 +141,7 @@ class AddActivity extends React.Component {
                                         fetchProductType={this.props.fetchProductType}
                                         activityApplyForProduct={activityApplyForProduct}
                                         fetchCustomerType={this.props.fetchCustomerType}
-                                        requestModalQuantity={requestModalQuantity}
+                                        modalRequestQuantity={modalRequestQuantity}
                                         treeData={treeData}
                                         customerType={customerType}
                                         byCustomerType={byCustomerType} />}
@@ -161,7 +160,7 @@ class AddActivity extends React.Component {
                                 })(<Select
                                     placeholder="请选择与此活动互斥的互动"
                                     mode="multiple"
-                                    loading={requestModalQuantity > 0}
+                                    loading={modalRequestQuantity > 0}
                                     onFocus={() => this.props.fetchActivities(requestType.modalRequest)}
                                 >
                                     {
@@ -209,8 +208,8 @@ const mapStateToProps = (state, props) => {
         byBelong: getByBelong(state),
         productType: getProductType(state),
         byProductType: getByProductType(state),
-        requestQuantity: getRequestQuantity(state),
-        requestModalQuantity: getModalRequestQuantity(state),
+        // requestQuantity: getRequestQuantity(state),
+        // modalRequestQuantity: getModalRequestQuantity(state),
         productDetail: getProductDetail(state),
         byProductDetail: getByProductDetail(state),
         customerType: getCustomerType(state),

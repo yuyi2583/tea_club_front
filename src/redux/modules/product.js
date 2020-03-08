@@ -13,6 +13,8 @@ const initialState = {
 export const types = {
     FETCH_PRODUCT_TYPE: "PRODUCT/FETCH_PRODUCT_TYPE",
     FETCH_PRODUCT_DETAIL: "PRODUCT/FETCH_PRODUCT_DETAIL",//获取产品详细信息
+    CREATE_NEW_PRODUCT_TYPE: "PRODUCT/CREATE_NEW_PRODUCT_TYPE",//创建新的产品种类
+    CREATE_NEW_PRODUCT: "PRODUCT/CREATE_NEW_PRODUCT",//新增产品
 };
 
 export const actions = {
@@ -32,7 +34,7 @@ export const actions = {
         }
     },
     //type=-1默认获取所有产品信息
-    fetchProductDetail: (type = -1, reqType = requestType.modalRequest) => {
+    fetchProductDetail: ( reqType = requestType.modalRequest) => {
         return (dispatch) => {
             dispatch(appActions.startRequest(reqType));
             return get(url.fetchProductDetailByType()).then((data) => {
@@ -46,7 +48,39 @@ export const actions = {
                 }
             })
         }
-    }
+    },
+    createNewProductType: (newProductType, reqType = requestType.modalRequest) => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest(reqType));
+            const params = { productType: newProductType };
+            return get(url.createNewProductType(), params).then((data) => {
+                dispatch(appActions.finishRequest(reqType));
+                if (!data.error) {
+                    dispatch(createProductTypeSuccess(convertProductTypeToPlainStructure(data.productType)));
+                    return Promise.resolve();
+                } else {
+                    dispatch(appActions.setError(data.error));
+                    return Promise.reject(data.error);
+                }
+            })
+        }
+    },
+    createNewProduct: (newProduct, reqType = requestType.appRequest) => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest(reqType));
+            const params={product:newProduct}
+            return get(url.createNewProduct(),params).then((data) => {
+                dispatch(appActions.finishRequest(reqType));
+                if (!data.error) {
+                    dispatch(fetchProductDetailSuccess(convertProductDetailToPlainStructure(data.productDetail)));
+                    return Promise.resolve();
+                } else {
+                    dispatch(appActions.setError(data.error));
+                    return Promise.reject(data.error);
+                }
+            })
+        }
+    },
 }
 const convertProductDetailToPlainStructure = (data) => {
     console.log("product detail", data);
@@ -84,6 +118,12 @@ const fetchProductDetailSuccess = ({ productDetail, byProductDetail }) => ({
     type: types.FETCH_PRODUCT_DETAIL,
     productDetail,
     byProductDetail
+});
+
+const createProductSuccess = ({ productDetail, byProductDetail }) => ({
+    type: types.CREATE_NEW_PRODUCT,
+    productDetail,
+    byProductDetail
 })
 
 const fetchProductTypeSuccess = ({ productType, byProductType }) => ({
@@ -92,10 +132,17 @@ const fetchProductTypeSuccess = ({ productType, byProductType }) => ({
     byProductType,
 });
 
+const createProductTypeSuccess = ({ productType, byProductType }) => ({
+    type: types.CREATE_NEW_PRODUCT_TYPE,
+    productType,
+    byProductType,
+});
+
 const reducer = (state = initialState, action) => {
     switch (action.type) {
         case types.FETCH_PRODUCT_TYPE:
             return { ...state, productType: action.productType, byProductType: action.byProductType };
+        case types.CREATE_NEW_PRODUCT:
         case types.FETCH_PRODUCT_DETAIL:
             return { ...state, productDetail: action.productDetail, byProductDetail: action.byProductDetail };
         default:

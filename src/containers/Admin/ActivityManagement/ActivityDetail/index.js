@@ -4,13 +4,15 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actions as activityActions, getActivities, getByActivities, getByActivityRules } from "../../../../redux/modules/activity";
 import { actions as uiActions, getAlterInfoState } from "../../../../redux/modules/ui";
-import { actions as appActions, getRequestQuantity, getModalRequestQuantity } from "../../../../redux/modules/app";
+import { actions as appActions, 
+    // getRequestQuantity, getModalRequestQuantity
+ } from "../../../../redux/modules/app";
 import { actions as productActions, getProductType, getByProductType, getByProductDetail, getProductDetail } from "../../../../redux/modules/product";
 import { actions as customerActions, getCustomerType, getByCustomerType } from "../../../../redux/modules/customer";
 import { Prompt, Redirect } from "react-router-dom";
 import { timeStampConvertToFormatTime, timeStringConvertToTimeStamp } from "../../../../utils/timeUtil";
 import moment from 'moment';
-import { activityType, requestType, callMessage } from "../../../../utils/common";
+import { activityType, requestType } from "../../../../utils/common";
 import PictureCard from "../../../../components/PictureCard";
 import ActivityRuleInput from "../../../../components/ActivityRuleInput";
 import DynamicFieldSet from "../../../../components/DynamicFieldSet";
@@ -126,13 +128,13 @@ class ActivityDetail extends React.Component {
                         console.log("actual submit value", activityInfo);
                         thiz.props.alterActivityInfo(activityInfo)
                             .then(() => {
-                                callMessage("success", "修改活动成功！")
+                                this.props.callMessage("success", "修改活动成功！")
                                 thiz.setState({
                                     from: map.admin.AdminHome() + `/activity_management/activities`
                                 });
                             })
                             .catch((err) => {
-                                callMessage("error", "修改活动失败！" + err)
+                                this.props.callMessage("error", "修改活动失败！" + err)
                             })
                     },
                 });
@@ -165,7 +167,7 @@ class ActivityDetail extends React.Component {
             return <Redirect to={from} />;
         }
         let { activityId } = this.props.match.params;
-        let { activities, byActivities, alterInfo, requestQuantity, form, requestModalQuantity,
+        let { activities, byActivities, alterInfo, requestQuantity, form, modalRequestQuantity,
             byActivityRules, productType, byProductType, customerType, byCustomerType } = this.props;
         const fileListInProps = this.getFileList(byActivities[activityId].pictures);
         const fileListInState = this.getFileList(this.state.pictures);
@@ -260,7 +262,7 @@ class ActivityDetail extends React.Component {
                                                     fetchProductType={this.props.fetchProductType}
                                                     activityApplyForProduct={activityApplyForProduct}
                                                     fetchCustomerType={this.props.fetchCustomerType}
-                                                    requestModalQuantity={requestModalQuantity}
+                                                    modalRequestQuantity={modalRequestQuantity}
                                                     treeData={treeData}
                                                     customerType={customerType}
                                                     byCustomerType={byCustomerType} />}
@@ -274,7 +276,7 @@ class ActivityDetail extends React.Component {
                                                                 fetchProductType={this.props.fetchProductType}
                                                                 activityApplyForProduct={activityApplyForProduct}
                                                                 fetchCustomerType={this.props.fetchCustomerType}
-                                                                requestModalQuantity={requestModalQuantity}
+                                                                modalRequestQuantity={modalRequestQuantity}
                                                                 treeData={treeData}
                                                                 customerType={customerType}
                                                                 byCustomerType={byCustomerType} />
@@ -298,7 +300,7 @@ class ActivityDetail extends React.Component {
                                             })(<Select
                                                 placeholder="请选择与此活动互斥的互动"
                                                 mode="multiple"
-                                                loading={requestModalQuantity > 0}
+                                                loading={modalRequestQuantity > 0}
                                                 onFocus={() => this.props.fetchActivities(requestType.modalRequest)}
                                             >
                                                 {
@@ -353,9 +355,9 @@ const mapStateToProps = (state, props) => {
         activities: getActivities(state),
         byActivities: getByActivities(state),
         alterInfo: getAlterInfoState(state),
-        requestQuantity: getRequestQuantity(state),
+        // requestQuantity: getRequestQuantity(state),
         byActivityRules: getByActivityRules(state),
-        requestModalQuantity: getModalRequestQuantity(state),
+        // modalRequestQuantity: getModalRequestQuantity(state),
         productType: getProductType(state),
         byProductType: getByProductType(state),
         productDetail: getProductDetail(state),

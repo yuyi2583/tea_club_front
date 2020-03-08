@@ -144,7 +144,7 @@ class ActivityRuleInput extends React.Component {
                                 <TreeSelect
                                     onFocus={() => this.props.fetchProductType(requestType.modalRequest)}
                                     treeDataSimpleMode
-                                    loading={this.props.requestModalQuantity > 0}
+                                    loading={this.props.modalRequestQuantity > 0}
                                     style={{ width: '200px' }}
                                     dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
                                     placeholder="请选择优惠产品范围"
@@ -163,7 +163,7 @@ class ActivityRuleInput extends React.Component {
                             })(
                                 <Select
                                     mode="multiple"
-                                    loading={this.props.requestModalQuantity > 0}
+                                    loading={this.props.modalRequestQuantity > 0}
                                     placeholder="请选择享受优惠客户范围"
                                     onFocus={() => this.props.fetchCustomerType(requestType.modalRequest)}
                                     style={{ width: 200 }}
@@ -197,7 +197,7 @@ ActivityRuleInput.propTypes = {
     activityApplyForProduct: PropTypes.object.isRequired,
     fetchProductType: PropTypes.func.isRequired,
     fetchCustomerType: PropTypes.func.isRequired,
-    requestModalQuantity: PropTypes.number.isRequired,
+    modalRequestQuantity: PropTypes.number.isRequired,
     treeData: PropTypes.array.isRequired,
     customerType: PropTypes.array.isRequired,
     byCustomerType: PropTypes.object.isRequired,

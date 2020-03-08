@@ -19,7 +19,9 @@ import { TweenOneGroup } from 'rc-tween-one';
 import PictureCard from "../../../../../components/PictureCard";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { actions as appActions, getError, getRequestQuantity, getModalRequestQuantity } from "../../../../../redux/modules/app";
+import { actions as appActions, getError, 
+    // getRequestQuantity, getModalRequestQuantity 
+} from "../../../../../redux/modules/app";
 import { actions as shopActions, getShop, getShopList, getBoxes, getDisplay, getOpenHours } from "../../../../../redux/modules/shop";
 import { actions as clerkActions, getByClerks, getClerks } from "../../../../../redux/modules/clerk";
 import {
@@ -528,7 +530,7 @@ const mapStateToProps = (state, props) => {
         shop: getShop(state),
         clerks: getClerks(state),
         byClerks: getByClerks(state),
-        requestQuantity: getRequestQuantity(state),
+        // requestQuantity: getRequestQuantity(state),
         error: getError(state),
         shopId: getShopId_shopManagement(state),
         addButtonVisible: getAddButtonVisible_shopManagement(state),
@@ -536,7 +538,7 @@ const mapStateToProps = (state, props) => {
         alterInfo: getAlterInfoState(state),
         byDisplay: getDisplay(state),
         modalVisible: getModalVisible(state),
-        modalRequestQuantity: getModalRequestQuantity(state),
+        // modalRequestQuantity: getModalRequestQuantity(state),
         clientWidth: getClientWidth(state),
         clientHeight: getClientHeight(state),
         byShopList: getShopList(state),

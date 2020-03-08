@@ -16,67 +16,67 @@ import AddBox from "./components/AddBox";
 
 
 class ShopManagement extends React.Component {
-    handleBack = () => {
-        window.history.back();
-    }
+    // handleBack = () => {
+    //     window.history.back();
+    // }
 
-    getExtra = () => {
-        const { history, match } = this.props;
-        let extra = null;
-        if (history.location.pathname === "/administrator/company/shop_management") {
-            extra = (
-                <Link to={`${match.url}/addShop`}>
-                    <Button type="primary">新增门店</Button>
-                </Link>);
-        } else if (history.location.pathname.indexOf("boxInfo") != -1) {
-            extra = (<Button type="primary" onClick={() => this.props.startAlterInfo()}>修改包厢信息</Button>);
-        } else {
-            extra = null;
-        }
-        return extra;
-    }
+    // getExtra = () => {
+    //     const { history, match } = this.props;
+    //     let extra = null;
+    //     if (history.location.pathname === "/administrator/company/shop_management") {
+    //         extra = (
+    //             <Link to={`${match.url}/addShop`}>
+    //                 <Button type="primary">新增门店</Button>
+    //             </Link>);
+    //     } else if (history.location.pathname.indexOf("boxInfo") != -1) {
+    //         extra = (<Button type="primary" onClick={() => this.props.startAlterInfo()}>修改包厢信息</Button>);
+    //     } else {
+    //         extra = null;
+    //     }
+    //     return extra;
+    // }
 
-    callMessage = (type, content) => {
-        switch (type) {
-            case "success":
-                message.success(content);
-                break;
-            case "error":
-                message.error(content);
-                break;
-            case "warning":
-                message.warning(content);
-                break;
-        }
-    }
+    // callMessage = (type, content) => {
+    //     switch (type) {
+    //         case "success":
+    //             message.success(content);
+    //             break;
+    //         case "error":
+    //             message.error(content);
+    //             break;
+    //         case "warning":
+    //             message.warning(content);
+    //             break;
+    //     }
+    // }
 
-    getSubTitle = () => {
-        const { history } = this.props;
-        let subTitle = null;
-        if (history.location.pathname.indexOf("addShop") != -1) {
-            subTitle = "新增门店";
-        } else if (history.location.pathname.indexOf("boxInfo") != -1) {
-            subTitle = "包厢信息";
-        } else if(history.location.pathname.indexOf("addBox") != -1){
-            subTitle="新增包厢";
-        }else if(history.location.pathname.indexOf("clerkDetail") != -1){
-            subTitle="职员信息";
-        }else {
-            subTitle = null;
-        }
-        return subTitle;
-    }
+    // getSubTitle = () => {
+    //     const { history } = this.props;
+    //     let subTitle = null;
+    //     if (history.location.pathname.indexOf("addShop") != -1) {
+    //         subTitle = "新增门店";
+    //     } else if (history.location.pathname.indexOf("boxInfo") != -1) {
+    //         subTitle = "包厢信息";
+    //     } else if(history.location.pathname.indexOf("addBox") != -1){
+    //         subTitle="新增包厢";
+    //     }else if(history.location.pathname.indexOf("clerkDetail") != -1){
+    //         subTitle="职员信息";
+    //     }else {
+    //         subTitle = null;
+    //     }
+    //     return subTitle;
+    // }
 
     render() {
         const { byClerks, match, addButtonVisible, history, alterInfo } = this.props;
-        const extra = this.getExtra();
-        const subTitle = this.getSubTitle();
+        const extra = this.props.getExtra();
+        const subTitle = this.props.getSubTitle();
         return (
             <div>
                 <PageHeader
                     title="门店管理"
                     subTitle={subTitle}
-                    onBack={this.handleBack}
+                    onBack={this.props.handleBack}
                     extra={extra}>
                     <div>
                         <Route
@@ -84,22 +84,27 @@ class ShopManagement extends React.Component {
                             exact
                             render={props =>
                                 <ShopView
-                                    {...props}
-                                    callMessage={this.callMessage} />
+                                {...props}
+                                    {...this.props}
+                                    // callMessage={this.callMessage} 
+                                    />
                             } />
                         <Route
                             path={`${match.url}/addShop`}
                             render={props =>
                                 <AddShop
-                                    {...props}
-                                    callMessage={this.callMessage} />
+                                {...props}
+                                    {...this.props}
+                                    // callMessage={this.callMessage} 
+                                    />
                             } />
                         <Route
                             path={`${match.url}/boxInfo/:shopId/:boxId`}
                             render={props =>
                                 <BoxView
                                     {...props}
-                                    callMessage={this.callMessage}
+                                    {...this.props}
+                                    // callMessage={this.callMessage}
                                     alterInfo={alterInfo} />
                             } />
                         <Route
@@ -107,15 +112,19 @@ class ShopManagement extends React.Component {
                             render={props =>
                                 <AddBox
                                     {...props}
-                                    callMessage={this.callMessage} />
+                                    {...this.props}
+                                    // callMessage={this.callMessage} 
+                                    />
                             } />
                         <Route
                             path={`${match.url}/clerkDetail/:shopId/:clerkId`}
                             render={(props) => (
                                 <ClerkView
                                     {...props}
+                                    {...this.props}
                                     byClerks={byClerks}
-                                    callMessage={this.callMessage} />
+                                    // callMessage={this.callMessage} 
+                                    />
                             )} />
                     </div>
                 </PageHeader>

@@ -11,50 +11,50 @@ import ActivityList from "./ActivityList";
 
 
 class ActivityManagement extends React.Component {
-    handleBack = () => {
-        window.history.back();
-    }
+    // handleBack = () => {
+    //     window.history.back();
+    // }
 
-    getExtra = () => {
-        const { history, match } = this.props;
-        let extra = null;
-        if (history.location.pathname.indexOf("/activity/") != -1) {
-            extra = (<Button type="primary" onClick={this.startAlterActivityDetail}>修改活动信息</Button>);
-        } else {
-            extra = null;
-        }
-        return extra;
-    }
+    // getExtra = () => {
+    //     const { history, match } = this.props;
+    //     let extra = null;
+    //     if (history.location.pathname.indexOf("/activity/") != -1) {
+    //         extra = (<Button type="primary" onClick={this.startAlterActivityDetail}>修改活动信息</Button>);
+    //     } else {
+    //         extra = null;
+    //     }
+    //     return extra;
+    // }
 
-    startAlterActivityDetail=()=>{
+    startAlterActivityDetail = () => {
         this.props.startAlterInfo();
     }
 
-    getSubTitle = () => {
-        const { history } = this.props;
-        let subTitle = null;
-        if (history.location.pathname.indexOf("new_role_detail") != -1) {
-            subTitle = "新增职员详情";
-        } else {
-            subTitle = null;
-        }
-        return subTitle;
-    }
+    // getSubTitle = () => {
+    //     const { history } = this.props;
+    //     let subTitle = null;
+    //     if (history.location.pathname.indexOf("new_role_detail") != -1) {
+    //         subTitle = "新增职员详情";
+    //     } else {
+    //         subTitle = null;
+    //     }
+    //     return subTitle;
+    // }
 
 
-    callMessage = (type = "success", content = "操作成功！") => {
-        switch (type) {
-            case "success":
-                message.success(content);
-                break;
-            case "error":
-                message.error(content);
-                break;
-            case "warning":
-                message.warning(content);
-                break;
-        }
-    }
+    // callMessage = (type = "success", content = "操作成功！") => {
+    //     switch (type) {
+    //         case "success":
+    //             message.success(content);
+    //             break;
+    //         case "error":
+    //             message.error(content);
+    //             break;
+    //         case "warning":
+    //             message.warning(content);
+    //             break;
+    //     }
+    // }
 
     componentDidMount() {
         this.props.fetchProductType();
@@ -63,15 +63,15 @@ class ActivityManagement extends React.Component {
         console.log("history in activity management", history);
     }
     render() {
-        const subTitle = this.getSubTitle();
-        const extra = this.getExtra();
-        const { match,productType,byCustomerType,customerType,byProductType } = this.props;
+        const subTitle = this.props.getSubTitle();
+        const extra = this.props.getExtra();
+        const { match, productType, byCustomerType, customerType, byProductType } = this.props;
         return (
             <div>
                 <PageHeader
                     title="活动管理"
                     subTitle={subTitle}
-                    onBack={this.handleBack}
+                    onBack={this.props.handleBack}
                     extra={extra}>
                     <Route
                         path={match.url}
@@ -79,7 +79,8 @@ class ActivityManagement extends React.Component {
                         render={props =>
                             <ActivityList
                                 {...props}
-                                callMessage={this.callMessage} />
+                                {...this.props}
+                            />
                         }
                     />
                     <Route
@@ -88,11 +89,11 @@ class ActivityManagement extends React.Component {
                         render={props =>
                             <ActivityDetail
                                 {...props}
+                                {...this.props}
                                 productType={productType}
                                 byProductType={byProductType}
                                 customerType={customerType}
                                 byCustomerType={byCustomerType}
-                                callMessage={this.callMessage}
                             />
                         }
                     />

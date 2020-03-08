@@ -8,6 +8,7 @@ const initialState = {
     shopId_shopManagement: "",          //门店管理选择的门店编号
     addButtonVisible_shopManagement: true,   //新增门店按钮显示
     modalVisible: false,             //modal显示与否
+    modalLoading: false,                 //modal是否展示loading
 };
 
 //action types
@@ -24,6 +25,8 @@ export const types = {
     SHOPMANAGEMENT_ADD_BUTTON_INVISIBLE: "UI/SHOPMANAGEMENT_ADD_BUTTON_INVISIBLE",//去除按钮
     OPEN_MODAL: "UI/OPEN_MODAL",                     //打开modal
     CLOSE_MODAL: "UI/CLOSE_MODAL",                   //关闭modal
+    SHOW_MODAL_LOADING: "UI/SHOW_MODAL_LOADING",
+    HIDE_MODAL_LOADING: "UI/HIDE_MODAL_LOADING",
 };
 
 //action creators
@@ -67,6 +70,12 @@ export const actions = {
     }),
     closeModal: () => ({
         type: types.CLOSE_MODAL
+    }),
+    showModalLoading: () => ({
+        type: types.SHOW_MODAL_LOADING
+    }),
+    hideModalLoading: () => ({
+        type: types.HIDE_MODAL_LOADING
     })
 };
 
@@ -97,6 +106,10 @@ const reducer = (state = initialState, action) => {
             return { ...state, modalVisible: true };
         case types.CLOSE_MODAL:
             return { ...state, modalVisible: false };
+        case types.SHOW_MODAL_LOADING:
+            return { ...state, modalLoading: true };
+        case types.HIDE_MODAL_LOADING:
+            return { ...state, modalLoading: false };
         default:
             return state;
     }
@@ -113,3 +126,4 @@ export const getAlterInfoState = (state) => state.ui.alterInfo;
 export const getShopId_shopManagement = (state) => state.ui.shopId_shopManagement;
 export const getAddButtonVisible_shopManagement = (state) => state.ui.addButtonVisible_shopManagement;
 export const getModalVisible = (state) => state.ui.modalVisible;
+export const getModalLoading = (state) => state.ui.modalLoading;

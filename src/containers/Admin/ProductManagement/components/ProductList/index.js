@@ -1,34 +1,36 @@
 import React from "react";
 import { PageHeader, Button, Icon, Divider, DatePicker, Input, Select, Spin, TreeSelect, Modal, Tooltip, Table } from "antd";
-import PictureCard from "../../../../components/PictureCard";
+// import PictureCard from "../../../../components/PictureCard";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { actions as shopActions, getShop, getShopList } from "../../../../redux/modules/shop";
-import { actions as clerkActions, getAllPosition, getByAllPosition, getByAuthority, getByBelong } from "../../../../redux/modules/clerk";
-import { actions as activityActions, getActivities, getByActivities } from "../../../../redux/modules/activity";
-import { getRequestQuantity } from "../../../../redux/modules/app";
-import { Redirect } from "react-router-dom";
-import { map } from "../../../../router";
-import { sex, activityStatus } from "../../../../utils/common";
-import { judgeStatus } from "./method";
-import { Link } from "react-router-dom";
+import { actions as productActions, getByProductDetail, getProductDetail, getProductType, getByProductType } from "../../../../../redux/modules/product";
 import Highlighter from 'react-highlight-words';
-import { activityType } from "../../../../utils/common";
-import { timeStampConvertToFormatTime } from "../../../../utils/timeUtil";
-import { stringWithEllipsis } from "../../../../utils/stringUtil";
+import { Link } from "react-router-dom";
+import { productStatus, requestType } from "../../../../../utils/common";
+// import { Redirect } from "react-router-dom";
+// import { map } from "../../../../router";
+// import { sex, activityStatus } from "../../../../utils/common";
+// import { judgeStatus } from "./method";
+// import { Link } from "react-router-dom";
+// import Highlighter from 'react-highlight-words';
+// import { activityType } from "../../../../utils/common";
+// import { timeStampConvertToFormatTime } from "../../../../utils/timeUtil";
+// import { stringWithEllipsis } from "../../../../utils/stringUtil";
 
 const { Option } = Select;
 const { confirm } = Modal;
 const { MonthPicker, RangePicker } = DatePicker;
 const { SHOW_PARENT } = TreeSelect;
 
-class ActivityList extends React.Component {
+class ProductList extends React.Component {
     state = {
         searchText: '',
         searchedColumn: '',
     };
     componentDidMount() {
-        this.props.fetchActivities();
+        // this.props.fetchActivities();
+        this.props.fetchProductDetail(requestType.appRequest);
+        this.props.fetchProductType();
     }
 
     getColumnSearchProps = dataIndex => ({
@@ -98,19 +100,14 @@ class ActivityList extends React.Component {
     };
 
     getDataSource = () => {
-        const { activities, byActivities } = this.props;
+        const { productDetail, byProductDetail, byProductType } = this.props;
         let dataSource = new Array();
-        activities.length > 0 && activities.forEach((item) => {
-            let status = judgeStatus(byActivities[item]);
-            if (status == null) {
-                return;
-            }
+        productDetail.length > 0 && productDetail.forEach((uid) => {
             const dataItem = {
-                key: item,
-                ...byActivities[item],
-                description: stringWithEllipsis(byActivities[item].description, 30),
-                status: byActivities[item].status != null && byActivities[item].status != undefined ? activityStatus[byActivities[item].status] : status,
-                duration: timeStampConvertToFormatTime(byActivities[item].startTime) + "~" + timeStampConvertToFormatTime(byActivities[item].endTime)
+                key: uid,
+                ...byProductDetail[uid],
+                status: productStatus[byProductDetail[uid].status],
+                type: byProductType[byProductDetail[uid].type].type,
             };
             dataSource.push(dataItem);
         })
@@ -121,31 +118,36 @@ class ActivityList extends React.Component {
         const { match } = this.props;
         return [
             {
-                title: '活动名称',
+                title: '产品名称',
                 dataIndex: 'name',
                 key: 'name',
-                width: '20%',
+                width: '15%',
                 ...this.getColumnSearchProps('name'),
             },
             {
-                title: '活动描述',
-                dataIndex: 'description',
-                key: 'description',
-                width: '25%',
-                ...this.getColumnSearchProps('description'),
+                title: '产品种类',
+                dataIndex: 'type',
+                key: 'type',
+                width: '15%',
+                ...this.getColumnSearchProps('type'),
             },
             {
-                title: '持续时间',
-                dataIndex: 'duration',
-                key: 'duration',
-                width: '30%',
-                ...this.getColumnSearchProps('duration'),
+                title: '产品价格',
+                dataIndex: 'price',
+                key: 'price',
+                ...this.getColumnSearchProps('price'),
             },
             {
-                title: '活动状态',
+                title: '库存',
+                dataIndex: 'storage',
+                key: 'storage',
+                ...this.getColumnSearchProps('storage'),
+            },
+            {
+                title: '状态',
                 dataIndex: 'status',
                 key: 'status',
-                ...this.getColumnSearchProps('duration'),
+                ...this.getColumnSearchProps('status'),
             },
             {
                 title: "操作",
@@ -154,14 +156,14 @@ class ActivityList extends React.Component {
                 render: (text, record) => (
                     <span>
                         <Tooltip title={`查看详细信息`}>
-                            <Link to={`${match.url}/activity/${record.uid}`}>查看</Link>
+                            <Link to={`${match.url}/product/${record.uid}`}>查看</Link>
                         </Tooltip>
                         <Divider type="vertical" />
-                        <Tooltip title={`终止活动`}>
+                        {/* <Tooltip title={`终止活动`}>
                             {record.enforceTerminal || judgeStatus(record) == "expired" ? null :
                                 <a onClick={() => this.terminalActivity(record.uid)}>终止</a>
                             }
-                        </Tooltip>
+                        </Tooltip> */}
                     </span>
                 ),
             }
@@ -204,24 +206,19 @@ class ActivityList extends React.Component {
 
 const mapStateToProps = (state, props) => {
     return {
-        shop: getShop(state),
-        byShopList: getShopList(state),
-        requestQuantity: getRequestQuantity(state),
-        allPositions: getAllPosition(state),
-        byAllPositions: getByAllPosition(state),
-        byAuthority: getByAuthority(state),
-        byBelong: getByBelong(state),
-        activities: getActivities(state),
-        byActivities: getByActivities(state),
+        productDetail: getProductDetail(state),
+        byProductDetail: getByProductDetail(state),
+        productType: getProductType(state),
+        byProductType: getByProductType(state),
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        ...bindActionCreators(clerkActions, dispatch),
-        ...bindActionCreators(shopActions, dispatch),
-        ...bindActionCreators(activityActions, dispatch)
+        ...bindActionCreators(productActions, dispatch),
+        // ...bindActionCreators(shopActions, dispatch),
+        // ...bindActionCreators(activityActions, dispatch)
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ActivityList);
+export default connect(mapStateToProps, mapDispatchToProps)(ProductList);

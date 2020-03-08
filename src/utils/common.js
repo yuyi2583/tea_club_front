@@ -1,23 +1,3 @@
-import { message } from "antd";
-
-export const handleBack = () => {
-    window.history.back();
-}
-
-export const callMessage = (type = "success", content = "操作成功！") => {
-    switch (type) {
-        case "success":
-            message.success(content);
-            break;
-        case "error":
-            message.error(content);
-            break;
-        case "warning":
-            message.warning(content);
-            break;
-    }
-}
-
 export const sex = {
     "0": "男",
     "1": "女"
@@ -33,10 +13,37 @@ export const requestType = {
     "modalRequest": 1,
 }
 
-export const activityStatus={
-    "upcoming":"未开始",
-    "ongoing":"进行中",
-    "expired":"已结束"
+export const activityStatus = {
+    "upcoming": "未开始",
+    "ongoing": "进行中",
+    "expired": "已结束"
 }
 
+export const formItemLayout = {
+    labelCol: {
+        xs: { span: 2 },
+        sm: { span: 8 },
+    },
+    wrapperCol: {
+        xs: { span: 6 },
+        sm: { span: 12 },
+    },
+};
 
+export const tailFormItemLayout = {
+    wrapperCol: {
+        xs: {
+            span: 8,
+            offset: 8,
+        },
+        sm: {
+            span: 8,
+            offset: 8,
+        },
+    },
+};
+
+export const productStatus = {
+    0: "已下架",
+    1: "销售中"
+};

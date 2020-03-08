@@ -1,3 +1,23 @@
+import { message } from "antd";
+
+export const handleBack = () => {
+    window.history.back();
+}
+
+export const callMessage = (type = "success", content = "操作成功！") => {
+    switch (type) {
+        case "success":
+            message.success(content);
+            break;
+        case "error":
+            message.error(content);
+            break;
+        case "warning":
+            message.warning(content);
+            break;
+    }
+}
+
 //删除父数组中的子数组
 export const removePointById = (parents, children) => {
     let newArray = new Array();

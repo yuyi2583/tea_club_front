@@ -10,9 +10,9 @@ import {actions as clerkActions} from "../../../redux/modules/clerk";
 import {actions as shopActions} from "../../../redux/modules/shop";
 
 class RoleInformation extends React.Component {
-    handleBack = () => {
-        window.history.back();
-    }
+    // handleBack = () => {
+    //     window.history.back();
+    // }
 
     startAlterRoleDetail=()=>{
         this.props.fetchAllAuthority();
@@ -21,51 +21,51 @@ class RoleInformation extends React.Component {
         this.props.startAlterInfo();
     }
 
-    getExtra = () => {
-        const { history, match } = this.props;
-        let extra = null;
-        if (history.location.pathname.indexOf("role_detail") != -1) {
-            extra = (<Button type="primary" onClick={this.startAlterRoleDetail }>修改职员信息</Button>);
-        } else {
-            extra = null;
-        }
-        return extra;
-    }
+    // getExtra = () => {
+    //     const { history, match } = this.props;
+    //     let extra = null;
+    //     if (history.location.pathname.indexOf("role_detail") != -1) {
+    //         extra = (<Button type="primary" onClick={this.startAlterRoleDetail }>修改职员信息</Button>);
+    //     } else {
+    //         extra = null;
+    //     }
+    //     return extra;
+    // }
 
-    getSubTitle = () => {
-        const { history } = this.props;
-        let subTitle = null;
-        if (history.location.pathname.indexOf("role_detail") != -1) {
-            subTitle = "职员详情";
-        } else {
-            subTitle = null;
-        }
-        return subTitle;
-    }
+    // getSubTitle = () => {
+    //     const { history } = this.props;
+    //     let subTitle = null;
+    //     if (history.location.pathname.indexOf("role_detail") != -1) {
+    //         subTitle = "职员详情";
+    //     } else {
+    //         subTitle = null;
+    //     }
+    //     return subTitle;
+    // }
 
-    callMessage = (type="success", content="操作成功！") => {
-        switch (type) {
-            case "success":
-                message.success(content);
-                break;
-            case "error":
-                message.error(content);
-                break;
-            case "warning":
-                message.warning(content);
-                break;
-        }
-    }
+    // callMessage = (type="success", content="操作成功！") => {
+    //     switch (type) {
+    //         case "success":
+    //             message.success(content);
+    //             break;
+    //         case "error":
+    //             message.error(content);
+    //             break;
+    //         case "warning":
+    //             message.warning(content);
+    //             break;
+    //     }
+    // }
 
     render() {
-        const subTitle = this.getSubTitle();
-        const extra = this.getExtra();
+        const subTitle = this.props.getSubTitle();
+        const extra = this.props.getExtra();
         const { match } = this.props;
         return (
             <PageHeader
                 title="人员信息管理"
                 subTitle={subTitle}
-                onBack={this.handleBack}
+                onBack={this.props.handleBack}
                 extra={extra}>
                 <Route
                     path={match.url}
@@ -73,7 +73,8 @@ class RoleInformation extends React.Component {
                     render={props =>
                         <RoleList
                             {...props}
-                            callMessage={this.callMessage} />
+                            // callMessage={this.callMessage} 
+                            />
                     }
                 />
                 <Route
@@ -82,7 +83,7 @@ class RoleInformation extends React.Component {
                     render={props =>
                         <RoleDetail
                             {...props}
-                            callMessage={this.callMessage} 
+                            // callMessage={this.callMessage} 
                         />
                     }
                 />
