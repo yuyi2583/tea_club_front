@@ -31,4 +31,5 @@ export default {
     startApplicationCheck:()=>"/mock/enterpriseCustomerApplication.json",
     admitApplication:()=>"/mock/enterpriseCustomerApplication.json",
     rejectApplication:()=>"/mock/enterpriseCustomerApplication.json",
+    fetchAllCustomers:()=>"/mock/customers.json",
 }

@@ -8,6 +8,8 @@ const initialState = {
     byCustomerType: new Object(),
     enterpriseCustomerApplication: new Array(),
     byEnterpriseCustomerApplication: new Object(),
+    customers: new Array(),
+    byCustomers: new Object(),
 }
 
 export const types = {
@@ -16,6 +18,7 @@ export const types = {
     START_APPLICATION_CHECK: "CUSTOMER/START_APPLICATION_CHECK",
     ADMIT_APPLICATION: "CUSTOMER/ADMIT_APPLICATION",
     REJECT_APPLICATION: "CUSTOMER/REJECT_APPLICATION",
+    FETCH_ALL_CUSTOMERS: "CUSTOMER/FETCH_ALL_CUSTOMERS",
 };
 
 export const actions = {
@@ -34,11 +37,11 @@ export const actions = {
             });
         }
     },
-    fetchEnterpriseCustomerApplication: (isFetchAll=false,reqType = requestType.appRequest) => {
+    fetchEnterpriseCustomerApplication: (isFetchAll = false, reqType = requestType.appRequest) => {
         return (dispatch) => {
             dispatch(appActions.startRequest(reqType));
-            const params={isFetchAll};
-            return get(url.fetchEnterpriseCustomerApplication(),params).then((data) => {
+            const params = { isFetchAll };
+            return get(url.fetchEnterpriseCustomerApplication(), params).then((data) => {
                 dispatch(appActions.finishRequest(reqType));
                 if (!data.error) {
                     dispatch(fetchEnterpriseCustomerApplicationSuccess(types.FETCH_ENTERPRISE_CUSTOMER_APPLICATION, convertEnterpriseCustomerApplicationToPlainStructure(data.enterpriseCustomerApplication)));
@@ -98,6 +101,21 @@ export const actions = {
             });
         }
     },
+    fetchAllCustomers: (reqType = requestType.appRequest) => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest(reqType));
+            return get(url.fetchAllCustomers()).then((data) => {
+                dispatch(appActions.finishRequest(reqType));
+                if (!data.error) {
+                    dispatch(fetchAllCustomersSuccess(convetCustomersToPlainStructure(data.customers)));
+                    return Promise.resolve();
+                } else {
+                    dispatch(appActions.setError(data.error));
+                    return Promise.reject();
+                }
+            });
+        }
+    }
 }
 
 const convetCustomerTypeToPlainStructure = (data) => {
@@ -112,6 +130,21 @@ const convetCustomerTypeToPlainStructure = (data) => {
     return {
         customerType,
         byCustomerType,
+    }
+}
+
+const convetCustomersToPlainStructure = (data) => {
+    let customers = new Array();
+    let byCustomers = new Object();
+    data.forEach((item) => {
+        customers.push(item.uid);
+        if (!byCustomers[item.uid]) {
+            byCustomers[item.uid] = item;
+        }
+    });
+    return {
+        customers,
+        byCustomers,
     }
 }
 
@@ -140,6 +173,12 @@ const fetchCustomerTypeSuccess = ({ customerType, byCustomerType }) => ({
     type: types.FETCH_CUSTOMER_TYPE,
     customerType,
     byCustomerType,
+});
+
+const fetchAllCustomersSuccess = ({ customers, byCustomers }) => ({
+    type: types.FETCH_ALL_CUSTOMERS,
+    customers,
+    byCustomers,
 })
 
 const reducer = (state = initialState, action) => {
@@ -151,6 +190,8 @@ const reducer = (state = initialState, action) => {
         case types.REJECT_APPLICATION:
         case types.FETCH_ENTERPRISE_CUSTOMER_APPLICATION:
             return { ...state, enterpriseCustomerApplication: action.enterpriseCustomerApplication, byEnterpriseCustomerApplication: action.byEnterpriseCustomerApplication };
+        case types.FETCH_ALL_CUSTOMERS:
+            return { ...state, customers: action.customers, byCustomers: action.byCustomers };
         default:
             return state;
     }
@@ -162,3 +203,5 @@ export const getCustomerType = (state) => state.customer.customerType;
 export const getByCustomerType = (state) => state.customer.byCustomerType;
 export const getEnterpriseCustomerApplication = (state) => state.customer.enterpriseCustomerApplication;
 export const getByEnterpriseCustomerApplication = (state) => state.customer.byEnterpriseCustomerApplication;
+export const getCustomers = (state) => state.customer.customers;
+export const getByCustomers = (state) => state.customer.byCustomers;

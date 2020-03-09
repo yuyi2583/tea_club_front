@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Icon, Divider, Input, Spin, Tooltip, Table } from "antd";
+import { PageHeader, Button, Icon, Divider, Input, Spin, Tooltip, Table } from "antd";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import Highlighter from 'react-highlight-words';
@@ -177,9 +177,11 @@ class EnterpriseCustomerApplication extends React.Component {
     render() {
         const data = this.getDataSource();
         const columns = this.getColmuns();
-        const { requestQuantity, modalVisible, modalRequestQuantity } = this.props;
+        const { requestQuantity } = this.props;
         return (
-            <div style={{ margin: "10px" }}>
+            <PageHeader
+                title="企业用户申请"
+                onBack={this.props.handleBack}>
                 <span>当前为最近3个月的申请数据</span>
                 <Button type="link" onClick={() => this.props.fetchEnterpriseCustomerApplication(true)}>加载所有申请数据</Button>
                 <Spin spinning={requestQuantity > 0}>
@@ -188,7 +190,7 @@ class EnterpriseCustomerApplication extends React.Component {
                         loading={requestQuantity > 0}
                         dataSource={data} />
                 </Spin>
-            </div>
+            </PageHeader>
         )
     }
 }
