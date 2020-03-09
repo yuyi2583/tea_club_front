@@ -7,6 +7,7 @@ import { actions as customerActions, getCustomerType, getByCustomerType } from "
 import { Route } from "react-router-dom";
 // import ActivityDetail from "./ActivityDetail";
 import ProductList from "./components/ProductList";
+import ProductDetail from "./components/ProductDetail";
 
 
 class ProductManagement extends React.Component {
@@ -26,22 +27,18 @@ class ProductManagement extends React.Component {
                         path={match.url}
                         exact
                         render={props =>
-                            <ProductList {...props} {...this.props} />
+                            <ProductList {...this.props} {...props} />
                         }
                     />
                     <Route
                         path={`${match.url}/product/:productId`}
                         exact
-                        // render={props =>
-                        //     <ActivityDetail
-                        //         {...props}
-                        //         productType={productType}
-                        //         byProductType={byProductType}
-                        //         customerType={customerType}
-                        //         byCustomerType={byCustomerType}
-                        //         // callMessage={this.callMessage}
-                        //     />
-                        // }
+                        render={props =>
+                            <ProductDetail
+                            {...this.props}
+                                {...props}
+                            />
+                        }
                     />
                 </PageHeader>
             </div>

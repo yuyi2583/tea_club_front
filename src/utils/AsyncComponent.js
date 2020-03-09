@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import CompanyInfo from "../containers/Admin/CompanyInfo";
 import { handleBack, callMessage } from "./commonUtils";
 import { Button } from "antd";
-import { actions as uiActions, getAlterInfoState } from "../redux/modules/ui";
+import { actions as uiActions, getAlterInfoState, getModalLoading, getModalVisible } from "../redux/modules/ui";
 import { getRequestQuantity, getModalRequestQuantity } from "../redux/modules/app";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
@@ -44,6 +44,8 @@ export default function asyncComponent(importComponent) {
           </Link>);
       } else if (history.location.pathname.indexOf("boxInfo") != -1) {
         extra = (<Button type="primary" onClick={this.props.startAlterInfo}>修改包厢信息</Button>);
+      } else if (history.location.pathname.indexOf("/product/") != -1) {
+        extra = (<Button type="primary" onClick={this.props.startAlterInfo}>修改产品</Button>);
       } else {
         extra = null;
       }
@@ -71,6 +73,8 @@ export default function asyncComponent(importComponent) {
         subTitle = "职员信息";
       } else if (history.location.pathname.indexOf("/activity/") != -1) {
         subTitle = "活动信息";
+      } else if (history.location.pathname.indexOf("/product/") != -1) {
+        subTitle = "产品信息";
       } else {
         subTitle = null;
       }
@@ -94,6 +98,8 @@ export default function asyncComponent(importComponent) {
       alterInfo: getAlterInfoState(state),
       requestQuantity: getRequestQuantity(state),
       modalRequestQuantity: getModalRequestQuantity(state),
+      modalLoading: getModalLoading(state),
+      modalVisible: getModalVisible(state),
     };
   };
 

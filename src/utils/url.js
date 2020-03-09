@@ -25,4 +25,6 @@ export default {
     addActivity:()=>"/mock/activities.json",
     createNewProductType:()=>"/mock/productType.json",
     createNewProduct:()=>"/mock/productDetailByType.json",
+    terminalProductSale:()=>"/mock/productDetailByType.json",
+    alterProductInfo:()=>"/mock/productDetailByType.json",
 }

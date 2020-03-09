@@ -1,10 +1,15 @@
 {
     "productDetail":[
-        {"uid":12,"name":"红茶1","type":1,"description":"this is...","price":12,"storage":12,"status":1},
-        {"uid":22,"name":"绿茶1","type":2,"description":"this is...","price":12,"storage":12,"status":1},
-        {"uid":32,"name":"乌龙茶1","type":3,"description":"this is...","price":12,"storage":12,"status":1},
-        {"uid":42,"name":"普洱茶1","type":4,"description":"this is...","price":12,"storage":12,"status":0},
-        {"uid":52,"name":"白茶1","type":5,"description":"this is...","price":12,"storage":12,"status":1}
+        {"uid":12,"name":"红茶1","type":1,"description":"this is...","price":12,"storage":12,"status":1,
+            "pictures":"https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"},
+        {"uid":22,"name":"绿茶1","type":2,"description":"this is...","price":12,"storage":12,"status":1,
+            "pictures":"https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"},
+        {"uid":32,"name":"乌龙茶1","type":3,"description":"this is...","price":12,"storage":12,"status":1,
+            "pictures":"https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"},
+        {"uid":42,"name":"普洱茶1","type":4,"description":"this is...","price":12,"storage":12,"status":0,
+            "pictures":"https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"},
+        {"uid":52,"name":"白茶1","type":5,"description":"this is...","price":12,"storage":12,"status":1,
+            "pictures":"https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"}
     ],
     "retCode": "200",
     "error": ""

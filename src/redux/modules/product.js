@@ -15,6 +15,8 @@ export const types = {
     FETCH_PRODUCT_DETAIL: "PRODUCT/FETCH_PRODUCT_DETAIL",//获取产品详细信息
     CREATE_NEW_PRODUCT_TYPE: "PRODUCT/CREATE_NEW_PRODUCT_TYPE",//创建新的产品种类
     CREATE_NEW_PRODUCT: "PRODUCT/CREATE_NEW_PRODUCT",//新增产品
+    TERMINAL_PRODUCT_SALE: "PRODUCT/TERMINAL_PRODUCT_SALE",//下架产品
+    ALTER_PRODUCT_INFO: "PRODUCT/ALTER_PRODUCT_INFO"
 };
 
 export const actions = {
@@ -24,7 +26,7 @@ export const actions = {
             return get(url.fetchProductType()).then((data) => {
                 dispatch(appActions.finishRequest(reqType));
                 if (!data.error) {
-                    dispatch(fetchProductTypeSuccess(convertProductTypeToPlainStructure(data.productType)));
+                    dispatch(fetchProductTypeSuccess(types.FETCH_PRODUCT_TYPE, convertProductTypeToPlainStructure(data.productType)));
                     return Promise.resolve();
                 } else {
                     dispatch(appActions.setError(data.error));
@@ -34,13 +36,13 @@ export const actions = {
         }
     },
     //type=-1默认获取所有产品信息
-    fetchProductDetail: ( reqType = requestType.modalRequest) => {
+    fetchProductDetail: (reqType = requestType.modalRequest) => {
         return (dispatch) => {
             dispatch(appActions.startRequest(reqType));
             return get(url.fetchProductDetailByType()).then((data) => {
                 dispatch(appActions.finishRequest(reqType));
                 if (!data.error) {
-                    dispatch(fetchProductDetailSuccess(convertProductDetailToPlainStructure(data.productDetail)));
+                    dispatch(fetchProductDetailSuccess(types.FETCH_PRODUCT_DETAIL, convertProductDetailToPlainStructure(data.productDetail)));
                     return Promise.resolve();
                 } else {
                     dispatch(appActions.setError(data.error));
@@ -56,7 +58,7 @@ export const actions = {
             return get(url.createNewProductType(), params).then((data) => {
                 dispatch(appActions.finishRequest(reqType));
                 if (!data.error) {
-                    dispatch(createProductTypeSuccess(convertProductTypeToPlainStructure(data.productType)));
+                    dispatch(fetchProductTypeSuccess(types.CREATE_NEW_PRODUCT_TYPE, convertProductTypeToPlainStructure(data.productType)));
                     return Promise.resolve();
                 } else {
                     dispatch(appActions.setError(data.error));
@@ -68,11 +70,11 @@ export const actions = {
     createNewProduct: (newProduct, reqType = requestType.appRequest) => {
         return (dispatch) => {
             dispatch(appActions.startRequest(reqType));
-            const params={product:newProduct}
-            return get(url.createNewProduct(),params).then((data) => {
+            const params = { product: newProduct }
+            return get(url.createNewProduct(), params).then((data) => {
                 dispatch(appActions.finishRequest(reqType));
                 if (!data.error) {
-                    dispatch(fetchProductDetailSuccess(convertProductDetailToPlainStructure(data.productDetail)));
+                    dispatch(fetchProductDetailSuccess(types.CREATE_NEW_PRODUCT, convertProductDetailToPlainStructure(data.productDetail)));
                     return Promise.resolve();
                 } else {
                     dispatch(appActions.setError(data.error));
@@ -81,7 +83,40 @@ export const actions = {
             })
         }
     },
+    terminalProductSale: (uid, reqType = requestType.appRequest) => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest(reqType));
+            const params = { uid }
+            return get(url.terminalProductSale(), params).then((data) => {
+                dispatch(appActions.finishRequest(reqType));
+                if (!data.error) {
+                    dispatch(fetchProductDetailSuccess(types.TERMINAL_PRODUCT_SALE, convertProductDetailToPlainStructure(data.productDetail)));
+                    return Promise.resolve();
+                } else {
+                    dispatch(appActions.setError(data.error));
+                    return Promise.reject(data.error);
+                }
+            })
+        }
+    },
+    alterProductInfo: (product, reqType = requestType.appRequest) => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest(reqType));
+            const params = { product }
+            return get(url.alterProductInfo(), params).then((data) => {
+                dispatch(appActions.finishRequest(reqType));
+                if (!data.error) {
+                    dispatch(fetchProductDetailSuccess(types.ALTER_PRODUCT_INFO, convertProductDetailToPlainStructure(data.productDetail)));
+                    return Promise.resolve();
+                } else {
+                    dispatch(appActions.setError(data.error));
+                    return Promise.reject(data.error);
+                }
+            })
+        }
+    }
 }
+
 const convertProductDetailToPlainStructure = (data) => {
     console.log("product detail", data);
     let productDetail = new Array();
@@ -114,29 +149,18 @@ const convertProductTypeToPlainStructure = (data) => {
     }
 };
 
-const fetchProductDetailSuccess = ({ productDetail, byProductDetail }) => ({
-    type: types.FETCH_PRODUCT_DETAIL,
+const fetchProductDetailSuccess = (type, { productDetail, byProductDetail }) => ({
+    type,
     productDetail,
     byProductDetail
 });
 
-const createProductSuccess = ({ productDetail, byProductDetail }) => ({
-    type: types.CREATE_NEW_PRODUCT,
-    productDetail,
-    byProductDetail
-})
-
-const fetchProductTypeSuccess = ({ productType, byProductType }) => ({
-    type: types.FETCH_PRODUCT_TYPE,
+const fetchProductTypeSuccess = (type, { productType, byProductType }) => ({
+    type,
     productType,
     byProductType,
 });
 
-const createProductTypeSuccess = ({ productType, byProductType }) => ({
-    type: types.CREATE_NEW_PRODUCT_TYPE,
-    productType,
-    byProductType,
-});
 
 const reducer = (state = initialState, action) => {
     switch (action.type) {

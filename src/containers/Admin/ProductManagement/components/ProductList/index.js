@@ -1,5 +1,5 @@
 import React from "react";
-import { PageHeader, Button, Icon, Divider, DatePicker, Input, Select, Spin, TreeSelect, Modal, Tooltip, Table } from "antd";
+import { Popover, Button, Icon, Divider, DatePicker, Input, Select, Spin, TreeSelect, Modal, Tooltip, Table, InputNumber } from "antd";
 // import PictureCard from "../../../../components/PictureCard";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
@@ -26,7 +26,9 @@ class ProductList extends React.Component {
     state = {
         searchText: '',
         searchedColumn: '',
+        alterStorageUid: "",
     };
+
     componentDidMount() {
         // this.props.fetchActivities();
         this.props.fetchProductDetail(requestType.appRequest);
@@ -101,15 +103,21 @@ class ProductList extends React.Component {
 
     getDataSource = () => {
         const { productDetail, byProductDetail, byProductType } = this.props;
+        const { alterStorageUid } = this.state;
         let dataSource = new Array();
         productDetail.length > 0 && productDetail.forEach((uid) => {
-            const dataItem = {
-                key: uid,
-                ...byProductDetail[uid],
-                status: productStatus[byProductDetail[uid].status],
-                type: byProductType[byProductDetail[uid].type].type,
+            try {
+                const dataItem = {
+                    key: uid,
+                    ...byProductDetail[uid],
+                    status: productStatus[byProductDetail[uid].status],
+                    type: byProductType[byProductDetail[uid].type].type
+                };
+                dataSource.push(dataItem);
+            } catch (err) {
+                // console.error(err);
             };
-            dataSource.push(dataItem);
+
         })
         return dataSource;
     }
@@ -158,27 +166,57 @@ class ProductList extends React.Component {
                         <Tooltip title={`查看详细信息`}>
                             <Link to={`${match.url}/product/${record.uid}`}>查看</Link>
                         </Tooltip>
-                        <Divider type="vertical" />
-                        {/* <Tooltip title={`终止活动`}>
-                            {record.enforceTerminal || judgeStatus(record) == "expired" ? null :
-                                <a onClick={() => this.terminalActivity(record.uid)}>终止</a>
-                            }
-                        </Tooltip> */}
+                        {record.status == productStatus[0] ? null : <span>
+                            <Divider type="vertical" />
+                            <Tooltip title={`下架该产品`}>
+                                <Button type="link" onClick={() => this.terminalProductSale(record.uid)}>下架</Button>
+                            </Tooltip>
+                        </span>}
                     </span>
                 ),
             }
         ];
     }
 
-    terminalActivity = (uid) => {
+    alterProductStorage = (uid) => {
+        console.log("alter sotrage id", uid);
+        // this.props.openModal();
+        this.setState({ alterStorageUid: uid });
+        // const { byProductDetail } = this.props;
+        // const thiz = this;
+        // confirm({
+        //     title: "确认",
+        //     content: `确定要下架${byProductDetail[uid].name}吗?`,
+        //     onOk() {
+        //         thiz.props.terminalProductSale(uid)
+        //             .then(() => {
+        //                 thiz.props.callMessage("success", "产品下架成功");
+        //             })
+        //             .catch(err => {
+        //                 thiz.props.callMessage("error", "产品下架失败" + err);
+        //             });
+        //     },
+        //     onCancel() {
+        //         console.log('Cancel');
+        //     },
+        // });
+    }
+
+    terminalProductSale = (uid) => {
         console.log("terminal id", uid);
-        const { byActivities } = this.props;
+        const { byProductDetail } = this.props;
         const thiz = this;
         confirm({
             title: "确认",
-            content: `确定要终止${byActivities[uid].name}吗?`,
+            content: `确定要下架${byProductDetail[uid].name}吗?`,
             onOk() {
-                thiz.props.terminalActivity(uid);
+                thiz.props.terminalProductSale(uid)
+                    .then(() => {
+                        thiz.props.callMessage("success", "产品下架成功");
+                    })
+                    .catch(err => {
+                        thiz.props.callMessage("error", "产品下架失败" + err);
+                    });
             },
             onCancel() {
                 console.log('Cancel');
@@ -189,7 +227,7 @@ class ProductList extends React.Component {
     render() {
         const data = this.getDataSource();
         const columns = this.getColmuns();
-        const { requestQuantity } = this.props;
+        const { requestQuantity, modalVisible, modalRequestQuantity } = this.props;
         return (
             <div>
                 <Spin spinning={requestQuantity > 0}>
