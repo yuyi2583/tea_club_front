@@ -33,7 +33,7 @@ class App extends React.Component {
                     </Sider>
                     <Layout
                         style={{
-                            padding: '24px 24px',
+                            padding: '24px',
                             height: (this.props.clientHeight - 64) + "px",
                         }}>
                         <Content

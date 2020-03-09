@@ -1,0 +1,11 @@
+{
+    "enterpriseCustomerApplication":[
+        {"uid":1,"customerName":"customer1","customerId":1,"applicationTime":1583730795625,"companyName":"company1","contact":"16237439","email":"asdj@yu.com","status":0},
+        {"uid":2,"customerName":"customer1","customerId":1,"applicationTime":1583730795625,"companyName":"company1","contact":"16237439","email":"asdj@yu.com","status":1},    
+        {"uid":3,"customerName":"customer1","customerId":1,"applicationTime":1583730795625,"companyName":"company1","contact":"16237439","email":"asdj@yu.com","status":2},    
+        {"uid":4,"customerName":"customer1","customerId":1,"applicationTime":1583730795625,"companyName":"company1","contact":"16237439","email":"asdj@yu.com","status":3},    
+        {"uid":5,"customerName":"customer1","customerId":1,"applicationTime":1583730795625,"companyName":"company1","contact":"16237439","email":"asdj@yu.com","status":0}        
+    ],
+    "retCode": "200",
+    "error":""
+}

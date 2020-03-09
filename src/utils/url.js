@@ -27,4 +27,8 @@ export default {
     createNewProduct:()=>"/mock/productDetailByType.json",
     terminalProductSale:()=>"/mock/productDetailByType.json",
     alterProductInfo:()=>"/mock/productDetailByType.json",
+    fetchEnterpriseCustomerApplication:()=>"/mock/enterpriseCustomerApplication.json",
+    startApplicationCheck:()=>"/mock/enterpriseCustomerApplication.json",
+    admitApplication:()=>"/mock/enterpriseCustomerApplication.json",
+    rejectApplication:()=>"/mock/enterpriseCustomerApplication.json",
 }

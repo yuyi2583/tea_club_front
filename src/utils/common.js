@@ -47,3 +47,10 @@ export const productStatus = {
     0: "已下架",
     1: "销售中"
 };
+
+export const enterpriseCustomerApplicationStatus={
+    0:"未审核",
+    1:"审核中",
+    2:"审核通过",
+    3:"审核未通过"
+}
