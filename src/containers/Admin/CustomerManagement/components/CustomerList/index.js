@@ -1,11 +1,11 @@
 import React from "react";
-import { Popover, Button, Icon, Divider, DatePicker, Input, Select, Spin, TreeSelect, Modal, Tooltip, Table, InputNumber } from "antd";
+import { Button, Icon, Divider, DatePicker, Input, Select, Spin, TreeSelect, Modal, Tooltip, Table, InputNumber } from "antd";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { actions as customerActions, getCustomers, getByCustomers, getByCustomerType, getCustomerType } from "../../../../redux/modules/customer";
+import { actions as customerActions, getCustomers, getByCustomers, getByCustomerType, getCustomerType } from "../../../../../redux/modules/customer";
 import Highlighter from 'react-highlight-words';
 import { Link } from "react-router-dom";
-import { productStatus, requestType, sex } from "../../../../utils/common";
+import { sex } from "../../../../../utils/common";
 
 const { confirm } = Modal;
 
@@ -13,13 +13,9 @@ class CustomerList extends React.Component {
     state = {
         searchText: '',
         searchedColumn: '',
-        alterStorageUid: "",
     };
 
     componentDidMount() {
-        // this.props.fetchActivities();
-        // this.props.fetchProductDetail(requestType.appRequest);
-        // this.props.fetchProductType();
         this.props.fetchAllCustomers();
         this.props.fetchCustomerType();
     }
@@ -149,8 +145,12 @@ class CustomerList extends React.Component {
                 key: "action",
                 render: (text, record) => (
                     <span>
-                        <Tooltip title={`查看详细信息`}>
+                        <Tooltip title={`查看${record.name}信息及订单记录`}>
                             <Link to={`${match.url}/customer/${record.uid}`}>查看</Link>
+                        </Tooltip>
+                        <Divider type="vertical" />
+                        <Tooltip title={`将${record.name}升级为超级VIP用户`}>
+                            <Button type="link" onClick={() => this.setSuperVIP(record.uid)}>设置超级VIP</Button>
                         </Tooltip>
                     </span>
                 ),
@@ -158,50 +158,25 @@ class CustomerList extends React.Component {
         ];
     }
 
-    alterProductStorage = (uid) => {
-        console.log("alter sotrage id", uid);
-        // this.props.openModal();
-        this.setState({ alterStorageUid: uid });
-        // const { byProductDetail } = this.props;
-        // const thiz = this;
-        // confirm({
-        //     title: "确认",
-        //     content: `确定要下架${byProductDetail[uid].name}吗?`,
-        //     onOk() {
-        //         thiz.props.terminalProductSale(uid)
-        //             .then(() => {
-        //                 thiz.props.callMessage("success", "产品下架成功");
-        //             })
-        //             .catch(err => {
-        //                 thiz.props.callMessage("error", "产品下架失败" + err);
-        //             });
-        //     },
-        //     onCancel() {
-        //         console.log('Cancel');
-        //     },
-        // });
-    }
-
-    terminalProductSale = (uid) => {
-        console.log("terminal id", uid);
-        const { byProductDetail } = this.props;
-        const thiz = this;
+    setSuperVIP = (uid) => {
+        const { byCustomers } = this.props;
+        const thiz=this;
         confirm({
-            title: "确认",
-            content: `确定要下架${byProductDetail[uid].name}吗?`,
-            onOk() {
-                thiz.props.terminalProductSale(uid)
-                    .then(() => {
-                        thiz.props.callMessage("success", "产品下架成功");
-                    })
-                    .catch(err => {
-                        thiz.props.callMessage("error", "产品下架失败" + err);
-                    });
-            },
+            title: '确认升级?',
+            content: `确认将${byCustomers[uid].name}升级为超级VIP？`,
             onCancel() {
-                console.log('Cancel');
+            },
+            onOk() {
+                thiz.props.setSuperVIP(uid)
+                    .then(() => {
+                        thiz.props.callMessage("success",`${byCustomers[uid].name}升级超级VIP成功！`);
+                    })
+                    .catch(err=>{
+                        thiz.props.callMessage("error",`${byCustomers[uid].name}升级超级VIP失败`+err);
+                    })
             },
         });
+
     }
 
     render() {
@@ -234,8 +209,6 @@ const mapStateToProps = (state, props) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         ...bindActionCreators(customerActions, dispatch),
-        // ...bindActionCreators(shopActions, dispatch),
-        // ...bindActionCreators(activityActions, dispatch)
     };
 };
 

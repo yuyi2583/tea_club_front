@@ -32,4 +32,6 @@ export default {
     admitApplication:()=>"/mock/enterpriseCustomerApplication.json",
     rejectApplication:()=>"/mock/enterpriseCustomerApplication.json",
     fetchAllCustomers:()=>"/mock/customers.json",
+    setSuperVIP:()=>"/mock/customers.json",
+    fetchOrdersByCustomer:()=>"/mock/ordersByCustomer.json",
 }

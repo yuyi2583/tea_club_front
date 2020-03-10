@@ -19,6 +19,7 @@ export const types = {
     ADMIT_APPLICATION: "CUSTOMER/ADMIT_APPLICATION",
     REJECT_APPLICATION: "CUSTOMER/REJECT_APPLICATION",
     FETCH_ALL_CUSTOMERS: "CUSTOMER/FETCH_ALL_CUSTOMERS",
+    SET_SUPER_VIP:"CUSTOMER/SET_SUPER_VIP",
 };
 
 export const actions = {
@@ -107,7 +108,7 @@ export const actions = {
             return get(url.fetchAllCustomers()).then((data) => {
                 dispatch(appActions.finishRequest(reqType));
                 if (!data.error) {
-                    dispatch(fetchAllCustomersSuccess(convetCustomersToPlainStructure(data.customers)));
+                    dispatch(fetchCustomersSuccess(types.FETCH_ALL_CUSTOMERS,convetCustomersToPlainStructure(data.customers)));
                     return Promise.resolve();
                 } else {
                     dispatch(appActions.setError(data.error));
@@ -115,7 +116,23 @@ export const actions = {
                 }
             });
         }
-    }
+    },
+    setSuperVIP:(uid,reqType = requestType.appRequest) => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest(reqType));
+            const params={uid};
+            return get(url.setSuperVIP(),params).then((data) => {
+                dispatch(appActions.finishRequest(reqType));
+                if (!data.error) {
+                    dispatch(fetchCustomersSuccess(types.SET_SUPER_VIP,convetCustomersToPlainStructure(data.customers)));
+                    return Promise.resolve();
+                } else {
+                    dispatch(appActions.setError(data.error));
+                    return Promise.reject();
+                }
+            });
+        }
+    },
 }
 
 const convetCustomerTypeToPlainStructure = (data) => {
@@ -175,8 +192,8 @@ const fetchCustomerTypeSuccess = ({ customerType, byCustomerType }) => ({
     byCustomerType,
 });
 
-const fetchAllCustomersSuccess = ({ customers, byCustomers }) => ({
-    type: types.FETCH_ALL_CUSTOMERS,
+const fetchCustomersSuccess = (type,{ customers, byCustomers }) => ({
+    type,
     customers,
     byCustomers,
 })

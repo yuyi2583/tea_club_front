@@ -75,6 +75,8 @@ export default function asyncComponent(importComponent) {
         subTitle = "活动信息";
       } else if (history.location.pathname.indexOf("/product/") != -1) {
         subTitle = "产品信息";
+      } else if (history.location.pathname.indexOf("/customer/") != -1) {
+        subTitle = "客户信息";
       } else {
         subTitle = null;
       }

@@ -3,8 +3,8 @@ import { PageHeader, Button, Icon, Divider, Input, Spin, Tooltip, Table } from "
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import Highlighter from 'react-highlight-words';
-import { actions as customerActions, getEnterpriseCustomerApplication, getByEnterpriseCustomerApplication } from "../../../../redux/modules/customer";
-import { enterpriseCustomerApplicationStatus } from "../../../../utils/common";
+import { actions as customerActions, getEnterpriseCustomerApplication, getByEnterpriseCustomerApplication } from "../../../redux/modules/customer";
+import { enterpriseCustomerApplicationStatus } from "../../../utils/common";
 
 class EnterpriseCustomerApplication extends React.Component {
     state = {

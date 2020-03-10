@@ -11,8 +11,8 @@
         {"uid":"6","name":"activities","component":"Admin/ActivityManagement","title":"活动管理","description":"这是活动管理","belong":{"uid":"3","name":"activity_management","title":"活动管理","icon":"calendar"}},
         {"uid":"7","name":"add_product","component":"Admin/AddProductForm","title":"新增产品","description":"这是新增产品","belong":{"uid":"4","name":"product_management","title":"产品管理","icon":"project"}},
         {"uid":"8","name":"products","component":"Admin/ProductManagement","title":"产品管理","description":"这是产品管理","belong":{"uid":"4","name":"product_management","title":"产品管理","icon":"project"}},
-        {"uid":"9","name":"special_application","component":"Admin/CustomerManagement/EnterpriseCustomerApplication","title":"企业用户申请","description":"这是企业用户申请","belong":{"uid":"5","name":"customer_management","title":"客户管理","icon":"customer-service"}},
-        {"uid":"10","name":"customers","component":"Admin/CustomerManagement/CustomerList","title":"客户信息","description":"这是客户信息","belong":{"uid":"5","name":"customer_management","title":"客户管理","icon":"customer-service"}},
+        {"uid":"9","name":"special_application","component":"Admin/EnterpriseCustomerApplication","title":"企业用户申请","description":"这是企业用户申请","belong":{"uid":"5","name":"customer_management","title":"客户管理","icon":"customer-service"}},
+        {"uid":"10","name":"customers","component":"Admin/CustomerManagement","title":"客户信息","description":"这是客户信息","belong":{"uid":"5","name":"customer_management","title":"客户管理","icon":"customer-service"}},
         {"uid":"11","name":"test","component":"test.js","title":"test","description":"这是test","belong":{"uid":"6","name":"t4","title":"财务管理","icon":"mail"}}
       ]
     },

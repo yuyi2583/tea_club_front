@@ -1,8 +1,9 @@
 import React from 'react';
-import {Button, Icon, Divider,  Input, Spin,  Tooltip, Table } from "antd";
-import {map} from "../router";
-import Highlighter from 'react-highlight-words';
+import { Button, Icon, Divider, Input, Spin, Tooltip, Table } from "antd";
+import { map } from "../../router";
 import { Link } from "react-router-dom";
+import Highlighter from 'react-highlight-words';
+import PropTypes from "prop-types";
 
 class OrderList extends React.Component {
 
@@ -10,11 +11,6 @@ class OrderList extends React.Component {
     searchText: '',
     searchedColumn: '',
   };
-
-  componentDidMount() {
-    // this.props.fetchAllCustomers();
-    // this.props.fetchCustomerType();
-  }
 
   getColumnSearchProps = dataIndex => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
@@ -83,22 +79,23 @@ class OrderList extends React.Component {
   };
 
   getDataSource = () => {
-    // const { customers, byCustomers, byCustomerType } = this.props;
+    const { orders, byOrders } = this.props;
     let dataSource = new Array();
-    // customers.length > 0 && customers.forEach((uid) => {
-    //   try {
-    //     const dataItem = {
-    //       key: uid,
-    //       ...byCustomers[uid],
-    //       customerType: byCustomerType[byCustomers[uid].customerType].name,
-    //       sex: sex[byCustomers[uid].sex],
-    //     };
-    //     dataSource.push(dataItem);
-    //   } catch (err) {
-    //     // console.error(err);
-    //   };
+    orders.length > 0 && orders.forEach((uid) => {
+      try {
+        const dataItem = {
+          key: uid,
+          ...byOrders[uid],
+          productName: byOrders[uid].product.name,
+          customerId: byOrders[uid].customer.uid,
+          status: byOrders[uid].status,
+        };
+        dataSource.push(dataItem);
+      } catch (err) {
+        // console.error(err);
+      };
 
-    // })
+    })
     return dataSource;
   }
 
@@ -137,9 +134,9 @@ class OrderList extends React.Component {
       },
       {
         title: '状态',
-        dataIndex: 'customerType',
-        key: 'customerType',
-        ...this.getColumnSearchProps('customerType'),
+        dataIndex: 'status',
+        key: 'status',
+        ...this.getColumnSearchProps('status'),
       },
       {
         title: "操作",
@@ -160,12 +157,12 @@ class OrderList extends React.Component {
     ];
   }
 
-  deleteOrder=(uid)=>{
+  deleteOrder = (uid) => {
 
   }
 
   render() {
-    const {requestQuantity}=this.props;
+    const { requestQuantity } = this.props;
     const data = this.getDataSource();
     const columns = this.getColmuns();
     return (
@@ -179,6 +176,11 @@ class OrderList extends React.Component {
       </div>
     )
   }
+}
+
+OrderList.propTypes = {
+  orders: PropTypes.array.isRequired,
+  byOrders: PropTypes.object.isRequired,
 }
 
 export default OrderList;
