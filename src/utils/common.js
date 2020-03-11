@@ -1,3 +1,5 @@
+import { getNDaysAgoTimeStamp } from "./timeUtil";
+
 export const sex = {
     "0": "男",
     "1": "女"
@@ -56,8 +58,8 @@ export const enterpriseCustomerApplicationStatus = {
 }
 
 export const fetchOrdersTimeRange = {
-    all: 0,
-    last3Months: 1
+    all: () => ({ startDate: -1, endDate: getNDaysAgoTimeStamp(-1) }),
+    last3Months: () => ({ startDate: getNDaysAgoTimeStamp(90), endDate: getNDaysAgoTimeStamp(-1) }),
 }
 
 export const orderStatus = {

@@ -1,19 +1,22 @@
 import React from 'react';
-import { Button, Icon, Divider, Input, Spin, Tooltip, Table, MOdal, Modal } from "antd";
+import { Button, Icon, Divider, Input, Spin, Tooltip, Table, Modal, DatePicker } from "antd";
 import { map } from "../../router";
 import { Link } from "react-router-dom";
 import Highlighter from 'react-highlight-words';
 import PropTypes from "prop-types";
-import { timeStampConvertToFormatTime } from "../../utils/timeUtil";
+import { timeStampConvertToFormatTime, momentConvertToTimeStamp } from "../../utils/timeUtil";
 import { orderStatus } from "../../utils/common";
+import moment from 'moment';
 
 const { confirm } = Modal;
+const { RangePicker } = DatePicker;
 
 class OrderList extends React.Component {
 
   state = {
     searchText: '',
     searchedColumn: '',
+    selectedRows: new Array()
   };
 
   getColumnSearchProps = dataIndex => ({
@@ -163,7 +166,7 @@ class OrderList extends React.Component {
   }
 
   deleteOrder = (uid) => {
-    const thiz=this;
+    const thiz = this;
     confirm({
       title: '确认删除?',
       content: '确认删除此订单记录？',
@@ -171,14 +174,65 @@ class OrderList extends React.Component {
       },
       onOk() {
         thiz.props.deleteOrder(uid)
-        .then(()=>{
-          
-        })
-        .catch(err=>{
-
-        });
+          .then(() => {
+            thiz.props.callMessage("success", "删除订单成功！");
+          })
+          .catch(err => {
+            thiz.props.callMessage("error", "删除订单失败！" + err);
+          });
       },
     });
+  }
+
+  // rowSelection object indicates the need for row selection
+  rowSelection = {
+    onChange: (selectedRowKeys, selectedRows) => {
+      console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+      this.setState({ selectedRows });
+    },
+    getCheckboxProps: record => ({
+      disabled: record.name === 'Disabled User', // Column configuration not to be checked
+      name: record.name,
+    }),
+  };
+
+  deleteOrdersByBatch = () => {
+    const { selectedRows } = this.state;
+    if (selectedRows.length == 0) {
+      Modal.error({
+        title: '错误',
+        content: '请选择至少一行订单记录！',
+      });
+      return;
+    }
+    const thiz = this;
+    confirm({
+      title: '确认删除?',
+      content: '确认删除这些订单记录？',
+      onCancel() {
+      },
+      onOk() {
+        thiz.props.deleteOrdersByBatch(selectedRows)
+          .then(() => {
+            thiz.props.callMessage("success", "删除订单成功！");
+          })
+          .catch(err => {
+            thiz.props.callMessage("error", "删除订单失败！" + err);
+          });
+      },
+    });
+
+  }
+
+  disabledDate = (current) => {
+    // Can not select days before today and today
+    return current > moment().endOf('day');
+  }
+
+  selectRange = (dates) => {
+    const starDate = new Date(dates[0].format()).getTime();
+    const endDate = new Date(dates[1].format()).getTime();
+    this.props.fetchOrdersByCustomerAndTimeRange({ starDate, endDate });
   }
 
   render() {
@@ -188,8 +242,13 @@ class OrderList extends React.Component {
     return (
       <div>
         <Spin spinning={requestQuantity > 0}>
+          <div>
+            <Button type="primary" onClick={this.deleteOrdersByBatch}>批量删除</Button>&nbsp;&nbsp;
+            <RangePicker showTime format="YYYY-MM-DD" disabledDate={this.disabledDate} onOk={this.selectRange} />
+          </div>
           <Table
             columns={columns}
+            rowSelection={this.rowSelection}
             loading={requestQuantity > 0}
             dataSource={data} />
         </Spin>

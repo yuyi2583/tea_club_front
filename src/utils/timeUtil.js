@@ -15,3 +15,13 @@ export const timeStringConvertToTimeStamp = (timeString) => {
     let date = new Date(timeString);
     return date.getTime();
 }
+
+//将moment格式时间数据转为时间戳
+export const momentConvertToTimeStamp = (time) => {
+    return new Date(time().format()).getTime();
+}
+
+//获取n天前凌晨0点的时间戳
+export const getNDaysAgoTimeStamp=(n)=>{
+   return new Date(new Date().setHours(0, 0, 0, 0)).getTime()-n*1000*60*60*24;
+}

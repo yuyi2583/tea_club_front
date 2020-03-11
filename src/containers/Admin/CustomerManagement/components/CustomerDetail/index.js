@@ -35,6 +35,11 @@ class CustomerDetail extends React.Component {
         this.props.fetchOrdersByCustomer(customerId, fetchOrdersTimeRange["all"]);
     }
 
+    fetchOrdersByCustomerAndTimeRange=(timeRange)=>{
+        const { customerId } = this.props.match.params;
+        this.props.fetchOrdersByCustomer(customerId, timeRange);
+    }
+
     render() {
         const { byCustomers, match, customers, requestQuantity,
             customerType, byCustomerType, orders, byOrders } = this.props;
@@ -75,6 +80,9 @@ class CustomerDetail extends React.Component {
                             <OrderList
                                 orders={orders}
                                 byOrders={byOrders}
+                                deleteOrdersByBatch={(orders)=>this.props.deleteOrdersByBatch(orders)}
+                                fetchOrdersByCustomerAndTimeRange={this.fetchOrdersByCustomerAndTimeRange}
+                                callMessage={this.props.callMessage}
                                 deleteOrder={this.props.deleteOrder}
                             />
                         </div>
