@@ -232,7 +232,7 @@ class OrderList extends React.Component {
   selectRange = (dates) => {
     const starDate = new Date(dates[0].format()).getTime();
     const endDate = new Date(dates[1].format()).getTime();
-    this.props.fetchOrdersByCustomerAndTimeRange({ starDate, endDate });
+    this.props.fetchOrdersTimeRange({ starDate, endDate });
   }
 
   render() {

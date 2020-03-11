@@ -11,6 +11,7 @@ const initialState = {
 export const types = {
     FETCH_ALL_ORDERS: "ORDER/FETCH_ALL_ORDERS",
     FETCH_LAST_THREE_MONTH_ORDERS: "ORDER/FETCH_LAST_THREE_MONTH_ORDERS",
+    FETCH_TIME_RANGE_ORDERS: "ORDER/FETCH_TIME_RANGE_ORDERS",
     FETCH_ALL_ORDERS_BY_CUSTOMER: "ORDER/FETCH_ALL_ORDER_BY_CUSTOMER",
     FETCH_LAST_THREE_MONTH_ORDERS_BY_CUSTOMER: "ORDER/FETCH_LAST_THREE_MONTH_ORDERS_BY_CUSTOMER",
     FETCH_TIME_RANGE_ORDERS_BY_CUSTOMER: "ORDER/FETCH_TIME_RANGE_ORDERS_BY_CUSTOMER",
@@ -27,11 +28,11 @@ export const actions = {
                 dispatch(appActions.finishRequest(reqType));
                 if (!data.error) {
                     if (timeRange == fetchOrdersTimeRange["last3Months"])
-                        dispatch(fetchOrdersByCustomerSuccess(types.FETCH_LAST_THREE_MONTH_ORDERS_BY_CUSTOMER, convetOrdersToPlainStructure(data.orders)));
+                        dispatch(fetchOrdersSuccess(types.FETCH_LAST_THREE_MONTH_ORDERS_BY_CUSTOMER, convetOrdersToPlainStructure(data.orders)));
                     else if (timeRange == fetchOrdersTimeRange["all"])
-                        dispatch(fetchOrdersByCustomerSuccess(types.FETCH_ALL_ORDERS_BY_CUSTOMER, convetOrdersToPlainStructure(data.orders)));
+                        dispatch(fetchOrdersSuccess(types.FETCH_ALL_ORDERS_BY_CUSTOMER, convetOrdersToPlainStructure(data.orders)));
                     else
-                        dispatch(fetchOrdersByCustomerSuccess(types.FETCH_TIME_RANGE_ORDERS_BY_CUSTOMER, convetOrdersToPlainStructure(data.orders)));
+                        dispatch(fetchOrdersSuccess(types.FETCH_TIME_RANGE_ORDERS_BY_CUSTOMER, convetOrdersToPlainStructure(data.orders)));
                     return Promise.resolve();
                 } else {
                     dispatch(appActions.setError(data.error));
@@ -57,7 +58,7 @@ export const actions = {
         }
     },
     deleteOrdersByBatch: (orders, reqType = requestType.appRequest) => {
-        console.log("delete orders",orders);
+        console.log("delete orders", orders);
         return (dispatch) => {
             dispatch(appActions.startRequest(reqType));
             const params = { orders };
@@ -65,6 +66,27 @@ export const actions = {
                 dispatch(appActions.finishRequest(reqType));
                 if (!data.error) {
                     dispatch(deleteOrderSuccess(types.DELETE_ORDERS_BY_BATCH, convetOrdersToPlainStructure(data.orders)));
+                    return Promise.resolve();
+                } else {
+                    dispatch(appActions.setError(data.error));
+                    return Promise.reject();
+                }
+            });
+        }
+    },
+    fetchOrders: (timeRange = fetchOrdersTimeRange["last3Months"], reqType = requestType.appRequest) => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest(reqType));
+            const params = { ...timeRange };
+            return get(url.fetchOrdersByCustomer(), params).then((data) => {
+                dispatch(appActions.finishRequest(reqType));
+                if (!data.error) {
+                    if (timeRange == fetchOrdersTimeRange["last3Months"])
+                        dispatch(fetchOrdersSuccess(types.FETCH_LAST_THREE_MONTH_ORDERS, convetOrdersToPlainStructure(data.orders)));
+                    else if (timeRange == fetchOrdersTimeRange["all"])
+                        dispatch(fetchOrdersSuccess(types.FETCH_ALL_ORDERS, convetOrdersToPlainStructure(data.orders)));
+                    else
+                        dispatch(fetchOrdersSuccess(types.FETCH_TIME_RANGE_ORDERS, convetOrdersToPlainStructure(data.orders)));
                     return Promise.resolve();
                 } else {
                     dispatch(appActions.setError(data.error));
@@ -96,18 +118,23 @@ const deleteOrderSuccess = (type, { orders, byOrders }) => ({
     byOrders
 })
 
-const fetchOrdersByCustomerSuccess = (type, { orders, byOrders }) => ({
+const fetchOrdersSuccess = (type, { orders, byOrders }) => ({
     type,
     orders,
     byOrders,
 });
 
+
 const reducer = (state = initialState, action) => {
     switch (action.type) {
         case types.FETCH_ALL_ORDERS_BY_CUSTOMER:
+        case types.FETCH_LAST_THREE_MONTH_ORDERS_BY_CUSTOMER:
+        case types.FETCH_TIME_RANGE_ORDERS_BY_CUSTOMER:
+        case types.FETCH_ALL_ORDERS:
+        case types.FETCH_LAST_THREE_MONTH_ORDERS:
+        case types.FETCH_TIME_RANGE_ORDERS:
         case types.DELETE_ORDER:
         case types.DELETE_ORDERS_BY_BATCH:
-        case types.FETCH_LAST_THREE_MONTH_ORDERS_BY_CUSTOMER:
             return { ...state, orders: action.orders, byOrders: action.byOrders };
         default:
             return state;

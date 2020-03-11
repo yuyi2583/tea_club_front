@@ -81,7 +81,7 @@ class CustomerDetail extends React.Component {
                                 orders={orders}
                                 byOrders={byOrders}
                                 deleteOrdersByBatch={(orders)=>this.props.deleteOrdersByBatch(orders)}
-                                fetchOrdersByCustomerAndTimeRange={this.fetchOrdersByCustomerAndTimeRange}
+                                fetchOrdersTimeRange={this.fetchOrdersByCustomerAndTimeRange}
                                 callMessage={this.props.callMessage}
                                 deleteOrder={this.props.deleteOrder}
                             />
