@@ -19,7 +19,8 @@ export const types = {
     ADMIT_APPLICATION: "CUSTOMER/ADMIT_APPLICATION",
     REJECT_APPLICATION: "CUSTOMER/REJECT_APPLICATION",
     FETCH_ALL_CUSTOMERS: "CUSTOMER/FETCH_ALL_CUSTOMERS",
-    SET_SUPER_VIP:"CUSTOMER/SET_SUPER_VIP",
+    SET_SUPER_VIP: "CUSTOMER/SET_SUPER_VIP",
+    FETCH_CUSTOMER_BY_ID: "CUSTOMER/FETCH_CUSTOMER_BY_ID",
 };
 
 export const actions = {
@@ -108,7 +109,7 @@ export const actions = {
             return get(url.fetchAllCustomers()).then((data) => {
                 dispatch(appActions.finishRequest(reqType));
                 if (!data.error) {
-                    dispatch(fetchCustomersSuccess(types.FETCH_ALL_CUSTOMERS,convetCustomersToPlainStructure(data.customers)));
+                    dispatch(fetchCustomersSuccess(types.FETCH_ALL_CUSTOMERS, convetCustomersToPlainStructure(data.customers)));
                     return Promise.resolve();
                 } else {
                     dispatch(appActions.setError(data.error));
@@ -117,14 +118,30 @@ export const actions = {
             });
         }
     },
-    setSuperVIP:(uid,reqType = requestType.appRequest) => {
+    setSuperVIP: (uid, reqType = requestType.appRequest) => {
         return (dispatch) => {
             dispatch(appActions.startRequest(reqType));
-            const params={uid};
-            return get(url.setSuperVIP(),params).then((data) => {
+            const params = { uid };
+            return get(url.setSuperVIP(), params).then((data) => {
                 dispatch(appActions.finishRequest(reqType));
                 if (!data.error) {
-                    dispatch(fetchCustomersSuccess(types.SET_SUPER_VIP,convetCustomersToPlainStructure(data.customers)));
+                    dispatch(fetchCustomersSuccess(types.SET_SUPER_VIP, convetCustomersToPlainStructure(data.customers)));
+                    return Promise.resolve();
+                } else {
+                    dispatch(appActions.setError(data.error));
+                    return Promise.reject();
+                }
+            });
+        }
+    },
+    fetchCustomerById: (uid, reqType = requestType.appRequest) => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest(reqType));
+            const params = { uid };
+            return get(url.fetchCustomerById(), params).then((data) => {
+                dispatch(appActions.finishRequest(reqType));
+                if (!data.error) {
+                    dispatch(fetchCustomerByIdSuccess(data.customer));
                     return Promise.resolve();
                 } else {
                     dispatch(appActions.setError(data.error));
@@ -180,6 +197,11 @@ const convertEnterpriseCustomerApplicationToPlainStructure = (data) => {
     }
 }
 
+const fetchCustomerByIdSuccess = (customer) => ({
+    type: types.FETCH_CUSTOMER_BY_ID,
+    customer
+})
+
 const fetchEnterpriseCustomerApplicationSuccess = (type, { enterpriseCustomerApplication, byEnterpriseCustomerApplication }) => ({
     type,
     enterpriseCustomerApplication,
@@ -192,13 +214,14 @@ const fetchCustomerTypeSuccess = ({ customerType, byCustomerType }) => ({
     byCustomerType,
 });
 
-const fetchCustomersSuccess = (type,{ customers, byCustomers }) => ({
+const fetchCustomersSuccess = (type, { customers, byCustomers }) => ({
     type,
     customers,
     byCustomers,
 })
 
 const reducer = (state = initialState, action) => {
+    let customers, byCustomers;
     switch (action.type) {
         case types.FETCH_CUSTOMER_TYPE:
             return { ...state, customerType: action.customerType, byCustomerType: action.byCustomerType };
@@ -209,6 +232,13 @@ const reducer = (state = initialState, action) => {
             return { ...state, enterpriseCustomerApplication: action.enterpriseCustomerApplication, byEnterpriseCustomerApplication: action.byEnterpriseCustomerApplication };
         case types.FETCH_ALL_CUSTOMERS:
             return { ...state, customers: action.customers, byCustomers: action.byCustomers };
+        case types.FETCH_CUSTOMER_BY_ID:
+            customers = state.customers;
+            byCustomers = { ...state.byCustomers, [action.customer.uid]: action.customer };
+            if (state.customers.indexOf(action.customer.uid) == -1) {
+                customers.push(action.customer.uid);
+            }
+            return { ...state, customers, byCustomers };
         default:
             return state;
     }

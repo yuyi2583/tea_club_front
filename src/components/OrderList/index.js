@@ -1,9 +1,13 @@
 import React from 'react';
-import { Button, Icon, Divider, Input, Spin, Tooltip, Table } from "antd";
+import { Button, Icon, Divider, Input, Spin, Tooltip, Table, MOdal, Modal } from "antd";
 import { map } from "../../router";
 import { Link } from "react-router-dom";
 import Highlighter from 'react-highlight-words';
 import PropTypes from "prop-types";
+import { timeStampConvertToFormatTime } from "../../utils/timeUtil";
+import { orderStatus } from "../../utils/common";
+
+const { confirm } = Modal;
 
 class OrderList extends React.Component {
 
@@ -88,7 +92,8 @@ class OrderList extends React.Component {
           ...byOrders[uid],
           productName: byOrders[uid].product.name,
           customerId: byOrders[uid].customer.uid,
-          status: byOrders[uid].status,
+          status: orderStatus[byOrders[uid].status],
+          orderTime: timeStampConvertToFormatTime(byOrders[uid].orderTime)
         };
         dataSource.push(dataItem);
       } catch (err) {
@@ -158,7 +163,22 @@ class OrderList extends React.Component {
   }
 
   deleteOrder = (uid) => {
+    const thiz=this;
+    confirm({
+      title: '确认删除?',
+      content: '确认删除此订单记录？',
+      onCancel() {
+      },
+      onOk() {
+        thiz.props.deleteOrder(uid)
+        .then(()=>{
+          
+        })
+        .catch(err=>{
 
+        });
+      },
+    });
   }
 
   render() {

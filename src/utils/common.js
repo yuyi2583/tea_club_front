@@ -59,3 +59,10 @@ export const fetchOrdersTimeRange = {
     all: 0,
     last3Months: 1
 }
+
+export const orderStatus = {
+    0: "未付款",
+    1: "未配送",
+    2: "已发货",
+    3: "完成"
+}

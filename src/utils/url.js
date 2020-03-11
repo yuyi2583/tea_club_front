@@ -34,4 +34,6 @@ export default {
     fetchAllCustomers:()=>"/mock/customers.json",
     setSuperVIP:()=>"/mock/customers.json",
     fetchOrdersByCustomer:()=>"/mock/ordersByCustomer.json",
+    fetchCustomerById:()=>"/mock/customer.json",
+    deleteOrder:()=>"/mock/ordersByCustomer.json",
 }

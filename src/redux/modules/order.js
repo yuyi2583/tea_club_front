@@ -13,6 +13,7 @@ export const types = {
     FETCH_LAST_THREE_MONTH_ORDERS: "ORDER/FETCH_LAST_THREE_MONTH_ORDERS",
     FETCH_ALL_ORDERS_BY_CUSTOMER: "ORDER/FETCH_ALL_ORDER_BY_CUSTOMER",
     FETCH_LAST_THREE_MONTH_ORDERS_BY_CUSTOMER: "ORDER/FETCH_LAST_THREE_MONTH_ORDERS_BY_CUSTOMER",
+    DELETE_ORDER: "ORDER/DELETE_ORDER",
 };
 
 export const actions = {
@@ -35,6 +36,22 @@ export const actions = {
             });
         }
     },
+    deleteOrder: (uid, reqType = requestType.appRequest) => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest(reqType));
+            const params = { uid };
+            return get(url.deleteOrder(), params).then((data) => {
+                dispatch(appActions.finishRequest(reqType));
+                if (!data.error) {
+                    dispatch(deleteOrderSuccess(convetOrdersToPlainStructure(data.orders)));
+                    return Promise.resolve();
+                } else {
+                    dispatch(appActions.setError(data.error));
+                    return Promise.reject();
+                }
+            });
+        }
+    }
 }
 
 const convetOrdersToPlainStructure = (data) => {
@@ -52,6 +69,12 @@ const convetOrdersToPlainStructure = (data) => {
     }
 }
 
+const deleteOrderSuccess = ({ orders, byOrders }) => ({
+    type: types.DELETE_ORDER,
+    orders,
+    byOrders
+})
+
 const fetchOrdersByCustomerSuccess = (type, { orders, byOrders }) => ({
     type,
     orders,
@@ -61,6 +84,7 @@ const fetchOrdersByCustomerSuccess = (type, { orders, byOrders }) => ({
 const reducer = (state = initialState, action) => {
     switch (action.type) {
         case types.FETCH_ALL_ORDERS_BY_CUSTOMER:
+        case types.DELETE_ORDER:
         case types.FETCH_LAST_THREE_MONTH_ORDERS_BY_CUSTOMER:
             return { ...state, orders: action.orders, byOrders: action.byOrders };
         default:
