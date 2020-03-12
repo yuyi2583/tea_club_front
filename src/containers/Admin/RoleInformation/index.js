@@ -10,9 +10,6 @@ import {actions as clerkActions} from "../../../redux/modules/clerk";
 import {actions as shopActions} from "../../../redux/modules/shop";
 
 class RoleInformation extends React.Component {
-    // handleBack = () => {
-    //     window.history.back();
-    // }
 
     startAlterRoleDetail=()=>{
         this.props.fetchAllAuthority();
@@ -20,42 +17,6 @@ class RoleInformation extends React.Component {
         this.props.fetchAllPosition();
         this.props.startAlterInfo();
     }
-
-    // getExtra = () => {
-    //     const { history, match } = this.props;
-    //     let extra = null;
-    //     if (history.location.pathname.indexOf("role_detail") != -1) {
-    //         extra = (<Button type="primary" onClick={this.startAlterRoleDetail }>修改职员信息</Button>);
-    //     } else {
-    //         extra = null;
-    //     }
-    //     return extra;
-    // }
-
-    // getSubTitle = () => {
-    //     const { history } = this.props;
-    //     let subTitle = null;
-    //     if (history.location.pathname.indexOf("role_detail") != -1) {
-    //         subTitle = "职员详情";
-    //     } else {
-    //         subTitle = null;
-    //     }
-    //     return subTitle;
-    // }
-
-    // callMessage = (type="success", content="操作成功！") => {
-    //     switch (type) {
-    //         case "success":
-    //             message.success(content);
-    //             break;
-    //         case "error":
-    //             message.error(content);
-    //             break;
-    //         case "warning":
-    //             message.warning(content);
-    //             break;
-    //     }
-    // }
 
     render() {
         const subTitle = this.props.getSubTitle();

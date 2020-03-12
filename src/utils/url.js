@@ -37,4 +37,5 @@ export default {
     fetchCustomerById:()=>"/mock/customer.json",
     deleteOrder:()=>"/mock/ordersByCustomer.json",
     deleteOrderByBatch:()=>"/mock/ordersByCustomer.json",
+    fetchOrderById:()=>"/mock/order.json",
 }

@@ -1,0 +1,53 @@
+{
+    "order": {
+        "uid": 1,
+        "product": {
+            "uid": 1,
+            "name": "红茶1",
+            "price": {
+                "type": 0,
+                "ingot": 15,
+                "credit": 10
+            }
+        },
+        "number": 1,
+        "orderTime": 1583843604994,
+        "customer": {
+            "uid": 1,
+            "name": "customer1"
+        },
+        "clerk": {
+            "uid": 1,
+            "name": "clerk1"
+        },
+        "status": 0,
+        "picture": "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png",
+        "activity": {
+            "uid": "1123asdf",
+            "name": "activity1",
+            "mutexRange": [
+                "2"
+            ],
+            "description": "this is activity1 asdfasdfasdfasdfasdfasfd",
+            "startTime": 1583138590403,
+            "endTime": 1583148590403,
+            "enforceTerminal": true,
+            "activityRule": {
+                "uid": 1,
+                "activityType": "1",
+                "avtivityApplyForProduct": [
+                    3
+                ],
+                "avtivityApplyForCustomer": [
+                    "1",
+                    "2"
+                ],
+                "activityInReduction1": 123,
+                "activityInReduction2": 1
+            },
+            "pictures": "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
+        }
+    },
+    "retCode": "200",
+    "error": ""
+}

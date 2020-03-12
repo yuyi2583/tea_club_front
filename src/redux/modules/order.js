@@ -17,6 +17,7 @@ export const types = {
     FETCH_TIME_RANGE_ORDERS_BY_CUSTOMER: "ORDER/FETCH_TIME_RANGE_ORDERS_BY_CUSTOMER",
     DELETE_ORDER: "ORDER/DELETE_ORDER",
     DELETE_ORDERS_BY_BATCH: "ORDER/DELETE_ORDERS_BY_BATCH",
+    FETCH_ORDER_BY_ID: "ORDER/FETCH_ORDER_BY_ID",
 };
 
 export const actions = {
@@ -95,6 +96,22 @@ export const actions = {
             });
         }
     },
+    fetchOrderById: (orderId, reqType = requestType.appRequest) => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest(reqType));
+            const params = { uid: orderId };
+            return get(url.fetchOrderById(), params).then((data) => {
+                dispatch(appActions.finishRequest(reqType));
+                if (!data.error) {
+                    dispatch(fetchOrderSuccess(data.order));
+                    return Promise.resolve();
+                } else {
+                    dispatch(appActions.setError(data.error));
+                    return Promise.reject();
+                }
+            });
+        }
+    },
 }
 
 const convetOrdersToPlainStructure = (data) => {
@@ -110,7 +127,12 @@ const convetOrdersToPlainStructure = (data) => {
         orders,
         byOrders
     }
-}
+};
+
+const fetchOrderSuccess = (order) => ({
+    type: types.FETCH_ORDER_BY_ID,
+    order
+});
 
 const deleteOrderSuccess = (type, { orders, byOrders }) => ({
     type,
@@ -126,6 +148,7 @@ const fetchOrdersSuccess = (type, { orders, byOrders }) => ({
 
 
 const reducer = (state = initialState, action) => {
+    let orders, byOrders;
     switch (action.type) {
         case types.FETCH_ALL_ORDERS_BY_CUSTOMER:
         case types.FETCH_LAST_THREE_MONTH_ORDERS_BY_CUSTOMER:
@@ -136,6 +159,13 @@ const reducer = (state = initialState, action) => {
         case types.DELETE_ORDER:
         case types.DELETE_ORDERS_BY_BATCH:
             return { ...state, orders: action.orders, byOrders: action.byOrders };
+        case types.FETCH_ORDER_BY_ID:
+            orders = state.orders;
+            if (orders.indexOf(action.order.uid) == -1) {
+                orders.push(action.order.uid);
+            }
+            byOrders = { ...state.byOrders, [action.order.uid]: action.order };
+            return { ...state, orders, byOrders };
         default:
             return state;
     }

@@ -2,7 +2,7 @@ import React from "react";
 import { PageHeader } from "antd";
 import { Route } from "react-router-dom";
 import OrderList from "./components/OrderList";
-// import CustomerDetail from "./components/CustomerDetail";
+import OrderDetail from "./components/OrderDetail";
 
 
 class OrderManagement extends React.Component {
@@ -25,16 +25,16 @@ class OrderManagement extends React.Component {
                             <OrderList {...this.props} {...props} />
                         }
                     />
-                    {/* <Route
-                        path={`${match.url}/customer/:customerId`}
+                    <Route
+                        path={`${match.url}/order/:orderId`}
                         exact
                         render={props =>
-                            <CustomerDetail
+                            <OrderDetail
                                 {...this.props}
                                 {...props}
                             />
                         }
-                    /> */}
+                    />
                 </PageHeader>
             </div>
         )

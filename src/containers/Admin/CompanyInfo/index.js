@@ -44,9 +44,9 @@ class CompanyInfo extends React.Component {
         this.props.alterCompanyInfo(info);
     }
 
-    componentWillUnmount(){
-        this.props.finishAlterInfo();
-    }
+    // componentWillUnmount(){
+    //     this.props.finishAlterInfo();
+    // }
     
     handleChange = (e) => {
         const name = e.target.name;
