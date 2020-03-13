@@ -10,7 +10,7 @@ import Drawer from "../../../components/MessageDrawer";
 import Routers, { map } from "../../../router";
 import { Route, Redirect, Switch } from "react-router-dom";
 import { actions as authActions, getAuth, getAuthority } from "../../../redux/modules/adminAuth";
-import { getRequestQuantity, getError } from "../../../redux/modules/app";
+import { getRetrieveRequestQuantity, getError } from "../../../redux/modules/app";
 
 const { Content, Sider } = Layout;
 

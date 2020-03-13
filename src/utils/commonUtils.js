@@ -1,4 +1,4 @@
-import { message } from "antd";
+import { message, notification } from "antd";
 
 export const handleBack = () => {
     window.history.back();
@@ -16,6 +16,25 @@ export const callMessage = (type = "success", content = "操作成功！") => {
             message.warning(content);
             break;
     }
+}
+
+export const callNotification = (type = "info", description = "您有一条信息待处理") => {
+    let message = "通知";
+    switch (type) {
+        case "success":
+            message = "操作成功";
+            break;
+        case "warning":
+            message = "警告";
+            break;
+        case "error":
+            message = "错误！";
+            break;
+    }
+    notification[type]({
+        message,
+        description
+    });
 }
 
 //删除父数组中的子数组
@@ -66,7 +85,7 @@ export const convertToDay = (arry) => {
         }
         return day;
     });
-    if (result.indexOf("错误")!==-1) {
+    if (result.indexOf("错误") !== -1) {
         result = ["错误,请修改营业时间"];
     } else if (result.indexOf("周一") !== -1 && result.indexOf("周二") !== -1 && result.indexOf("周三") !== -1 &&
         result.indexOf("周四") !== -1 && result.indexOf("周五") !== -1 &&
@@ -84,7 +103,7 @@ export const convertToDay = (arry) => {
 /**
  * 选择优惠产品范围方法
  */
-export const activityApplyForProduct ={
+export const activityApplyForProduct = {
     convertToStandardTreeData: ({ productType, byProductType, productDetail, byProductDetail }) => {
         let treeData = new Array();
         productType.forEach((uid) => {
@@ -95,16 +114,16 @@ export const activityApplyForProduct ={
         })
         return treeData;
     },
-    onLoadData: (treeNode,props) =>
+    onLoadData: (treeNode, props) =>
         new Promise(resolve => {
             const { id } = treeNode.props;
             props.fetchProductDetail(id).then(() => {
                 resolve();
             });
         }),
-    onChange: (value,setFieldsValue) => {
+    onChange: (value, setFieldsValue) => {
         console.log("on change", value);
-        setFieldsValue({"avtivityApplyForProduct":value});
+        setFieldsValue({ "avtivityApplyForProduct": value });
         // this.setState({ value });
     },
 }

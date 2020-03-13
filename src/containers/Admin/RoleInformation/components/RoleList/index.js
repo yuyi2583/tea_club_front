@@ -4,7 +4,7 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { actions as clerkActions, getByClerks, getClerks } from "../../../../../redux/modules/clerk";
-import { actions as appActions, getRequestQuantity } from "../../../../../redux/modules/app";
+import { actions as appActions, getRetrieveRequestQuantity } from "../../../../../redux/modules/app";
 import Highlighter from 'react-highlight-words';
 import { actions as shopActions, getShopList } from "../../../../../redux/modules/shop";
 import { sex } from "../../../../../utils/common";
@@ -192,7 +192,7 @@ const mapStateToProps = (state, props) => {
     return {
         byClerks: getByClerks(state),
         clerks: getClerks(state),
-        requestQuantity: getRequestQuantity(state),
+        requestQuantity: getRetrieveRequestQuantity(state),
         byShopList: getShopList(state),
     };
 };

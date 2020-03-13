@@ -3,7 +3,7 @@ import CompanyInfo from "../containers/Admin/CompanyInfo";
 import { handleBack, callMessage } from "./commonUtils";
 import { Button } from "antd";
 import { actions as uiActions, getAlterInfoState, getModalLoading, getModalVisible } from "../redux/modules/ui";
-import { getRequestQuantity, getModalRequestQuantity } from "../redux/modules/app";
+import { getRetrieveRequestQuantity, getUpdateRequestQuantity, getModalRequestQuantity, getConnectError } from "../redux/modules/app";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
@@ -46,6 +46,8 @@ export default function asyncComponent(importComponent) {
         extra = (<Button type="primary" onClick={this.props.startAlterInfo}>修改包厢信息</Button>);
       } else if (history.location.pathname.indexOf("/product/") != -1) {
         extra = (<Button type="primary" onClick={this.props.startAlterInfo}>修改产品</Button>);
+      } else if (history.location.pathname.indexOf("/company_info") != -1) {
+        extra = (<Button type="primary" onClick={this.props.startAlterInfo}>修改公司信息</Button>);
       } else {
         extra = null;
       }
@@ -98,10 +100,12 @@ export default function asyncComponent(importComponent) {
   const mapStateToProps = (state, props) => {
     return {
       alterInfo: getAlterInfoState(state),
-      requestQuantity: getRequestQuantity(state),
+      retrieveRequestQuantity: getRetrieveRequestQuantity(state),
+      updateRequestQuantity: getUpdateRequestQuantity(state),
       modalRequestQuantity: getModalRequestQuantity(state),
       modalLoading: getModalLoading(state),
       modalVisible: getModalVisible(state),
+      connectError: getConnectError(state),
     };
   };
 

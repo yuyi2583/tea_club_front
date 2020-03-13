@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { actions as appActions, getError, getRequestQuantity, getCompanyInfo } from "../../redux/modules/app";
+import { actions as appActions, getError, getRetrieveRequestQuantity, getCompanyInfo } from "../../redux/modules/app";
 import { getAuth } from "../../redux/modules/adminAuth";
 import { actions as uiActions, getClientHeight, getClientWidth } from "../../redux/modules/ui";
 import { map } from "../../router";
@@ -24,17 +24,16 @@ class App extends React.Component {
   componentDidMount() {
     let { clientWidth, clientHeight } = document.documentElement;
     this.props.setClientSize(clientWidth, clientHeight);
-    this.props.getCompanyInfo();
   }
   render() {
-    const {companyInfo}=this.props;
+    const { companyInfo,requestQuantity } = this.props;
     return (
       <div style={{ width: this.props.clientWidth + "px", height: this.props.clientHeight + "px", overflow: "hidden" }}>
         <Router>
           <Switch>
             <Route path={map.error()} exact component={AsyncNotFound} />
-            <Route path={map.admin.AdminHome()} component={AsyncAdmin}/>
-            <Route path={map.client.ClientHome()} component={AsyncClient} companyInfo={companyInfo}/>
+            <Route path={map.admin.AdminHome()} component={AsyncAdmin} />
+            {/* <Route path={map.client.ClientHome()} component={AsyncClient} companyInfo={companyInfo} /> */}
           </Switch>
         </Router>
       </div>
@@ -45,11 +44,11 @@ class App extends React.Component {
 const mapStateToProps = (state, props) => {
   return {
     error: getError(state),
-    requestQuantity: getRequestQuantity(state),
+    // requestQuantity: getRetrieveRequestQuantity(state),
     auth: getAuth(state),
     clientWidth: getClientWidth(state),
     clientHeight: getClientHeight(state),
-    companyInfo: getCompanyInfo(state),
+    // companyInfo: getCompanyInfo(state),
   }
 }
 

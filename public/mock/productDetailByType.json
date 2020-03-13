@@ -1,5 +1,5 @@
 {
-    "productDetail":[
+    "data":[
         {"uid":12,"name":"红茶1","type":1,"description":"this is...","price":12,"storage":12,"status":1,
             "pictures":"https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"},
         {"uid":22,"name":"绿茶1","type":2,"description":"this is...","price":12,"storage":12,"status":1,

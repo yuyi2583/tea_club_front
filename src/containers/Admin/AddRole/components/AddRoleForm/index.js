@@ -5,7 +5,7 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actions as shopActions, getShop, getShopList } from "../../../../../redux/modules/shop";
 import { actions as clerkActions, getAllPosition, getByAllPosition, getByAuthority, getByBelong } from "../../../../../redux/modules/clerk";
-import { getRequestQuantity } from "../../../../../redux/modules/app";
+import { getRetrieveRequestQuantity } from "../../../../../redux/modules/app";
 import { getTreeData } from "./method";
 import { Redirect } from "react-router-dom";
 import { map } from "../../../../../router";
@@ -209,7 +209,7 @@ const mapStateToProps = (state, props) => {
     return {
         shop: getShop(state),
         byShopList: getShopList(state),
-        requestQuantity: getRequestQuantity(state),
+        requestQuantity: getRetrieveRequestQuantity(state),
         allPositions: getAllPosition(state),
         byAllPositions: getByAllPosition(state),
         byAuthority: getByAuthority(state),

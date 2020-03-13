@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import { actions as activityActions, getActivities, getByActivities, getByActivityRules } from "../../../../redux/modules/activity";
 import { actions as uiActions, getAlterInfoState } from "../../../../redux/modules/ui";
 import { actions as appActions, 
-    // getRequestQuantity, getModalRequestQuantity
+    // getRetrieveRequestQuantity, getModalRequestQuantity
  } from "../../../../redux/modules/app";
 import { actions as productActions, getProductType, getByProductType, getByProductDetail, getProductDetail } from "../../../../redux/modules/product";
 import { actions as customerActions, getCustomerType, getByCustomerType } from "../../../../redux/modules/customer";
@@ -355,7 +355,7 @@ const mapStateToProps = (state, props) => {
         activities: getActivities(state),
         byActivities: getByActivities(state),
         alterInfo: getAlterInfoState(state),
-        // requestQuantity: getRequestQuantity(state),
+        // requestQuantity: getRetrieveRequestQuantity(state),
         byActivityRules: getByActivityRules(state),
         // modalRequestQuantity: getModalRequestQuantity(state),
         productType: getProductType(state),

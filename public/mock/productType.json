@@ -1,5 +1,5 @@
 {
-    "productType":[
+    "data":[
         {"uid":1,"type":"红茶"},
         {"uid":2,"type":"绿茶"},
         {"uid":3,"type":"乌龙茶"},

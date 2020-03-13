@@ -5,7 +5,7 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actions as uiActions, getModalVisible } from "../../../redux/modules/ui";
 import { actions as productActions, getProductType, getByProductType, getByProductDetail, getProductDetail } from "../../../redux/modules/product";
-// import { getRequestQuantity, getModalRequestQuantity } from "../../../redux/modules/app";
+// import { getRetrieveRequestQuantity, getModalRequestQuantity } from "../../../redux/modules/app";
 import { Redirect } from "react-router-dom";
 import { map } from "../../../router";
 import { formItemLayout, tailFormItemLayout } from "../../../utils/common";
@@ -181,7 +181,7 @@ const mapStateToProps = (state, props) => {
     return {
         productType: getProductType(state),
         byProductType: getByProductType(state),
-        // requestQuantity: getRequestQuantity(state),
+        // requestQuantity: getRetrieveRequestQuantity(state),
         // modalRequestQuantity: getModalRequestQuantity(state),
         productDetail: getProductDetail(state),
         byProductDetail: getByProductDetail(state),

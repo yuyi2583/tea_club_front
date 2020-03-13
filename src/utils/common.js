@@ -11,8 +11,9 @@ export const activityType = {
 }
 
 export const requestType = {
-    "appRequest": 0,
-    "modalRequest": 1,
+    "retrieveRequest": 0,
+    "updateRequest":1,
+    "modalRequest": 2,
 }
 
 export const activityStatus = {

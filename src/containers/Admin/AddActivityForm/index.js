@@ -6,7 +6,7 @@ import { connect } from "react-redux";
 import { actions as shopActions, getShop, getShopList } from "../../../redux/modules/shop";
 import { actions as clerkActions, getAllPosition, getByAllPosition, getByAuthority, getByBelong } from "../../../redux/modules/clerk";
 import { actions as productActions, getProductType, getByProductType, getByProductDetail, getProductDetail } from "../../../redux/modules/product";
-// import { getRequestQuantity, getModalRequestQuantity } from "../../../redux/modules/app";
+// import { getRetrieveRequestQuantity, getModalRequestQuantity } from "../../../redux/modules/app";
 import { actions as customerActions, getByCustomerType, getCustomerType } from "../../../redux/modules/customer";
 import { actions as activityActions, getActivities, getByActivities } from "../../../redux/modules/activity";
 import { Redirect } from "react-router-dom";
@@ -208,7 +208,7 @@ const mapStateToProps = (state, props) => {
         byBelong: getByBelong(state),
         productType: getProductType(state),
         byProductType: getByProductType(state),
-        // requestQuantity: getRequestQuantity(state),
+        // requestQuantity: getRetrieveRequestQuantity(state),
         // modalRequestQuantity: getModalRequestQuantity(state),
         productDetail: getProductDetail(state),
         byProductDetail: getByProductDetail(state),

@@ -1,5 +1,5 @@
 {
-    "authority":[
+    "data":[
         {"uid":"1","name":"company_info","component":"Admin/CompanyInfo","title":"公司信息管理","description":"这是公司信息管理","belong":{"uid":"1","name":"company","title":"公司管理","icon":"book"}},
         {"uid":"2","name":"shop_management","component":"Admin/ShopManagement","title":"门店管理","description":"这是门店管理","belong":{"uid":"1","name":"company","title":"公司管理","icon":"book"}},
         {"uid":"3","name":"role_information","component":"Admin/RoleManagement","title":"人员信息管理","description":"这是人员信息管理","belong":{"uid":"2","name":"role","title":"角色管理","icon":"user"}},

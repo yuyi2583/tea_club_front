@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 // import { actions as activityActions, getActivities, getbyProductDetail, getByActivityRules } from "../../../../redux/modules/activity";
 // import { actions as uiActions, getAlterInfoState } from "../../../../redux/modules/ui";
 // import { actions as appActions, 
-//     // getRequestQuantity, getModalRequestQuantity
+//     // getRetrieveRequestQuantity, getModalRequestQuantity
 //  } from "../../../../redux/modules/app";
 import { actions as productActions, getProductType, getByProductType, getByProductDetail, getProductDetail } from "../../../../../redux/modules/product";
 // import { actions as customerActions, getCustomerType, getByCustomerType } from "../../../../redux/modules/customer";
@@ -241,10 +241,7 @@ class ProductDetail extends React.Component {
                                     <Button type="primary" htmlType="submit" block loading={requestQuantity > 0}>确认修改</Button>
                                 </Col>
                                 <Col span={4} push={4}>
-                                    <Button block onClick={() => {
-                                        this.props.finishAlterInfo()
-                                        console.log("field value after alter", this.props.form.getFieldsValue());
-                                    }}>取消修改</Button>
+                                    <Button block onClick={() => this.props.finishAlterInfo()}>取消修改</Button>
                                 </Col>
                             </Row>
                         }
@@ -261,7 +258,7 @@ const mapStateToProps = (state, props) => {
         // activities: getActivities(state),
         // byProductDetail: getbyProductDetail(state),
         // alterInfo: getAlterInfoState(state),
-        // // requestQuantity: getRequestQuantity(state),
+        // // requestQuantity: getRetrieveRequestQuantity(state),
         // byActivityRules: getByActivityRules(state),
         // modalRequestQuantity: getModalRequestQuantity(state),
         productType: getProductType(state),

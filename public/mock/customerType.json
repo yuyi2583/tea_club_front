@@ -1,5 +1,5 @@
 {
-    "customerType": [
+    "data": [
         {"uid":"1","name":"注册用户"},
         {"uid":"2","name":"充值用户"},
         {"uid":"3","name":"超级vip用户"},

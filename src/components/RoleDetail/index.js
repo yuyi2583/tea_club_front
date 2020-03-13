@@ -13,7 +13,7 @@ import {
     getAllPosition,
     getByAllPosition
 } from "../../redux/modules/clerk";
-import { actions as appActions, getRequestQuantity } from "../../redux/modules/app";
+import { actions as appActions, getRetrieveRequestQuantity } from "../../redux/modules/app";
 import { actions as shopActions, getShopList, getShop } from "../../redux/modules/shop";
 import { actions as uiActions, getAlterInfoState } from "../../redux/modules/ui";
 import PictureCard from "../PictureCard";
@@ -376,7 +376,7 @@ const mapStateToProps = (state, props) => {
     return {
         byClerks: getByClerks(state),
         clerks: getClerks(state),
-        requestQuantity: getRequestQuantity(state),
+        requestQuantity: getRetrieveRequestQuantity(state),
         shop: getShop(state),
         byShopList: getShopList(state),
         alterInfo: getAlterInfoState(state),

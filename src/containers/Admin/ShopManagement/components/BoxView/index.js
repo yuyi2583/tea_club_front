@@ -6,7 +6,7 @@ import { actions as shopActions, getBoxes, getShopList, getShop } from "../../..
 import moment from 'moment';
 import PictureCard from "../../../../../components/PictureCard";
 import { actions as uiActions, getAlterInfoState } from "../../../../../redux/modules/ui";
-import { getRequestQuantity } from "../../../../../redux/modules/app";
+import { getRetrieveRequestQuantity } from "../../../../../redux/modules/app";
 
 const format = 'HH:mm';
 const { Option } = Select;
@@ -190,7 +190,7 @@ const mapStateToProps = (state, props) => {
         byBoxes: getBoxes(state),
         byShopList: getShopList(state),
         shop: getShop(state),
-        requestQuantity: getRequestQuantity(state),
+        requestQuantity: getRetrieveRequestQuantity(state),
     };
 };
 

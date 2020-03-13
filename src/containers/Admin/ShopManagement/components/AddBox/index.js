@@ -14,7 +14,7 @@ import PictureCard from "../../../../../components/PictureCard";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actions as shopActions } from "../../../../../redux/modules/shop";
-import { getRequestQuantity, getError } from "../../../../../redux/modules/app";
+import { getRetrieveRequestQuantity, getError } from "../../../../../redux/modules/app";
 import { Redirect } from "react-router-dom";
 import { map } from "../../../../../router"
 
@@ -177,7 +177,7 @@ class AddBox extends React.Component {
 
 const mapStateToProps = (state, props) => {
     return {
-        requestQuantity: getRequestQuantity(state),
+        requestQuantity: getRetrieveRequestQuantity(state),
     };
 };
 

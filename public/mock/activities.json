@@ -1,5 +1,5 @@
 {
-    "activities": [
+    "data": [
         {"uid":"1123asdf","name":"activity1",
             "mutexRange": ["2"],"description":"this is activity1 asdfasdfasdfasdfasdfasfd","startTime":1583138590403,"endTime":1583148590403,"enforceTerminal":true,"activityRules":[{"uid":1,"activityType": "1","avtivityApplyForProduct": [3],
             "avtivityApplyForCustomer":  ["1", "2"],

@@ -40,15 +40,15 @@ export const actions = {
             // 每个API请求开始前，发送app模块定义的startRequest action
             dispatch(appActions.startRequest());
             const params = { userId, password };
-            return get(url.adminLogin(), params).then((data) => {
+            return get(url.adminLogin(), params).then((result) => {
                 // 每个API请求结束后，发送app模块定义的finishRequest action
                 dispatch(appActions.finishRequest());
                 // 请求返回成功，保存登录用户的信息，否则，设置全局错误信息
-                if (!data.error) {
-                    const {userId,userName,authority,authorityBelong}=convertToPlainStructure(data);
+                if (!result.error) {
+                    const {userId,userName,authority,authorityBelong}=convertToPlainStructure(result.data);
                     dispatch(actions.setLoginInfo(userId, userName,authority,authorityBelong));
                 } else {
-                    dispatch(appActions.setError(data.error));
+                    dispatch(appActions.setError(result.msg));
                 }
             });
         }
@@ -66,8 +66,7 @@ export const actions = {
     })
 };
 
-const convertToPlainStructure=(data)=>{
-    const {userId,userName,authority}=data.user;
+const convertToPlainStructure=( {userId,userName,authority})=>{
     let byAuthority={};
     let byAuthorityBelong={};
     authority.forEach((item)=>{

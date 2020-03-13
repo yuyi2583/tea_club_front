@@ -6,7 +6,7 @@ import { connect } from "react-redux";
 import { actions as shopActions, getShop, getShopList } from "../../../../redux/modules/shop";
 import { actions as clerkActions, getAllPosition, getByAllPosition, getByAuthority, getByBelong } from "../../../../redux/modules/clerk";
 import { actions as activityActions, getActivities, getByActivities } from "../../../../redux/modules/activity";
-import { getRequestQuantity } from "../../../../redux/modules/app";
+import { getRetrieveRequestQuantity } from "../../../../redux/modules/app";
 import { Redirect } from "react-router-dom";
 import { map } from "../../../../router";
 import { sex, activityStatus } from "../../../../utils/common";
@@ -206,7 +206,7 @@ const mapStateToProps = (state, props) => {
     return {
         shop: getShop(state),
         byShopList: getShopList(state),
-        requestQuantity: getRequestQuantity(state),
+        requestQuantity: getRetrieveRequestQuantity(state),
         allPositions: getAllPosition(state),
         byAllPositions: getByAllPosition(state),
         byAuthority: getByAuthority(state),

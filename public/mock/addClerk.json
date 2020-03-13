@@ -1,5 +1,5 @@
 {
-    "clerk":{
+    "data":{
         "uid":"new",
         "name":"新职员",
         "position":{"uid":"2","name":"服务员"},

@@ -20,7 +20,7 @@ import PictureCard from "../../../../../components/PictureCard";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actions as appActions, getError, 
-    // getRequestQuantity, getModalRequestQuantity 
+    // getRetrieveRequestQuantity, getModalRequestQuantity 
 } from "../../../../../redux/modules/app";
 import { actions as shopActions, getShop, getShopList, getBoxes, getDisplay, getOpenHours } from "../../../../../redux/modules/shop";
 import { actions as clerkActions, getByClerks, getClerks } from "../../../../../redux/modules/clerk";
@@ -530,7 +530,7 @@ const mapStateToProps = (state, props) => {
         shop: getShop(state),
         clerks: getClerks(state),
         byClerks: getByClerks(state),
-        // requestQuantity: getRequestQuantity(state),
+        // requestQuantity: getRetrieveRequestQuantity(state),
         error: getError(state),
         shopId: getShopId_shopManagement(state),
         addButtonVisible: getAddButtonVisible_shopManagement(state),
