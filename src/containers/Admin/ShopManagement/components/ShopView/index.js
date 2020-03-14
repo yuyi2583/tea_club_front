@@ -14,29 +14,31 @@ import {
     Typography,
     Modal
 } from "antd";
-import { Link, Prompt } from "react-router-dom";
+import { Link, Prompt, Redirect } from "react-router-dom";
 import { TweenOneGroup } from 'rc-tween-one';
 import PictureCard from "../../../../../components/PictureCard";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { actions as appActions, getError, 
+import {
+    actions as appActions, getError,
     // getRetrieveRequestQuantity, getModalRequestQuantity 
 } from "../../../../../redux/modules/app";
 import { actions as shopActions, getShop, getShopList, getBoxes, getDisplay, getOpenHours } from "../../../../../redux/modules/shop";
 import { actions as clerkActions, getByClerks, getClerks } from "../../../../../redux/modules/clerk";
-import {
-    actions as uiActions,
-    getShopId_shopManagement,
-    getAddButtonVisible_shopManagement,
-    getAlterInfoState,
-    getModalVisible,
-    getClientHeight,
-    getClientWidth
-} from "../../../../../redux/modules/ui";
+// import {
+//     actions as uiActions,
+//     getShopId_shopManagement,
+//     getAddButtonVisible_shopManagement,
+//     getAlterInfoState,
+//     getModalVisible,
+//     getClientHeight,
+//     getClientWidth
+// } from "../../../../../redux/modules/ui";
 import AddClerkModal from "../AddClerkModal";
 import BoxCard from "../BoxCard";
 import { convertToDay } from "../../../../../utils/commonUtils";
 import AlterOpenHourModal from "../AlterOpenHourModal";
+import { map } from "../../../../../router";
 
 const { Option } = Select;
 const { Text } = Typography;
@@ -53,7 +55,7 @@ class ShopView extends React.Component {
         }
     }
     onChange = (value) => {
-        console.log("on change",value);
+        console.log("on change", value);
         this.props.fetchShopInfo(value);
         this.props.selectShop_shopManagement(value);
     }
@@ -82,20 +84,20 @@ class ShopView extends React.Component {
 
     completeAlter = () => {
         const newShopInfo = this.state;
-        const{shopInfo}=newShopInfo;
+        const { shopInfo } = newShopInfo;
         console.log(newShopInfo);
-        let flag=true;
-        for(var key in shopInfo){
-            if(shopInfo[key]==null||shopInfo[key]===""){
-                this.props.callMessage("error","输入框不能为空");
-                flag=false;
+        let flag = true;
+        for (var key in shopInfo) {
+            if (shopInfo[key] == null || shopInfo[key] === "") {
+                this.props.callMessage("error", "输入框不能为空");
+                flag = false;
                 return;
             }
         }
         // if(!flag){
         //     return;
         // }
-        this.setState({ shopInfo: this.props.shop.shopInfo, selectClerks: new Array(), selectManagers: new Array(),byOpenHours:this.props.byOpenHours });
+        this.setState({ shopInfo: this.props.shop.shopInfo, selectClerks: new Array(), selectManagers: new Array(), byOpenHours: this.props.byOpenHours });
         this.props.alterShopInfo(newShopInfo)
             .then((data) => {
                 this.props.callMessage("success", "修改信息成功！");
@@ -183,7 +185,7 @@ class ShopView extends React.Component {
             this.props.closeModal();
         } else if (type === 1) {
             const { byOpenHours } = this.state;
-            const {openHours}=this.state.shopInfo;
+            const { openHours } = this.state.shopInfo;
             let breakFlag = true;
             openHours.forEach((item) => {
                 let startStatus = "success";
@@ -278,10 +280,10 @@ class ShopView extends React.Component {
                 </div>
             )
         });
-        let openHoursChildrenInState=null;
+        let openHoursChildrenInState = null;
         if (this.state.byOpenHours) {
-            const  byOpenHours1  = this.state.byOpenHours;
-            const openHours1  = this.state.shopInfo.openHours;
+            const byOpenHours1 = this.state.byOpenHours;
+            const openHours1 = this.state.shopInfo.openHours;
             openHoursChildrenInState = openHours1.map((item) => {
                 const day1 = convertToDay(byOpenHours1[item].repeat);
                 // const dayChildren=day.map((item)=>)
@@ -333,13 +335,20 @@ class ShopView extends React.Component {
     }
 
     render() {
+        const { from } = this.props.location.state || { from: { pathname: map.admin.AdminHome() } };
+        if (this.props.connectError) {
+            return <Redirect to={{
+                pathname: map.error(),
+                state: { from }
+            }} />
+        }
         const { shopList, shopInfo } = this.props.shop;
         const { byClerks, match, shopId, byShopList, modalRequestQuantity, clerks,
-            requestQuantity, byBoxes, alterInfo, modalVisible, shop } = this.props;
+            retrieveRequestQuantity, byBoxes, alterInfo, modalVisible, shop } = this.props;
         const { fileListInProps, fileListInState } = this.forDisplay();
         const { openHoursChildrenInProps, openHoursChildrenInState } = this.props.shop.shopInfo != null && this.getOpenHours();
         return (
-            <div>
+            <Spin spinning={retrieveRequestQuantity > 0}>
                 <div>
                     <Select
                         showSearch
@@ -356,145 +365,145 @@ class ShopView extends React.Component {
                     </Select>
                     {shopId === "" || shopId === "请选择门店" ? null : <Button onClick={this.startAlterInfo} style={{ marginBottom: "20px", float: "right" }}>修改门店信息</Button>}
                 </div>
-                {requestQuantity > 0 ?
-                    <div style={{ width: "100%", height: "300px", display: "flex", justifyContent: "center", alignItems: "center" }}><Spin size="large" /></div> :
-                    <div style={{ margin: "20px 0" }}>
-                        {shopId === "" || shopId === "请选择门店" ? <Empty description="请选择门店" /> :
-                            shopInfo ?
-                                <Descriptions bordered column={2}>
-                                    <Descriptions.Item label="门店名称">
-                                        {alterInfo ?
-                                            <Input value={this.state.shopInfo.name} allowClear name="name" onChange={this.handleChange} />
-                                            : shopInfo.name}
-                                    </Descriptions.Item>
-                                    <Descriptions.Item label="地址">
-                                        {alterInfo ?
-                                            <Input value={this.state.shopInfo.address} allowClear name="address" onChange={this.handleChange} />
-                                            : shopInfo.address}
-                                    </Descriptions.Item>
-                                    <Descriptions.Item label="介绍" span={2}>
-                                        {alterInfo ?
-                                            <Input.TextArea rows={3} value={this.state.shopInfo.description} allowClear name="description" onChange={this.handleChange} />
-                                            : shopInfo.description}
-                                    </Descriptions.Item>
-                                    <Descriptions.Item label="营业时间">
-                                        {alterInfo ?
-                                            <div>
-                                                <Button type="primary" onClick={this.alterOpenHour}>更改营业时间</Button>
-                                                {openHoursChildrenInState}
-                                            </div>
-                                            :  openHoursChildrenInProps 
-                                        }
-                                    </Descriptions.Item>
-                                    <Descriptions.Item label="联系方式">
-                                        {alterInfo ?
-                                            <Input value={this.state.shopInfo.contact} allowClear name="contact" onChange={this.handleChange} />
-                                            : shopInfo.contact}
-                                    </Descriptions.Item>
-                                    <Descriptions.Item label="职员" span={2} >
-                                        {alterInfo ?
-                                            <div>
-                                                <TweenOneGroup
-                                                    enter={{
-                                                        scale: 0.8,
-                                                        opacity: 0,
-                                                        type: 'from',
-                                                        duration: 100,
-                                                        onComplete: e => {
-                                                            e.target.style = '';
-                                                        },
-                                                    }}
-                                                    leave={{ opacity: 0, width: 0, scale: 0, duration: 200 }}
-                                                    appear={false}
-                                                >
-                                                    {this.state.shopInfo.clerks.map((id) => (
-                                                        <span key={id} style={{ display: 'inline-block' }}>
-                                                            <Tag
-                                                                closable
-                                                                style={{ margin: "10px" }}
-                                                                onClose={e => {
-                                                                    e.preventDefault();
-                                                                    this.handleRemoveClerk(id);
-                                                                }}
-                                                            >
-                                                                {byClerks[id].position == null ?
-                                                                    (this.state.selectClerks.indexOf(id) !== -1 ?
-                                                                        byClerks[id].name + " · " + "服务员" :
-                                                                        byClerks[id].name + " · " + "店长")
-                                                                    : (byClerks[id].name + " · " + byClerks[id].position.name)
-                                                                }
-                                                            </Tag>
-                                                        </span>))
-                                                    }
-                                                </TweenOneGroup>
-                                                {alterInfo && <Tag onClick={this.showModal} style={{ background: '#fff', borderStyle: 'dashed', margin: "10px" }}>
-                                                    <Icon type="plus" /> 添加职员
-                                                </Tag>}
-                                            </div>
-                                            : shopInfo.clerks.length != 0 && byClerks != null ? shopInfo.clerks.map((id) => (
-                                                <Tooltip key={id} title={"点击查看员工详情"} placement="topLeft">
-                                                    <Link to={`${match.url}/clerkDetail/${shopId}/${id}`}>
-                                                        <Tag onClick={this.showClerkInfo} style={{ margin: "10px" }}>
-                                                            {byClerks[id].name} · {byClerks[id].position.name}
-                                                        </Tag></Link>
-                                                </Tooltip>
-                                            )) : <Empty />}
-                                    </Descriptions.Item>
-                                    <Descriptions.Item label="门店展示图片" span={2}>
-                                        {alterInfo ?
-                                            <PictureCard
-                                                fileList={fileListInState}
-                                                alterInfo={alterInfo}
-                                                p="state"
-                                                onChange={this.handleDisplayChange} />
-                                            : shopInfo.display === null || shopInfo.display.length === 0 ?
-                                                <Empty />
-                                                : <PictureCard
-                                                    fileList={fileListInProps}
-                                                    p="props"
-                                                    alterInfo={alterInfo}
-                                                    onChange={this.handleDisplayChange} />
-                                        }
-                                    </Descriptions.Item>
-                                    <Descriptions.Item label="包厢" span={2}>
+                {/* {retrieveRequestQuantity > 0 ?
+                    <div style={{ width: "100%", height: "300px", display: "flex", justifyContent: "center", alignItems: "center" }}><Spin size="large" /></div> : */}
+                <div style={{ margin: "20px 0" }}>
+                    {shopId === "" || shopId === "请选择门店" ? <Empty description="请选择门店" /> :
+                        shopInfo ?
+                            <Descriptions bordered column={2}>
+                                <Descriptions.Item label="门店名称">
+                                    {alterInfo ?
+                                        <Input value={this.state.shopInfo.name} allowClear name="name" onChange={this.handleChange} />
+                                        : shopInfo.name}
+                                </Descriptions.Item>
+                                <Descriptions.Item label="地址">
+                                    {alterInfo ?
+                                        <Input value={this.state.shopInfo.address} allowClear name="address" onChange={this.handleChange} />
+                                        : shopInfo.address}
+                                </Descriptions.Item>
+                                <Descriptions.Item label="介绍" span={2}>
+                                    {alterInfo ?
+                                        <Input.TextArea rows={3} value={this.state.shopInfo.description} allowClear name="description" onChange={this.handleChange} />
+                                        : shopInfo.description}
+                                </Descriptions.Item>
+                                <Descriptions.Item label="营业时间">
+                                    {alterInfo ?
                                         <div>
-                                            <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                                                <Link to={{
-                                                    pathname: `${match.url}/addBox/${shopId}`,
-                                                    state: { from: this.props.location }
-                                                }}>
-                                                    <Button type="primary">新增包厢</Button>
-                                                </Link>
-                                            </div>
-                                            {shopInfo.boxes.length > 0 ?
-                                                shopInfo.boxes.map((boxId) => (
-                                                    <BoxCard
-                                                        key={boxId}
-                                                        match={match}
-                                                        shopId={shopId}
-                                                        deleteBoxInfo={this.deleteBoxInfo}
-                                                        boxInfo={byBoxes[boxId]}
-                                                        alterInfo={alterInfo} />))
-
-                                                : <Empty />
-                                            }
+                                            <Button type="primary" onClick={this.alterOpenHour}>更改营业时间</Button>
+                                            {openHoursChildrenInState}
                                         </div>
-                                    </Descriptions.Item>
-                                </Descriptions>
-                                : <Empty />
-                        }
-                        {alterInfo ?
-                            <Row style={{ margin: "20px 0" }}>
-                                <Col span={12} offset={4}>
-                                    <Button type="primary" block onClick={this.completeAlter} loading={modalRequestQuantity > 0} >{modalRequestQuantity > 0 ? "" : "确认修改"}</Button>
-                                </Col>
-                                <Col span={4} push={4}>
-                                    <Button block onClick={this.handleCancelAlter}>取消修改</Button>
-                                </Col>
-                            </Row>
-                            : null}
-                    </div>
-                }
+                                        : openHoursChildrenInProps
+                                    }
+                                </Descriptions.Item>
+                                <Descriptions.Item label="联系方式">
+                                    {alterInfo ?
+                                        <Input value={this.state.shopInfo.contact} allowClear name="contact" onChange={this.handleChange} />
+                                        : shopInfo.contact}
+                                </Descriptions.Item>
+                                <Descriptions.Item label="职员" span={2} >
+                                    {alterInfo ?
+                                        <div>
+                                            <TweenOneGroup
+                                                enter={{
+                                                    scale: 0.8,
+                                                    opacity: 0,
+                                                    type: 'from',
+                                                    duration: 100,
+                                                    onComplete: e => {
+                                                        e.target.style = '';
+                                                    },
+                                                }}
+                                                leave={{ opacity: 0, width: 0, scale: 0, duration: 200 }}
+                                                appear={false}
+                                            >
+                                                {this.state.shopInfo.clerks.map((id) => (
+                                                    <span key={id} style={{ display: 'inline-block' }}>
+                                                        <Tag
+                                                            closable
+                                                            style={{ margin: "10px" }}
+                                                            onClose={e => {
+                                                                e.preventDefault();
+                                                                this.handleRemoveClerk(id);
+                                                            }}
+                                                        >
+                                                            {byClerks[id].position == null ?
+                                                                (this.state.selectClerks.indexOf(id) !== -1 ?
+                                                                    byClerks[id].name + " · " + "服务员" :
+                                                                    byClerks[id].name + " · " + "店长")
+                                                                : (byClerks[id].name + " · " + byClerks[id].position.name)
+                                                            }
+                                                        </Tag>
+                                                    </span>))
+                                                }
+                                            </TweenOneGroup>
+                                            {alterInfo && <Tag onClick={this.showModal} style={{ background: '#fff', borderStyle: 'dashed', margin: "10px" }}>
+                                                <Icon type="plus" /> 添加职员
+                                                </Tag>}
+                                        </div>
+                                        : shopInfo.clerks.length != 0 && byClerks != null ? shopInfo.clerks.map((id) => (
+                                            <Tooltip key={id} title={"点击查看员工详情"} placement="topLeft">
+                                                <Link to={`${match.url}/clerkDetail/${shopId}/${id}`}>
+                                                    <Tag onClick={this.showClerkInfo} style={{ margin: "10px" }}>
+                                                        {byClerks[id].name} · {byClerks[id].position.name}
+                                                    </Tag></Link>
+                                            </Tooltip>
+                                        )) : <Empty />}
+                                </Descriptions.Item>
+                                <Descriptions.Item label="门店展示图片" span={2}>
+                                    {alterInfo ?
+                                        <PictureCard
+                                            fileList={fileListInState}
+                                            alterInfo={alterInfo}
+                                            p="state"
+                                            onChange={this.handleDisplayChange} />
+                                        : shopInfo.display === null || shopInfo.display.length === 0 ?
+                                            <Empty />
+                                            : <PictureCard
+                                                fileList={fileListInProps}
+                                                p="props"
+                                                alterInfo={alterInfo}
+                                                onChange={this.handleDisplayChange} />
+                                    }
+                                </Descriptions.Item>
+                                <Descriptions.Item label="包厢" span={2}>
+                                    <div>
+                                        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                                            <Link to={{
+                                                pathname: `${match.url}/addBox/${shopId}`,
+                                                state: { from: this.props.location }
+                                            }}>
+                                                <Button type="primary">新增包厢</Button>
+                                            </Link>
+                                        </div>
+                                        {shopInfo.boxes.length > 0 ?
+                                            shopInfo.boxes.map((boxId) => (
+                                                <BoxCard
+                                                    key={boxId}
+                                                    match={match}
+                                                    shopId={shopId}
+                                                    deleteBoxInfo={this.deleteBoxInfo}
+                                                    boxInfo={byBoxes[boxId]}
+                                                    alterInfo={alterInfo} />))
+
+                                            : <Empty />
+                                        }
+                                    </div>
+                                </Descriptions.Item>
+                            </Descriptions>
+                            : <Empty />
+                    }
+                    {alterInfo ?
+                        <Row style={{ margin: "20px 0" }}>
+                            <Col span={12} offset={4}>
+                                <Button type="primary" block onClick={this.completeAlter} loading={modalRequestQuantity > 0} >{modalRequestQuantity > 0 ? "" : "确认修改"}</Button>
+                            </Col>
+                            <Col span={4} push={4}>
+                                <Button block onClick={this.handleCancelAlter}>取消修改</Button>
+                            </Col>
+                        </Row>
+                        : null}
+                </div>
+                {/* } */}
                 <AddClerkModal
                     visible={modalVisible}
                     requestQuantity={modalRequestQuantity}
@@ -520,7 +529,7 @@ class ShopView extends React.Component {
                     handleCancel={() => this.handleModalCancel(1)}
                 />
                 <Prompt message="当前页面正在输入中，离开此页面您输入的数据不会被保存，是否离开?" when={alterInfo} />
-            </div>
+            </Spin>
         );
     }
 
@@ -532,15 +541,15 @@ const mapStateToProps = (state, props) => {
         byClerks: getByClerks(state),
         // requestQuantity: getRetrieveRequestQuantity(state),
         error: getError(state),
-        shopId: getShopId_shopManagement(state),
-        addButtonVisible: getAddButtonVisible_shopManagement(state),
+        // shopId: getShopId_shopManagement(state),
+        // addButtonVisible: getAddButtonVisible_shopManagement(state),
         byBoxes: getBoxes(state),
-        alterInfo: getAlterInfoState(state),
+        // alterInfo: getAlterInfoState(state),
         byDisplay: getDisplay(state),
-        modalVisible: getModalVisible(state),
+        // modalVisible: getModalVisible(state),
         // modalRequestQuantity: getModalRequestQuantity(state),
-        clientWidth: getClientWidth(state),
-        clientHeight: getClientHeight(state),
+        // clientWidth: getClientWidth(state),
+        // clientHeight: getClientHeight(state),
         byShopList: getShopList(state),
         byOpenHours: getOpenHours(state),
     };
@@ -549,7 +558,7 @@ const mapStateToProps = (state, props) => {
 const mapDispatchToProps = (dispatch) => {
     return {
         ...bindActionCreators(shopActions, dispatch),
-        ...bindActionCreators(uiActions, dispatch),
+        // ...bindActionCreators(uiActions, dispatch),
         ...bindActionCreators(clerkActions, dispatch),
         ...bindActionCreators(appActions, dispatch),
     };

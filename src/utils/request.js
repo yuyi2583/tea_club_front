@@ -18,6 +18,19 @@ function get(url) {
   })
 }
 
+function _delete(url) {
+  return fetch(url, {
+    method: "DELETE",
+    headers: headers,
+  }).then(response => {
+    return handleResponse(url, response);
+  }).catch(err => {
+    callNotification("error", "请求失败，连接不到服务器.");
+    console.error(`Request failed. Url = ${url} . Message = ${err}`);
+    return { error: { msg: "请求失败，连接不到服务器.", code: "404" } };
+  })
+}
+
 function put(url, params) {
   return fetch(url, {
     method: "PUT",
@@ -28,7 +41,7 @@ function put(url, params) {
   }).catch(err => {
     callNotification("error", "请求失败，连接不到服务器.");
     console.error(`Request failed. Url = ${url} . Message = ${err}`);
-    return { error: { msg: "请求失败，连接不到服务器.", code: "404" } };
+    return { error: { msg: "请求失败，连接不到服务器.", code: 404 } };
   })
 }
 
@@ -42,11 +55,16 @@ function post(url, params) {
     return handleResponse(url, response);
   }).catch(err => {
     console.error(`Request failed. Url = ${url} . Message = ${err}`);
-    return { error: { message: "Request failed." } };
+    return { error: { msg: "请求失败，连接不到服务器.", code: 404 } };
   })
 }
 
 function handleResponse(url, response) {
+  console.log("handle response", response);
+  if(response.status==404){
+    callNotification("error", "请求失败，找不到该资源.");
+    return { error: { msg: "请求失败，找不到该资源.", code: 404 } };
+  }
   if (response.status < 500) {
     return response.json();
   } else {
@@ -56,4 +74,4 @@ function handleResponse(url, response) {
   }
 }
 
-export { post, get, put };
+export { post, get, put,_delete };

@@ -10,62 +10,13 @@ import {
     getAlterInfoState
 } from "../../../redux/modules/ui";
 import ClerkView from "./components/ClerkView";
-import AddShop from "./components/AddShop";
+// import AddShop from "./components/AddShop";
 import BoxView from "./components/BoxView";
 import AddBox from "./components/AddBox";
+import ShopList from "./components/ShopList";
 
 
 class ShopManagement extends React.Component {
-    // handleBack = () => {
-    //     window.history.back();
-    // }
-
-    // getExtra = () => {
-    //     const { history, match } = this.props;
-    //     let extra = null;
-    //     if (history.location.pathname === "/administrator/company/shop_management") {
-    //         extra = (
-    //             <Link to={`${match.url}/addShop`}>
-    //                 <Button type="primary">新增门店</Button>
-    //             </Link>);
-    //     } else if (history.location.pathname.indexOf("boxInfo") != -1) {
-    //         extra = (<Button type="primary" onClick={() => this.props.startAlterInfo()}>修改包厢信息</Button>);
-    //     } else {
-    //         extra = null;
-    //     }
-    //     return extra;
-    // }
-
-    // callMessage = (type, content) => {
-    //     switch (type) {
-    //         case "success":
-    //             message.success(content);
-    //             break;
-    //         case "error":
-    //             message.error(content);
-    //             break;
-    //         case "warning":
-    //             message.warning(content);
-    //             break;
-    //     }
-    // }
-
-    // getSubTitle = () => {
-    //     const { history } = this.props;
-    //     let subTitle = null;
-    //     if (history.location.pathname.indexOf("addShop") != -1) {
-    //         subTitle = "新增门店";
-    //     } else if (history.location.pathname.indexOf("boxInfo") != -1) {
-    //         subTitle = "包厢信息";
-    //     } else if(history.location.pathname.indexOf("addBox") != -1){
-    //         subTitle="新增包厢";
-    //     }else if(history.location.pathname.indexOf("clerkDetail") != -1){
-    //         subTitle="职员信息";
-    //     }else {
-    //         subTitle = null;
-    //     }
-    //     return subTitle;
-    // }
 
     render() {
         const { byClerks, match, addButtonVisible, history, alterInfo } = this.props;
@@ -83,21 +34,21 @@ class ShopManagement extends React.Component {
                             path={match.url}
                             exact
                             render={props =>
-                                <ShopView
-                                {...props}
+                                <ShopList
+                                    {...props}
                                     {...this.props}
-                                    // callMessage={this.callMessage} 
-                                    />
+                                // callMessage={this.callMessage} 
+                                />
                             } />
-                        <Route
+                        {/* <Route
                             path={`${match.url}/addShop`}
                             render={props =>
                                 <AddShop
-                                {...props}
+                                    {...props}
                                     {...this.props}
-                                    // callMessage={this.callMessage} 
-                                    />
-                            } />
+                                // callMessage={this.callMessage} 
+                                />
+                            } /> */}
                         <Route
                             path={`${match.url}/boxInfo/:shopId/:boxId`}
                             render={props =>
@@ -113,8 +64,8 @@ class ShopManagement extends React.Component {
                                 <AddBox
                                     {...props}
                                     {...this.props}
-                                    // callMessage={this.callMessage} 
-                                    />
+                                // callMessage={this.callMessage} 
+                                />
                             } />
                         <Route
                             path={`${match.url}/clerkDetail/:shopId/:clerkId`}
@@ -123,8 +74,8 @@ class ShopManagement extends React.Component {
                                     {...props}
                                     {...this.props}
                                     byClerks={byClerks}
-                                    // callMessage={this.callMessage} 
-                                    />
+                                // callMessage={this.callMessage} 
+                                />
                             )} />
                     </div>
                 </PageHeader>

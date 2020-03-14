@@ -89,13 +89,13 @@ class AddProduct extends React.Component {
         }
         const { getFieldDecorator } = this.props.form;
         const { fileList, newCategory } = this.state;
-        const { requestQuantity, modalVisible, productType, byProductType, modalRequestQuantity } = this.props;
+        const { retrieveRequestQuantity, modalVisible, productType, byProductType, modalRequestQuantity } = this.props;
         return (
             <div>
                 <PageHeader
                     title="添加产品"
                     onBack={this.props.handleBack}>
-                    <Spin spinning={requestQuantity > 0}>
+                    <Spin spinning={retrieveRequestQuantity > 0}>
                         <Form {...formItemLayout} onSubmit={this.handleSubmit}>
                             <Form.Item label="产品名称">
                                 {getFieldDecorator('name', {
@@ -157,7 +157,7 @@ class AddProduct extends React.Component {
                                     onChange={this.handleDisplayChange} />
                             </Form.Item>
                             <Form.Item {...tailFormItemLayout}>
-                                <Button type="primary" htmlType="submit" block loading={requestQuantity > 0}>
+                                <Button type="primary" htmlType="submit" block loading={retrieveRequestQuantity > 0}>
                                     新增产品
                                 </Button>
                             </Form.Item>

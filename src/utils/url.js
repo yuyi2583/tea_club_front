@@ -10,14 +10,21 @@ export default {
     alterCompanyInfo: () =>
         HOME + "/company",
     //"/mock/companyInfo.json",
-    fetchShopInfo: () => "/mock/shopInfo.json",
-    fetchShopList: () => "/mock/shopList.json",
+    fetchShopInfo: (uid) => 
+    HOME+`/shop/${uid}`,
+    // "/mock/shopInfo.json",
+    fetchShops: () => 
+    // HOME+"/shops",
+    "/mock/shopList.json",
+    removeShop:(uid)=>HOME+`shop/${uid}`,
+    //"/mock/alterBoxInfo.json",
     fetchAllClerks: () => "/mock/allClerks.json",
     alterBoxInfo: () => "/mock/alterBoxInfo.json",
     deleteBoxInfo: () => "/mock/alterBoxInfo.json",
     addBoxInfo: () => "/mock/addBoxInfo.json",
     alterShopInfo: () => "/mock/alterBoxInfo.json",
-    addShop: () => "/mock/addShop.json",
+    addShop: () => HOME+"/shop",
+    // "/mock/addShop.json",
     fetchAllAuthority: () => "/mock/allAuthority.json",
     fetchAllPosition: () => "/mock/allPosition.json",
     alterClerkInfo: () => "/mock/alterClerkInfo.json",
@@ -44,4 +51,5 @@ export default {
     deleteOrder: () => "/mock/ordersByCustomer.json",
     deleteOrderByBatch: () => "/mock/ordersByCustomer.json",
     fetchOrderById: () => "/mock/order.json",
+    uploadPhoto:()=>HOME+"/savephoto",
 }

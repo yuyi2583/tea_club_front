@@ -5,7 +5,6 @@ import PropTypes from "prop-types";
 import { DynamicFieldSetContext } from "../../components/DynamicFieldSet";
 
 const { Option } = Select;
-const index = DynamicFieldSetContext;
 
 class ActivityRuleInput extends React.Component {
     constructor(props) {

@@ -1,63 +1,14 @@
 import React from "react";
-import { Descriptions, Input, Button, Row, Spin, Col, notification, PageHeader, Form, Modal, Skeleton } from 'antd';
+import { Descriptions, Input, Button, Row, Spin, Col, PageHeader, Form, Modal, Skeleton } from 'antd';
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
 import { map } from "../../../router";
 import { actions as appActions, getCompanyInfo, getError, getRetrieveRequestQuantity } from "../../../redux/modules/app";
-import { requestType } from "../../../utils/common";
 
 const { confirm } = Modal;
 
 class CompanyInfo extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            ...this.props.companyInfo
-            // companyName: "",
-            // postCode: "",
-            // contact: "",
-            // websiteName: "",
-            // weChatOfficialAccount: "",
-            // address: ""
-        }
-    }
-    alterCompanyInfo = () => {
-        this.props.startAlterInfo();
-    }
-
-    handleCancelAlter = () => {
-        this.setState({ ...this.props.companyInfo });
-        this.props.finishAlterInfo();
-    }
-
-
-    completeAlter = () => {
-        const info = this.state;
-        for (var key in info) {
-            if (info[key].length == 0) {
-                notification["error"]({
-                    message: '信息缺失',
-                    description:
-                        '输入框不能为空！！！',
-                });
-                return;
-            }
-        }
-        this.props.alterCompanyInfo(info);
-    }
-
-    // componentWillUnmount(){
-    //     this.props.finishAlterInfo();
-    // }
-
-    handleChange = (e) => {
-        const name = e.target.name;
-        this.setState({
-            [name]: e.target.value
-        })
-    }
-
     handleSubmit = e => {
         e.preventDefault();
         const thiz = this;

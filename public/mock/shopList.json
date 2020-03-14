@@ -1,9 +1,9 @@
 {
     "data": [
-        {"uid":"1","name":"门店1"},
-        {"uid":"2","name":"门店2"},
-        {"uid":"3","name":"门店3"},
-        {"uid":"4","name":"门店4"}
+        {"uid":"1","name":"门店1","description":"这是门店1","contact":"88271998"},
+        {"uid":"2","name":"门店2","description":"这是门店2","contact":"88271998"},
+        {"uid":"3","name":"门店3","description":"这是门店3","contact":"88271998"},
+        {"uid":"4","name":"门店4","description":"这是门店4","contact":"88271998"}
     ],
     "retCode": "200",
     "error":""

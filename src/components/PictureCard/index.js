@@ -2,6 +2,9 @@ import React from "react";
 import { Upload, Modal, Icon } from "antd";
 import PropTypes from "prop-types";
 import { getBase64 } from "../../utils/imageUtil";
+// import { bindActionCreators } from "redux";
+// import { connect } from "react-redux";
+// import {actions as photoActions} from "../../redux/modules/photo";
 
 class PictureCard extends React.Component {
     constructor(props) {
@@ -9,6 +12,7 @@ class PictureCard extends React.Component {
         this.state = {
             previewVisible: false,
             previewImage: '',
+            fileList: new Array(),
         }
     }
 
@@ -25,13 +29,18 @@ class PictureCard extends React.Component {
 
     handleCancel = () => this.setState({ previewVisible: false });
 
-    handleDisplayChange = ({ fileList }) => {
-        this.props.onChange(fileList);
+    handleDisplayChange = ({ file, fileList }) => {
+        console.log("file", file);
+        if (file.status == "done") {
+            this.props.onChange(file.response.data);
+        }
+        this.setState({ fileList })
+        // this.props.onChange(info.fileList);
     }
 
     render() {
-        const { fileList, alterInfo, max } = this.props;
-        const { previewVisible, previewImage } = this.state;
+        const { alterInfo, max } = this.props;
+        const { previewVisible, previewImage, fileList } = this.state;
         const uploadButton = (
             <div>
                 <Icon type="plus" />
@@ -41,7 +50,7 @@ class PictureCard extends React.Component {
         return (
             <div className="clearfix">
                 <Upload
-                    action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                    action="http://localhost:8080/savephoto"
                     listType="picture-card"
                     fileList={fileList}
                     onPreview={this.handlePreview}
@@ -61,7 +70,7 @@ class PictureCard extends React.Component {
 
 
 PictureCard.propTypes = {
-    fileList: PropTypes.array.isRequired,
+    fileList: PropTypes.array,
     alterInfo: PropTypes.bool,
     onChange: PropTypes.func.isRequired,
     max: PropTypes.number,
@@ -72,4 +81,16 @@ PictureCard.defaultProps = {
     max: 4
 }
 
-export default PictureCard;
+
+// const mapStateToProps = (state, props) => {
+//     return {
+//     };
+// };
+
+// const mapDispatchToProps = (dispatch) => {
+//     return {
+//         ...bindActionCreators(photoActions, dispatch),
+//     };
+// };
+
+export default PictureCard//connect(mapStateToProps, mapDispatchToProps)(PictureCard);

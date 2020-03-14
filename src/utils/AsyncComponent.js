@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import CompanyInfo from "../containers/Admin/CompanyInfo";
 import { handleBack, callMessage } from "./commonUtils";
 import { Button } from "antd";
-import { actions as uiActions, getAlterInfoState, getModalLoading, getModalVisible } from "../redux/modules/ui";
+import { actions as uiActions, getAlterInfoState, getModalLoading, getModalVisible,getShopId_shopManagement,getAddButtonVisible_shopManagement } from "../redux/modules/ui";
 import { getRetrieveRequestQuantity, getUpdateRequestQuantity, getModalRequestQuantity, getConnectError } from "../redux/modules/app";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
@@ -106,6 +106,8 @@ export default function asyncComponent(importComponent) {
       modalLoading: getModalLoading(state),
       modalVisible: getModalVisible(state),
       connectError: getConnectError(state),
+      shopId: getShopId_shopManagement(state),
+      addButtonVisible: getAddButtonVisible_shopManagement(state),
     };
   };
 

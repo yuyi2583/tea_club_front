@@ -1,10 +1,14 @@
 import { actions as appActions } from "./app";
 import url from "../../utils/url";
-import { get } from "../../utils/request";
+import { get, post, put, _delete } from "../../utils/request";
 import { actions as clerkActions } from "./clerk";
 import { actions as uiActions } from "./ui";
 
 const initialState = {
+    shops: new Array(),
+    byShops: new Object(),
+
+    ////////////////////////////////
     shopList: new Array(),
     shopInfo: null,
     byBoxes: null,//包厢
@@ -14,6 +18,10 @@ const initialState = {
 }
 
 export const types = {
+    FETCH_SHOPS: "SHOP/FETCH_SHOPS",
+    REMOVE_SHOP: "SHOP/REMOVE_SHOP",
+    ADD_SHOP: "SHOP/ADD_SHOP",                       //新增门店
+    //////////////////////////////////
     FETCH_SHOP_INFO: "SHOP/FETCH_SHOP_INFO",     //获取门店信息
     FETCH_SHOP_LIST: "SHOP/FETCH_SHOP_LIST",      //获取门店列表
     REMOVE_SHOP_CLERK: "SHOP/REMOVE_SHOP_CLERK",     //移除门店职员
@@ -23,42 +31,104 @@ export const types = {
     DELETE_BOX_INFO: "SHOP/DELETE_BOX_INFO",         //删除包厢
     ADD_BOX_INFO: "SHOP/ADD_BOX_INFO",               //新增包厢
     ALTER_SHOP_INFO: "SHOP/ALTER_SHOP_INFO",         //修改门店信息
-    ADD_SHOP:"SHOP/ADD_SHOP",                       //新增门店
 };
 
 export const actions = {
+    fetchShops: () => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest());
+            return get(url.fetchShops()).then((result) => {
+                dispatch(appActions.finishRequest());
+                if (!result.error) {
+                    dispatch(fetchShopsSuccess(convertShopsToPlainStructure(result.data)));
+                } else {
+                    dispatch(appActions.setError(result.error.msg));
+                    if (result.error.code == 404) {
+                        dispatch(appActions.setConnectError());
+                    }
+                    return Promise.reject(result.error);
+                }
+            })
+        }
+    },
+    removeShop: (uid) => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest());
+            return _delete(url.removeShop(uid)).then((result) => {
+                dispatch(appActions.finishRequest());
+                if (!result.error) {
+                    dispatch(removeShopSuccess(uid));
+                    return Promise.resolve();
+                } else {
+                    dispatch(appActions.setError(result.error.msg));
+                    if (result.error.code == 404) {
+                        dispatch(appActions.setConnectError());
+                    }
+                    return Promise.reject(result.error);
+                }
+            })
+        }
+    },
+    //新增门店
+    addShop: (shop) => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest());
+            const params = { ...shop };
+            return post(url.addShop(), params).then((result) => {
+                dispatch(appActions.finishRequest());
+                if (!result.error) {
+                    dispatch(addShopSuccess(result.data));
+                    return Promise.resolve();
+                } else {
+                    dispatch(appActions.setError(result.error));
+                    if (result.error.code == 404) {
+                        dispatch(appActions.setConnectError());
+                    }
+                    return Promise.reject(result.error);
+                }
+            })
+        }
+    },
+    /////////////////////////////////////////////////////////////////////
     //获取门店信息
     fetchShopInfo: (shopId) => {
         return (dispatch) => {
             dispatch(appActions.startRequest());
-            const params = { shopId };
-            return get(url.fetchShopInfo(), params).then((data) => {
+            return get(url.fetchShopInfo(shopId)).then((result) => {
                 dispatch(appActions.finishRequest());
-                if (!data.error) {
-                    const { shopInfo, byClerks, byBoxes, byDisplay, byOpenHours } = convertShopInfoToPlainStructure(data.shopInfo);
+                if (!result.error) {
+                    const { shopInfo, byClerks, byBoxes, byDisplay, byOpenHours } = convertShopInfoToPlainStructure(result.data);
                     dispatch(fetchShopInfoSuccess(shopInfo, byBoxes, byDisplay, byOpenHours));
                     // dispatch(actions.setDisplay(byDisplay));
                     dispatch(clerkActions.fetchClerks(byClerks))
                 } else {
-                    dispatch(appActions.setError(data.error));
+                    dispatch(appActions.setError(result.error.msg));
+                    if (result.error.code == 404) {
+                        dispatch(appActions.setConnectError());
+                    }
+                    return Promise.reject(result.error);
                 }
             })
         }
     },
     //获取门店列表
-    fetchShopList: () => {
-        return (dispatch) => {
-            dispatch(appActions.startRequest());
-            return get(url.fetchShopList()).then((data) => {
-                dispatch(appActions.finishRequest());
-                if (!data.error) {
-                    dispatch(fetchShopListSuccess(convertShopListToPlainStructure(data.shopList)));
-                } else {
-                    dispatch(appActions.setError(data.error));
-                }
-            })
-        }
-    },
+    // fetchShopList: () => {
+    //     return (dispatch) => {
+    //         dispatch(appActions.startRequest());
+    //         return get(url.fetchShopList()).then((result) => {
+    //             dispatch(appActions.finishRequest());
+    //             if (!result.error) {
+    //                 dispatch(fetchShopListSuccess(convertShopListToPlainStructure(result.data)));
+    //             } else {
+    //                 dispatch(appActions.setError(result.error.msg));
+    //                 if (result.error.code == 404) {
+    //                     dispatch(appActions.setConnectError());
+    //                 }
+    //                 return Promise.reject(result.error);
+    //             }
+    //         })
+    //     }
+    // },
     //移除门店职员:
     removeShopClerk: (clerkId) => ({
         type: types.REMOVE_SHOP_CLERK,
@@ -78,12 +148,12 @@ export const actions = {
         return (dispatch) => {
             dispatch(appActions.startRequest());
             const params = { newBoxInfo };
-            return get(url.alterBoxInfo(), params).then((data) => {
+            return get(url.alterBoxInfo(), params).then((result) => {
                 dispatch(appActions.finishRequest());
-                if (!data.error) {
-                    dispatch(alterBoxInfoSuccess(newBoxInfo));
+                if (!result.error) {
+                    dispatch(alterBoxInfoSuccess(result.data));
                 } else {
-                    dispatch(appActions.setError(data.error));
+                    dispatch(appActions.setError(result.error));
                 }
                 dispatch(uiActions.finishAlterInfo());
             })
@@ -122,14 +192,14 @@ export const actions = {
         }
     },
     //修改门店信息
-    alterShopInfo: ({ shopInfo, selectClerks, selectManagers ,byOpenHours}) => {
+    alterShopInfo: ({ shopInfo, selectClerks, selectManagers, byOpenHours }) => {
         return (dispatch) => {
             dispatch(appActions.startModalRequest());
-            const params = { shopInfo, selectClerks, selectManagers ,byOpenHours};
+            const params = { shopInfo, selectClerks, selectManagers, byOpenHours };
             return get(url.alterShopInfo(), params).then((data) => {
                 dispatch(appActions.finishModalRequest());
                 if (!data.error) {
-                    dispatch(alterShopInfoSuccess(shopInfo,byOpenHours));
+                    dispatch(alterShopInfoSuccess(shopInfo, byOpenHours));
                     dispatch(clerkActions.alterClerkPosition(selectClerks, selectManagers));
                     dispatch(uiActions.finishAlterInfo());
                     return Promise.resolve(true);
@@ -141,25 +211,40 @@ export const actions = {
             })
         }
     },
-    //新增门店
-    addShop: (newShop) => {
-        return (dispatch) => {
-            dispatch(appActions.startRequest());
-            const params = { ...newShop};
-            return get(url.addShop(), params).then((data) => {
-                dispatch(appActions.finishRequest());
-                if (!data.error) {
-                    dispatch(fetchShopListSuccess(convertShopListToPlainStructure(data.shopList)));
-                    return Promise.resolve(true);
-                } else {
-                    dispatch(appActions.setError(data.error));
-                    return Promise.reject(data.error);
-                }
-            })
-        }
-    },
+
 };
 
+const addShopSuccess = (shop) => ({
+    type: types.ADD_SHOP,
+    shop
+})
+
+const removeShopSuccess = (uid) => ({
+    type: types.REMOVE_SHOP,
+    uid
+});
+
+const fetchShopsSuccess = ({ shops, byShops }) => ({
+    type: types.FETCH_SHOPS,
+    shops,
+    byShops
+});
+
+const convertShopsToPlainStructure = (data) => {
+    let shops = new Array();
+    let byShops = new Object;
+    data.forEach((item) => {
+        shops.push(item.uid);
+        if (!byShops[item.uid]) {
+            byShops[item.uid] = item;
+        }
+    })
+    return {
+        shops,
+        byShops
+    };
+}
+/////////////////////////////////////
 const alterBoxInfoSuccess = (newBoxInfo) => ({
     type: types.SET_BOX_INFO,
     newBoxInfo
@@ -176,7 +261,7 @@ const addBoxInfoSuccess = (newBoxInfo) => ({
     boxInfo: newBoxInfo
 })
 
-const alterShopInfoSuccess = (shopInfo,byOpenHours) => ({
+const alterShopInfoSuccess = (shopInfo, byOpenHours) => ({
     type: types.ALTER_SHOP_INFO,
     shopInfo,
     byOpenHours
@@ -230,29 +315,6 @@ const convertShopInfoToPlainStructure = (shopInfo) => {
         byOpenHours: plainOpenHours
     }
 }
-const convertShopListToPlainStructure = (shopList) => {
-    let byShopList = [];
-    let plainShopList = {}
-    shopList.forEach((item) => {
-        byShopList.push(item.uid);
-        if (!plainShopList[item.uid]) {
-            plainShopList[item.uid] = {
-                ...item
-            }
-        }
-    })
-    return {
-        shopList: byShopList,
-        byShopList: plainShopList
-    };
-}
-
-const fetchShopListSuccess = ({ shopList, byShopList }) => ({
-    type: types.FETCH_SHOP_LIST,
-    shopList,
-    byShopList
-});
-
 const fetchShopInfoSuccess = (shopInfo, byBoxes, byDisplay, byOpenHours) => ({
     type: types.FETCH_SHOP_INFO,
     shopInfo,
@@ -262,7 +324,29 @@ const fetchShopInfoSuccess = (shopInfo, byBoxes, byDisplay, byOpenHours) => ({
 });
 
 const reducer = (state = initialState, action) => {
+    let shops;
+    let byShops;
     switch (action.type) {
+        case types.FETCH_SHOPS:
+            return { ...state, shops: action.shops, byShops: action.byShops };
+        case types.REMOVE_SHOP:
+            shops = state.shops.filter(item => item != action.uid);
+            byShops = new Object();
+            shops.forEach(uid => {
+                if (!byShops[uid]) {
+                    byShops[uid] = state.byShops[uid];
+                }
+            })
+            return { ...state, shops, byShops };
+        case types.ADD_SHOP:
+            if (state.shops.indexOf(action.shop.uid) == -1) {
+                shops = state.shops.concat([action.shop.uid]);
+            } else {
+                shops = state.shops;
+            }
+            byShops = { ...state.byShops, [action.shop.uid]: action.shop };
+            return { ...state, shops, byShops };
+        //////////////////////////////////////
         case types.FETCH_SHOP_INFO:
             return { ...state, shopInfo: action.shopInfo, byBoxes: action.byBoxes, byDisplay: action.byDisplay, byOpenHours: action.byOpenHours };
         case types.FETCH_SHOP_LIST:
@@ -297,7 +381,7 @@ const reducer = (state = initialState, action) => {
             const newByBoxes2 = { ...state.byBoxes, [action.boxInfo.uid]: action.boxInfo };
             return { ...state, shopInfo: newShopInfo2, byBoxes: newByBoxes2 };
         case types.ALTER_SHOP_INFO:
-            return { ...state, shopInfo: action.shopInfo,byOpenHours:action.byOpenHours };
+            return { ...state, shopInfo: action.shopInfo, byOpenHours: action.byOpenHours };
         default:
             return state;
     }
@@ -305,6 +389,9 @@ const reducer = (state = initialState, action) => {
 
 export default reducer;
 
+export const getShops = (state) => state.shop.shops;
+export const getByShops = (state) => state.shop.byShops;
+//////////////////////////////////////////
 export const getShop = (state) => state.shop;
 export const getShopList = (state) => state.shop.byShopList;
 export const getBoxes = (state) => state.shop.byBoxes;
