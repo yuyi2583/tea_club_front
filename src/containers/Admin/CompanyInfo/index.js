@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
 import { map } from "../../../router";
 import { actions as appActions, getCompanyInfo, getError, getRetrieveRequestQuantity } from "../../../redux/modules/app";
-import {requestType} from "../../../utils/common";
+import { requestType } from "../../../utils/common";
 
 const { confirm } = Modal;
 
@@ -61,6 +61,7 @@ class CompanyInfo extends React.Component {
     handleSubmit = e => {
         e.preventDefault();
         const thiz = this;
+        const { companyInfo } = this.props;
         this.props.form.validateFieldsAndScroll((err, values) => {
             if (!err) {
                 confirm({
@@ -69,6 +70,7 @@ class CompanyInfo extends React.Component {
                     onCancel() {
                     },
                     onOk() {
+                        values = { ...values, uid: companyInfo.uid };
                         console.log("submit values", values);
                         thiz.props.alterCompanyInfo(values)
                             .then(() => {
@@ -77,7 +79,7 @@ class CompanyInfo extends React.Component {
                             })
                             .catch((err) => {
                                 thiz.props.callMessage("error", "修改公司信息失败！" + err.msg)
-                        })
+                            })
                     },
                 });
 

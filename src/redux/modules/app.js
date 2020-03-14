@@ -1,6 +1,5 @@
 import url from "../../utils/url";
 import { get, put } from "../../utils/request";
-import { actions as uiActions } from "./ui";
 import { requestType } from "../../utils/common";
 
 const initialState = {
@@ -172,6 +171,8 @@ const reducer = (state = initialState, action) => {
             return { ...state, connectError: true };
         case types.REMOVE_CONNECT_ERROR:
             return { ...state, connectError: false };
+        case types.ALTER_COMPANY_INFO:
+            return { ...state, companyInfo: action.companyInfo };
         default:
             return state;
     }
