@@ -41,7 +41,7 @@ class AddShop extends React.Component {
                             let openHour = new Object();
                             for (let key in values) {
                                 if (key.indexOf(index) != -1) {
-                                    if (key.indexOf("repeat") == -1) {
+                                    if (key.indexOf("date") == -1) {
                                         openHour[key.split("_")[0]] = values[key].format("HH:mm");
                                     } else {
                                         openHour[key.split("_")[0]] = values[key];
@@ -54,9 +54,9 @@ class AddShop extends React.Component {
                         console.log("submit value in add shop", values);
                         thiz.props.addShop(values).then(() => {
                             thiz.props.callMessage("success", "新增门店成功！");
-                            thiz.setState({
-                                from: map.admin.AdminHome() + `/shop_management/shops`
-                            });
+                            // thiz.setState({
+                            //     from: map.admin.AdminHome() + `/shop_management/shops`
+                            // });
                         }).catch((err) => {
                             thiz.props.callMessage("error", "新增门店失败!" + err);
                         });

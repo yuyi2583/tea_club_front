@@ -36,7 +36,7 @@ class ShopOpenHour extends React.Component {
                 <span style={{ display: 'inline-block' }}>&nbsp;重复&nbsp;</span>
                 <Col span={7}>
                     <Form.Item style={{ display: 'inline-block', width: "100px" }}>
-                        {getFieldDecorator('repeat_' + index, {
+                        {getFieldDecorator('date_' + index, {
                             rules: [{ required: true, message: '请选择重复日期!' }],
                         })(<Select mode="tags" tokenSeparators={[',']}>
                             <Option key={1}>周一</Option>
