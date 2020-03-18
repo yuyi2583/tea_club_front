@@ -109,11 +109,11 @@ export const actions = {
             return post(url.addBoxInfo(), params).then((result) => {
                 dispatch(appActions.finishRequest());
                 if (!result.error) {
-                    dispatch(addBoxInfoSuccess(result.data));
+                    dispatch(addBoxInfoSuccess(result.data));//TODO update the addBoxInfoSuccess funaction it cannot read the result.data
                     return Promise.resolve();
                 } else {
                     dispatch(appActions.setError(result.msg));
-                    return Promise.resolve(result.error);
+                    return Promise.reject(result.error);
                 }
             })
         }

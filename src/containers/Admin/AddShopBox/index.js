@@ -103,16 +103,13 @@ class AddBox extends React.Component {
                                         message: '请选择包厢所属门店!',
                                     },
                                 ],
-                            })(<Select
-                                mode="tags"
-                                tokenSeparators={[',']}
-                                dropdownRender={menu => (
-                                    <div>
-                                        {menu}
-                                        <Divider style={{ margin: '4px 0' }} />
-                                        <Link to={`${map.admin.AdminHome()}/shop_management/add_shop`}><Icon type="plus" /> 添加门店</Link>
-                                    </div>
-                                )}>
+                            })(<Select dropdownRender={menu => (
+                                <div>
+                                    {menu}
+                                    <Divider style={{ margin: '4px 0' }} />
+                                    <Link to={`${map.admin.AdminHome()}/shop_management/add_shop`}><Icon type="plus" /> 添加门店</Link>
+                                </div>
+                            )}>
                                 {shops.map(uid => <Option key={uid}>{byShops[uid].name}</Option>)}
                             </Select>)}
                         </Form.Item>
