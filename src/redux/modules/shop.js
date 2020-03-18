@@ -7,22 +7,27 @@ import { actions as uiActions } from "./ui";
 const initialState = {
     shops: new Array(),
     byShops: new Object(),
-
+    // openHours:new Array(),
+    byOpenHours: new Object(),//营业时间
+    byPhotos: new Object(),//门店照片
+    byClerks: new Object(),//门店职员
+    shopBoxes: new Array(),
+    byShopBoxes: new Object(),
     ////////////////////////////////
     shopList: new Array(),
     shopInfo: null,
     byBoxes: null,//包厢
     byDisplay: null,//门店图片
     byShopList: null,
-    byOpenHours: null,//营业时间
+
 }
 
 export const types = {
     FETCH_SHOPS: "SHOP/FETCH_SHOPS",
     REMOVE_SHOP: "SHOP/REMOVE_SHOP",
     ADD_SHOP: "SHOP/ADD_SHOP",                       //新增门店
+    FETCH_SHOP: "SHOP/FETCH_SHOP",     //获取门店信息
     //////////////////////////////////
-    FETCH_SHOP_INFO: "SHOP/FETCH_SHOP_INFO",     //获取门店信息
     FETCH_SHOP_LIST: "SHOP/FETCH_SHOP_LIST",      //获取门店列表
     REMOVE_SHOP_CLERK: "SHOP/REMOVE_SHOP_CLERK",     //移除门店职员
     ADD_SHOP_CLERK: "SHOP/ADD_SHOP_CLERK",           //添加门店职员
@@ -42,10 +47,7 @@ export const actions = {
                 if (!result.error) {
                     dispatch(fetchShopsSuccess(convertShopsToPlainStructure(result.data)));
                 } else {
-                    dispatch(appActions.setError(result.error.msg));
-                    if (result.error.code == 404) {
-                        dispatch(appActions.setConnectError());
-                    }
+                    dispatch(appActions.setError(result.msg));
                     return Promise.reject(result.error);
                 }
             })
@@ -60,10 +62,7 @@ export const actions = {
                     dispatch(removeShopSuccess(uid));
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(result.error.msg));
-                    if (result.error.code == 404) {
-                        dispatch(appActions.setConnectError());
-                    }
+                    dispatch(appActions.setError(result.msg));
                     return Promise.reject(result.error);
                 }
             })
@@ -80,55 +79,35 @@ export const actions = {
                     dispatch(addShopSuccess(result.data));
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(result.error));
-                    if (result.error.code == 404) {
-                        dispatch(appActions.setConnectError());
-                    }
+                    dispatch(appActions.setError(result.msg));
+                    return Promise.reject(result.error);
+                }
+            })
+        }
+    },
+    //获取门店信息
+    fetchShop: (shopId) => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest());
+            return get(url.fetchShop(shopId)).then((result) => {
+                dispatch(appActions.finishRequest());
+                if (!result.error) {
+                    const { shop, byOpenHours, byPhotos, byClerks, shopBoxes, byShopBoxes } = convertShopToPlainStructure(result.data);
+                    // const { shopInfo, byClerks, byBoxes, byDisplay, byOpenHours } = convertShopInfoToPlainStructure(result.data);
+                    dispatch(fetchShopSuccess(shop, byOpenHours, byPhotos, byClerks, shopBoxes, byShopBoxes));
+                    // dispatch(actions.setDisplay(byDisplay));
+                    // dispatch(clerkActions.fetchClerks(byClerks))
+                } else {
+                    dispatch(appActions.setError(result.msg));
+                    // if (result.error.code == 404) {
+                    //     dispatch(appActions.setConnectError());
+                    // }
                     return Promise.reject(result.error);
                 }
             })
         }
     },
     /////////////////////////////////////////////////////////////////////
-    //获取门店信息
-    fetchShopInfo: (shopId) => {
-        return (dispatch) => {
-            dispatch(appActions.startRequest());
-            return get(url.fetchShopInfo(shopId)).then((result) => {
-                dispatch(appActions.finishRequest());
-                if (!result.error) {
-                    const { shopInfo, byClerks, byBoxes, byDisplay, byOpenHours } = convertShopInfoToPlainStructure(result.data);
-                    dispatch(fetchShopInfoSuccess(shopInfo, byBoxes, byDisplay, byOpenHours));
-                    // dispatch(actions.setDisplay(byDisplay));
-                    dispatch(clerkActions.fetchClerks(byClerks))
-                } else {
-                    dispatch(appActions.setError(result.error.msg));
-                    if (result.error.code == 404) {
-                        dispatch(appActions.setConnectError());
-                    }
-                    return Promise.reject(result.error);
-                }
-            })
-        }
-    },
-    //获取门店列表
-    // fetchShopList: () => {
-    //     return (dispatch) => {
-    //         dispatch(appActions.startRequest());
-    //         return get(url.fetchShopList()).then((result) => {
-    //             dispatch(appActions.finishRequest());
-    //             if (!result.error) {
-    //                 dispatch(fetchShopListSuccess(convertShopListToPlainStructure(result.data)));
-    //             } else {
-    //                 dispatch(appActions.setError(result.error.msg));
-    //                 if (result.error.code == 404) {
-    //                     dispatch(appActions.setConnectError());
-    //                 }
-    //                 return Promise.reject(result.error);
-    //             }
-    //         })
-    //     }
-    // },
     //移除门店职员:
     removeShopClerk: (clerkId) => ({
         type: types.REMOVE_SHOP_CLERK,
@@ -230,6 +209,16 @@ const fetchShopsSuccess = ({ shops, byShops }) => ({
     byShops
 });
 
+const fetchShopSuccess = (shop, byOpenHours, byPhotos, byClerks, shopBoxes, byShopBoxes) => ({
+    type: types.FETCH_SHOP,
+    shop,
+    byOpenHours,
+    byPhotos,
+    byClerks,
+    shopBoxes,
+    byShopBoxes
+});
+
 const convertShopsToPlainStructure = (data) => {
     let shops = new Array();
     let byShops = new Object;
@@ -243,6 +232,49 @@ const convertShopsToPlainStructure = (data) => {
         shops,
         byShops
     };
+}
+
+const convertShopToPlainStructure = (data) => {
+    let openHours = new Array();
+    let byOpenHours = new Object();
+    let photos = new Array();
+    let byPhotos = new Object();
+    let clerks = new Array();
+    let byClerks = new Object();
+    let shopBoxes = new Array();
+    let byShopBoxes = new Object();
+    data.openHours != null && data.openHours.forEach(openHour => {
+        openHours.push(openHour.uid);
+        if (!byOpenHours[openHour.uid]) {
+            byOpenHours[openHour.uid] = openHour;
+        }
+    });
+    data.photos != null && data.photos.forEach(photo => {
+        photos.push(photo.uid);
+        if (!byPhotos[photo.uid]) {
+            byPhotos[photo.uid] = photo;
+        }
+    });
+    data.clerks != null && data.clerks.forEach(clerk => {
+        clerks.push(clerk.uid);
+        if (!byClerks[clerk.uid]) {
+            byClerks[clerk.uid] = clerk;
+        }
+    });
+    data.shopBoxes != null && data.shopBoxes.forEach(shopBox => {
+        shopBoxes.push(shopBox.uid);
+        if (!byShopBoxes[shopBox.uid]) {
+            byShopBoxes[shopBox.uid] = shopBox;
+        }
+    });
+    return {
+        shop: { ...data, openHours, photos, clerks, shopBoxes },
+        byOpenHours,
+        byPhotos,
+        byClerks,
+        shopBoxes,
+        byShopBoxes,
+    }
 }
 /////////////////////////////////////
 const alterBoxInfoSuccess = (newBoxInfo) => ({
@@ -315,13 +347,7 @@ const convertShopInfoToPlainStructure = (shopInfo) => {
         byOpenHours: plainOpenHours
     }
 }
-const fetchShopInfoSuccess = (shopInfo, byBoxes, byDisplay, byOpenHours) => ({
-    type: types.FETCH_SHOP_INFO,
-    shopInfo,
-    byBoxes,
-    byDisplay,
-    byOpenHours,
-});
+
 
 const reducer = (state = initialState, action) => {
     let shops;
@@ -346,6 +372,12 @@ const reducer = (state = initialState, action) => {
             }
             byShops = { ...state.byShops, [action.shop.uid]: action.shop };
             return { ...state, shops, byShops };
+        case types.FETCH_SHOP:
+            byShops = { ...state.byShops, [action.shop.uid]: action.shop };
+            return {
+                ...state, byOpenHours: action.byOpenHours, byShops, byPhotos: action.byPhotos,
+                byClerks: action.byClerks, shopBoxes: action.shopBoxes, byShopBoxes: action.byShopBoxes
+            };
         //////////////////////////////////////
         case types.FETCH_SHOP_INFO:
             return { ...state, shopInfo: action.shopInfo, byBoxes: action.byBoxes, byDisplay: action.byDisplay, byOpenHours: action.byOpenHours };
@@ -391,6 +423,11 @@ export default reducer;
 
 export const getShops = (state) => state.shop.shops;
 export const getByShops = (state) => state.shop.byShops;
+export const getByOpenHours = (state) => state.shop.byOpenHours;
+export const getByPhotos = (state) => state.shop.byPhotos;
+export const getByShopClerks = (state) => state.shop.byClerks;
+export const getShopBoxes = (state) => state.shop.shopBoxes;
+export const getByShopBoxes = (state) => state.shop.byShopBoxes;
 //////////////////////////////////////////
 export const getShop = (state) => state.shop;
 export const getShopList = (state) => state.shop.byShopList;

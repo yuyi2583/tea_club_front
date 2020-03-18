@@ -2,6 +2,7 @@ import React from "react";
 import { Upload, Modal, Icon } from "antd";
 import PropTypes from "prop-types";
 import { getBase64 } from "../../utils/imageUtil";
+import "./style.css";
 // import { bindActionCreators } from "redux";
 // import { connect } from "react-redux";
 // import {actions as photoActions} from "../../redux/modules/photo";
@@ -17,12 +18,14 @@ class PictureCard extends React.Component {
     }
 
     handlePreview = async file => {
-        if (!file.url && !file.preview) {
-            file.preview = await getBase64(file.originFileObj);
-        }
+        console.log("handle preview", file);
+
+        // if (!file.url && !file.preview) {
+        //     file.preview = await getBase64(file.originFileObj);
+        // }
 
         this.setState({
-            previewImage: file.url || file.preview,
+            previewImage: file.thumbUrl || file.preview,
             previewVisible: true,
         });
     };
@@ -31,6 +34,7 @@ class PictureCard extends React.Component {
 
     handleDisplayChange = ({ file, fileList }) => {
         console.log("file", file);
+        console.log("file list", fileList);
         if (file.status == "done") {
             this.props.onChange(file.response.data);
         }
@@ -39,7 +43,9 @@ class PictureCard extends React.Component {
     }
 
     render() {
-        const { alterInfo, max } = this.props;
+        console.log("file list in porps", this.props.fileList);
+
+        const { alterInfo, max, type } = this.props;
         const { previewVisible, previewImage, fileList } = this.state;
         const uploadButton = (
             <div>
@@ -49,16 +55,34 @@ class PictureCard extends React.Component {
         );
         return (
             <div className="clearfix">
-                <Upload
-                    action="http://localhost:8080/savephoto"
-                    listType="picture-card"
-                    fileList={fileList}
-                    onPreview={this.handlePreview}
-                    disabled={alterInfo ? false : true}
-                    onChange={this.handleDisplayChange}
-                >
-                    {fileList.length >= max ? null : alterInfo ? uploadButton : null}
-                </Upload>
+                {type == "display" ?
+                    this.props.fileList != null ?
+                        this.props.fileList.map((file,index) =>
+                            <Upload
+                                action="http://localhost:8080/savephoto"
+                                listType="picture-card"
+                                onPreview={this.handlePreview}
+                                key={index}
+                                className="display-photo"
+                                // style={{display:"inline-block",width:"auto"}}
+                                disabled={alterInfo ? false : true}
+                                onChange={this.handleDisplayChange}
+                            >
+                                <img src={file.thumbUrl} alt="avatar" style={{ width: '100%' }} />
+                            </Upload>
+                        ) : null
+                    :
+                    <Upload
+                        action="http://localhost:8080/savephoto"
+                        listType="picture-card"
+                        fileList={this.props.fileList != null ? this.props.fileList : fileList}
+                        onPreview={this.handlePreview}
+                        disabled={alterInfo ? false : true}
+                        onChange={this.handleDisplayChange}
+                    >
+                        {fileList.length >= max ? null : alterInfo ? uploadButton : null}
+                    </Upload>
+                }
                 <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
                     <img alt="example" style={{ width: '100%' }} src={previewImage} />
                 </Modal>
@@ -72,13 +96,16 @@ class PictureCard extends React.Component {
 PictureCard.propTypes = {
     fileList: PropTypes.array,
     alterInfo: PropTypes.bool,
-    onChange: PropTypes.func.isRequired,
+    onChange: PropTypes.func,
     max: PropTypes.number,
+    type: PropTypes.string,
 }
 
 PictureCard.defaultProps = {
     alterInfo: true,
-    max: 4
+    max: 4,
+    fileList: null,
+    type: "upload"
 }
 
 

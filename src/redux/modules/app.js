@@ -1,6 +1,7 @@
 import url from "../../utils/url";
 import { get, put } from "../../utils/request";
 import { requestType } from "../../utils/common";
+import { callNotification } from "../../utils/commonUtils";
 
 const initialState = {
     retrieceRequestQuantity: 0,     //当前应用中正在进行获取信息的API请求数
@@ -51,10 +52,13 @@ export const actions = {
                 return finishRetrieveRequest();
         }
     },
-    setError: (error) => ({
-        type: types.SET_ERROR,
-        error
-    }),
+    setError: (error) => {
+        callNotification("error", error);
+        return ({
+            type: types.SET_ERROR,
+            error
+        })
+    },
     removeError: () => ({
         type: types.REMOVE_ERROR
     }),
@@ -68,7 +72,7 @@ export const actions = {
                     dispatch(fetchCompanyInfoSuccess(result.data));
                     return Promise.resolve();
                 } else {
-                    dispatch(actions.setError(result.error.msg));
+                    dispatch(actions.setError(result.msg));
                     if (result.error.code == 404) {
                         dispatch(actions.setConnectError());
                     }
@@ -89,7 +93,7 @@ export const actions = {
                     dispatch(alterCompanyInfoSuccess(result.data));
                     return Promise.resolve()
                 } else {
-                    dispatch(actions.setError(result.error.msg));
+                    dispatch(actions.setError(result.msg));
                     if (result.error.code == 404) {
                         dispatch(actions.setConnectError());
                     }

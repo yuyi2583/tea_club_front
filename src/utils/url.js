@@ -10,13 +10,13 @@ export default {
     alterCompanyInfo: () =>
         HOME + "/company",
     //"/mock/companyInfo.json",
-    fetchShopInfo: (uid) => 
+    fetchShop: (uid) => 
     HOME+`/shop/${uid}`,
     // "/mock/shopInfo.json",
     fetchShops: () => 
-    // HOME+"/shops",
-    "/mock/shopList.json",
-    removeShop:(uid)=>HOME+`shop/${uid}`,
+    HOME+"/shops",
+    // "/mock/shopList.json",
+    removeShop:(uid)=>HOME+`/shop/${uid}`,
     //"/mock/alterBoxInfo.json",
     fetchAllClerks: () => "/mock/allClerks.json",
     alterBoxInfo: () => "/mock/alterBoxInfo.json",

@@ -12,9 +12,9 @@ function get(url) {
   }).then(response => {
     return handleResponse(url, response);
   }).catch(err => {
-    callNotification("error", "请求失败，连接不到服务器.");
+    // callNotification("error", "请求失败，连接不到服务器.");
     console.error(`Request failed. Url = ${url} . Message = ${err}`);
-    return { error: { msg: "请求失败，连接不到服务器.", code: "404" } };
+    return  { msg: "请求失败，连接不到服务器.", code: "404" ,error:"请求失败，连接不到服务器." };
   })
 }
 
@@ -25,9 +25,9 @@ function _delete(url) {
   }).then(response => {
     return handleResponse(url, response);
   }).catch(err => {
-    callNotification("error", "请求失败，连接不到服务器.");
+    // callNotification("error", "请求失败，连接不到服务器.");
     console.error(`Request failed. Url = ${url} . Message = ${err}`);
-    return { error: { msg: "请求失败，连接不到服务器.", code: "404" } };
+    return {  msg: "请求失败，连接不到服务器.", code: "404" ,error:"请求失败，连接不到服务器." };
   })
 }
 
@@ -39,9 +39,9 @@ function put(url, params) {
   }).then(response => {
     return handleResponse(url, response);
   }).catch(err => {
-    callNotification("error", "请求失败，连接不到服务器.");
+    // callNotification("error", "请求失败，连接不到服务器.");
     console.error(`Request failed. Url = ${url} . Message = ${err}`);
-    return { error: { msg: "请求失败，连接不到服务器.", code: 404 } };
+    return { msg: "请求失败，连接不到服务器.", code: 404,error:"请求失败，连接不到服务器."  };
   })
 }
 
@@ -55,21 +55,21 @@ function post(url, params) {
     return handleResponse(url, response);
   }).catch(err => {
     console.error(`Request failed. Url = ${url} . Message = ${err}`);
-    return { error: { msg: "请求失败，连接不到服务器.", code: 404 } };
+    return  { msg: "请求失败，连接不到服务器.", code: 404 ,error:"请求失败，连接不到服务器."};
   })
 }
 
 function handleResponse(url, response) {
   console.log("handle response", response);
   if(response.status==404){
-    callNotification("error", "请求失败，找不到该资源.");
-    return { error: { msg: "请求失败，找不到该资源.", code: 404 } };
+    // callNotification("error", "请求失败，找不到该资源.");
+    return { msg: "请求失败，找不到该资源.", code: 404 ,error:"请求失败，连接不到服务器." };
   }
   if (response.status < 500) {
     return response.json();
   } else {
     console.error(`Request failed. Url = ${url} . Message = ${response.statusText}. in handleRequest`);
-    return { error: { msg: "服务器内部错误，无法获取数据.", code: response.statusText } };
+    return { msg: "服务器内部错误，无法获取数据.", code: response.statusText,error:"服务器内部错误，无法获取数据." };
     // return Promise.reject(error);
   }
 }

@@ -3,17 +3,16 @@ import { Select, PageHeader, Tooltip, Icon, Button, message } from "antd";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { getByClerks } from "../../../redux/modules/clerk";
-import ShopView from "./components/ShopView";
 import { Route, Link } from "react-router-dom";
 import {
     actions as uiActions,
     getAlterInfoState
 } from "../../../redux/modules/ui";
 import ClerkView from "./components/ClerkView";
-// import AddShop from "./components/AddShop";
 import BoxView from "./components/BoxView";
 import AddBox from "./components/AddBox";
 import ShopList from "./components/ShopList";
+import ShopDetail from "./components/ShopDetail";
 
 
 class ShopManagement extends React.Component {
@@ -35,21 +34,17 @@ class ShopManagement extends React.Component {
                             exact
                             render={props =>
                                 <ShopList
-                                    {...props}
                                     {...this.props}
-                                // callMessage={this.callMessage} 
-                                />
+                                    {...props} />
+                            } />
+                        <Route
+                            path={`${match.url}/shop/:shopId`}
+                            render={props =>
+                                <ShopDetail
+                                    {...this.props}
+                                    {...props} />
                             } />
                         {/* <Route
-                            path={`${match.url}/addShop`}
-                            render={props =>
-                                <AddShop
-                                    {...props}
-                                    {...this.props}
-                                // callMessage={this.callMessage} 
-                                />
-                            } /> */}
-                        <Route
                             path={`${match.url}/boxInfo/:shopId/:boxId`}
                             render={props =>
                                 <BoxView
@@ -76,7 +71,7 @@ class ShopManagement extends React.Component {
                                     byClerks={byClerks}
                                 // callMessage={this.callMessage} 
                                 />
-                            )} />
+                            )} /> */}
                     </div>
                 </PageHeader>
             </div>

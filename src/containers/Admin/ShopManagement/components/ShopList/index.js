@@ -1,26 +1,12 @@
 import React from "react";
-import { Popover, Button, Icon, Divider, DatePicker, Input, Select, Spin, TreeSelect, Modal, Tooltip, Table, InputNumber } from "antd";
-// import PictureCard from "../../../../components/PictureCard";
+import { Button, Icon, Divider, Input, Spin, Modal, Tooltip, Table } from "antd";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actions as shopActions, getShops, getByShops } from "../../../../../redux/modules/shop";
 import Highlighter from 'react-highlight-words';
 import { Link } from "react-router-dom";
-import { productStatus, requestType } from "../../../../../utils/common";
-import { Redirect } from "react-router-dom";
-import { map } from "../../../../../router";
-// import { sex, activityStatus } from "../../../../utils/common";
-// import { judgeStatus } from "./method";
-// import { Link } from "react-router-dom";
-// import Highlighter from 'react-highlight-words';
-// import { activityType } from "../../../../utils/common";
-// import { timeStampConvertToFormatTime } from "../../../../utils/timeUtil";
-// import { stringWithEllipsis } from "../../../../utils/stringUtil";
 
-const { Option } = Select;
 const { confirm } = Modal;
-const { MonthPicker, RangePicker } = DatePicker;
-const { SHOW_PARENT } = TreeSelect;
 
 class ShopList extends React.Component {
     state = {
@@ -185,7 +171,7 @@ class ShopList extends React.Component {
     render() {
         const data = this.getDataSource();
         const columns = this.getColmuns();
-        const { retrieveRequestQuantity, modalVisible, modalRequestQuantity } = this.props;
+        const { retrieveRequestQuantity } = this.props;
         return (
             <div>
                 <Spin spinning={retrieveRequestQuantity > 0}>

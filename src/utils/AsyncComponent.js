@@ -2,8 +2,8 @@ import React, { Component } from "react";
 import CompanyInfo from "../containers/Admin/CompanyInfo";
 import { handleBack, callMessage } from "./commonUtils";
 import { Button } from "antd";
-import { actions as uiActions, getAlterInfoState, getModalLoading, getModalVisible,getShopId_shopManagement,getAddButtonVisible_shopManagement } from "../redux/modules/ui";
-import { getRetrieveRequestQuantity, getUpdateRequestQuantity, getModalRequestQuantity, getConnectError } from "../redux/modules/app";
+import { actions as uiActions, getAlterInfoState, getModalLoading, getModalVisible, getShopId_shopManagement, getAddButtonVisible_shopManagement } from "../redux/modules/ui";
+import { getRetrieveRequestQuantity, getUpdateRequestQuantity, getModalRequestQuantity, getConnectError, getError } from "../redux/modules/app";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
@@ -48,6 +48,8 @@ export default function asyncComponent(importComponent) {
         extra = (<Button type="primary" onClick={this.props.startAlterInfo}>修改产品</Button>);
       } else if (history.location.pathname.indexOf("/company_info") != -1) {
         extra = (<Button type="primary" onClick={this.props.startAlterInfo}>修改公司信息</Button>);
+      } else if (history.location.pathname.indexOf("/shop/") != -1) {
+        extra = (<Button type="primary" onClick={this.props.startAlterInfo}>修改门店信息</Button>);
       } else {
         extra = null;
       }
@@ -79,6 +81,8 @@ export default function asyncComponent(importComponent) {
         subTitle = "产品信息";
       } else if (history.location.pathname.indexOf("/customer/") != -1) {
         subTitle = "客户信息";
+      } else if (history.location.pathname.indexOf("/shop/") != -1) {
+        subTitle = "门店信息";
       } else {
         subTitle = null;
       }
@@ -108,6 +112,7 @@ export default function asyncComponent(importComponent) {
       connectError: getConnectError(state),
       shopId: getShopId_shopManagement(state),
       addButtonVisible: getAddButtonVisible_shopManagement(state),
+      error: getError(state),
     };
   };
 
