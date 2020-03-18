@@ -6,6 +6,7 @@
         {"uid":"1","name":"company_info","component":"Admin/CompanyInfo","title":"公司信息管理","description":"这是公司信息管理","belong":{"uid":"1","name":"company_management","title":"公司管理","icon":"book"}},
         {"uid":"2","name":"shops","component":"Admin/ShopManagement","title":"门店管理","description":"这是门店管理","belong":{"uid":"7","name":"shop_management","title":"门店管理","icon":"shop"}},
         {"uid":"13","name":"add_shop","component":"Admin/AddShop","title":"新增门店","description":"这是新增门店","belong":{"uid":"7","name":"shop_management","title":"门店管理","icon":"shop"}},
+        {"uid":"14","name":"add_shop_box","component":"Admin/AddShopBox","title":"新增包厢","description":"这是新增包厢","belong":{"uid":"7","name":"shop_management","title":"门店管理","icon":"shop"}},
         {"uid":"3","name":"clerks","component":"Admin/RoleInformation","title":"人员信息管理","description":"这是人员信息管理","belong":{"uid":"2","name":"clerk_management","title":"职员管理","icon":"user"}},
         {"uid":"4","name":"add_clerk","component":"Admin/AddRole","title":"新增人员","description":"这是新增人员","belong":{"uid":"2","name":"clerk_management","title":"职员管理","icon":"user"}},
         {"uid":"5","name":"add_activity","component":"Admin/AddActivityForm","title":"新增活动","description":"这是新增活动","belong":{"uid":"3","name":"activity_management","title":"活动管理","icon":"calendar"}},

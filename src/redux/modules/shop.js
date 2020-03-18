@@ -93,16 +93,27 @@ export const actions = {
                 dispatch(appActions.finishRequest());
                 if (!result.error) {
                     const { shop, byOpenHours, byPhotos, byClerks, shopBoxes, byShopBoxes } = convertShopToPlainStructure(result.data);
-                    // const { shopInfo, byClerks, byBoxes, byDisplay, byOpenHours } = convertShopInfoToPlainStructure(result.data);
                     dispatch(fetchShopSuccess(shop, byOpenHours, byPhotos, byClerks, shopBoxes, byShopBoxes));
-                    // dispatch(actions.setDisplay(byDisplay));
-                    // dispatch(clerkActions.fetchClerks(byClerks))
                 } else {
                     dispatch(appActions.setError(result.msg));
-                    // if (result.error.code == 404) {
-                    //     dispatch(appActions.setConnectError());
-                    // }
                     return Promise.reject(result.error);
+                }
+            })
+        }
+    },
+    //新增包厢
+    addBoxInfo: (shopBox) => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest());
+            const params = { ...shopBox };
+            return post(url.addBoxInfo(), params).then((result) => {
+                dispatch(appActions.finishRequest());
+                if (!result.error) {
+                    dispatch(addBoxInfoSuccess(result.data));
+                    return Promise.resolve();
+                } else {
+                    dispatch(appActions.setError(result.msg));
+                    return Promise.resolve(result.error);
                 }
             })
         }
@@ -149,23 +160,6 @@ export const actions = {
                     dispatch(deleteBoxInfoSuccess(shopId, boxId));
                 } else {
                     dispatch(appActions.setError(data.error));
-                }
-            })
-        }
-    },
-    //新增包厢
-    addBoxInfo: (newBoxInfo) => {
-        return (dispatch) => {
-            dispatch(appActions.startRequest());
-            const params = { newBoxInfo };
-            return get(url.addBoxInfo(), params).then((data) => {
-                dispatch(appActions.finishRequest());
-                if (!data.error) {
-                    dispatch(addBoxInfoSuccess(data.boxInfo));
-                    return Promise.resolve({ result: true });
-                } else {
-                    dispatch(appActions.setError(data.error));
-                    return Promise.resolve({ result: false, error: "cuowu" });
                 }
             })
         }

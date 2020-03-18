@@ -10,7 +10,6 @@ import {
 } from "../../../redux/modules/ui";
 import ClerkView from "./components/ClerkView";
 import BoxView from "./components/BoxView";
-import AddBox from "./components/AddBox";
 import ShopList from "./components/ShopList";
 import ShopDetail from "./components/ShopDetail";
 
@@ -44,6 +43,7 @@ class ShopManagement extends React.Component {
                                     {...this.props}
                                     {...props} />
                             } />
+                      
                         {/* <Route
                             path={`${match.url}/boxInfo/:shopId/:boxId`}
                             render={props =>
@@ -53,15 +53,7 @@ class ShopManagement extends React.Component {
                                     // callMessage={this.callMessage}
                                     alterInfo={alterInfo} />
                             } />
-                        <Route
-                            path={`${match.url}/addBox/:shopId`}
-                            render={props =>
-                                <AddBox
-                                    {...props}
-                                    {...this.props}
-                                // callMessage={this.callMessage} 
-                                />
-                            } />
+                        
                         <Route
                             path={`${match.url}/clerkDetail/:shopId/:clerkId`}
                             render={(props) => (

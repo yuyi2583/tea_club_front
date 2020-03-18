@@ -1,6 +1,7 @@
 import React from "react";
 import { Upload, Modal, Icon } from "antd";
 import PropTypes from "prop-types";
+import {callNotification} from "../../utils/commonUtils";
 import { getBase64 } from "../../utils/imageUtil";
 import "./style.css";
 // import { bindActionCreators } from "redux";
@@ -35,11 +36,18 @@ class PictureCard extends React.Component {
     handleDisplayChange = ({ file, fileList }) => {
         console.log("file", file);
         console.log("file list", fileList);
-        if (file.status == "done") {
+        if(file.response!=undefined&&file.response.code==606){
+            callNotification("error","照片过大，请上传1M以下的照片");
+            fileList=fileList.map(item=>{
+                if(item.uid==file.uid){
+                    item.status="error";
+                }
+                return item;
+            })
+        }else if (file.status == "done") {
             this.props.onChange(file.response.data);
         }
         this.setState({ fileList })
-        // this.props.onChange(info.fileList);
     }
 
     render() {
