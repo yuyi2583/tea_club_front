@@ -27,14 +27,15 @@ export const types = {
     REMOVE_SHOP: "SHOP/REMOVE_SHOP",
     ADD_SHOP: "SHOP/ADD_SHOP",                       //新增门店
     FETCH_SHOP: "SHOP/FETCH_SHOP",     //获取门店信息
+    ADD_SHOP_BOX: "SHOP/ADD_SHOP_BOX",               //新增包厢
+    FETCH_SHOP_BOXES: "SHOP/FETCH_SHOP_BOXES",//获取包厢列表
+    REMOVE_SHOP_BOX: "SHOP/REMOVE_SHOP_BOX",         //删除包厢
     //////////////////////////////////
     FETCH_SHOP_LIST: "SHOP/FETCH_SHOP_LIST",      //获取门店列表
     REMOVE_SHOP_CLERK: "SHOP/REMOVE_SHOP_CLERK",     //移除门店职员
     ADD_SHOP_CLERK: "SHOP/ADD_SHOP_CLERK",           //添加门店职员
     SET_DISPLAY: "SHOP/SET_DISPLAY",             //设置门店图片
     SET_BOX_INFO: "SHOP/SET_BOX_INFO",               //设置包厢信息
-    DELETE_BOX_INFO: "SHOP/DELETE_BOX_INFO",         //删除包厢
-    ADD_BOX_INFO: "SHOP/ADD_BOX_INFO",               //新增包厢
     ALTER_SHOP_INFO: "SHOP/ALTER_SHOP_INFO",         //修改门店信息
 };
 
@@ -109,7 +110,38 @@ export const actions = {
             return post(url.addBoxInfo(), params).then((result) => {
                 dispatch(appActions.finishRequest());
                 if (!result.error) {
-                    dispatch(addBoxInfoSuccess(result.data));//TODO update the addBoxInfoSuccess funaction it cannot read the result.data
+                    dispatch(addShopBoxSuccess(result.data));
+                    return Promise.resolve();
+                } else {
+                    dispatch(appActions.setError(result.msg));
+                    return Promise.reject(result.error);
+                }
+            })
+        }
+    },
+    //获取包厢列表
+    fetchShopBoxes: () => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest());
+            return get(url.fetchShopBoxes()).then((result) => {
+                dispatch(appActions.finishRequest());
+                if (!result.error) {
+                    dispatch(fetchShopBoxesSuccess(convertShopBoxesToPlainStructure(result.data)));
+                } else {
+                    dispatch(appActions.setError(result.msg));
+                    return Promise.reject(result.error);
+                }
+            })
+        }
+    },
+    //删除包厢信息
+    removeShopBox: (uid) => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest());
+            return _delete(url.removeShopBox(uid)).then((result) => {
+                dispatch(appActions.finishRequest());
+                if (!result.error) {
+                    dispatch(removeShopBoxSuccess(uid));
                     return Promise.resolve();
                 } else {
                     dispatch(appActions.setError(result.msg));
@@ -149,21 +181,6 @@ export const actions = {
             })
         }
     },
-    //删除包厢信息
-    deleteBoxInfo: (shopId, boxId) => {
-        return (dispatch) => {
-            dispatch(appActions.startRequest());
-            const params = { shopId, boxId };
-            return get(url.deleteBoxInfo(), params).then((data) => {
-                dispatch(appActions.finishRequest());
-                if (!data.error) {
-                    dispatch(deleteBoxInfoSuccess(shopId, boxId));
-                } else {
-                    dispatch(appActions.setError(data.error));
-                }
-            })
-        }
-    },
     //修改门店信息
     alterShopInfo: ({ shopInfo, selectClerks, selectManagers, byOpenHours }) => {
         return (dispatch) => {
@@ -197,6 +214,11 @@ const removeShopSuccess = (uid) => ({
     uid
 });
 
+const removeShopBoxSuccess = (uid) => ({
+    type: types.REMOVE_SHOP_BOX,
+    uid,
+})
+
 const fetchShopsSuccess = ({ shops, byShops }) => ({
     type: types.FETCH_SHOPS,
     shops,
@@ -212,6 +234,32 @@ const fetchShopSuccess = (shop, byOpenHours, byPhotos, byClerks, shopBoxes, bySh
     shopBoxes,
     byShopBoxes
 });
+
+const addShopBoxSuccess = (shopBox) => ({
+    type: types.ADD_SHOP_BOX,
+    shopBox
+});
+
+const fetchShopBoxesSuccess = ({ shopBoxes, byShopBoxes }) => ({
+    type: types.FETCH_SHOP_BOXES,
+    shopBoxes,
+    byShopBoxes
+})
+
+const convertShopBoxesToPlainStructure = (data) => {
+    let shopBoxes = new Array();
+    let byShopBoxes = new Object();
+    data.forEach((item) => {
+        shopBoxes.push(item.uid);
+        if (!byShopBoxes[item.uid]) {
+            byShopBoxes[item.uid] = item;
+        }
+    })
+    return {
+        shopBoxes,
+        byShopBoxes
+    }
+}
 
 const convertShopsToPlainStructure = (data) => {
     let shops = new Array();
@@ -270,7 +318,7 @@ const convertShopToPlainStructure = (data) => {
         byShopBoxes,
     }
 }
-/////////////////////////////////////
+///////////////////////////////////// discard below
 const alterBoxInfoSuccess = (newBoxInfo) => ({
     type: types.SET_BOX_INFO,
     newBoxInfo
@@ -282,10 +330,7 @@ const deleteBoxInfoSuccess = (shopId, boxId) => ({
     boxId
 })
 
-const addBoxInfoSuccess = (newBoxInfo) => ({
-    type: types.ADD_BOX_INFO,
-    boxInfo: newBoxInfo
-})
+
 
 const alterShopInfoSuccess = (shopInfo, byOpenHours) => ({
     type: types.ALTER_SHOP_INFO,
@@ -346,6 +391,8 @@ const convertShopInfoToPlainStructure = (shopInfo) => {
 const reducer = (state = initialState, action) => {
     let shops;
     let byShops;
+    let shopBoxes;
+    let byShopBoxes;
     switch (action.type) {
         case types.FETCH_SHOPS:
             return { ...state, shops: action.shops, byShops: action.byShops };
@@ -372,6 +419,24 @@ const reducer = (state = initialState, action) => {
                 ...state, byOpenHours: action.byOpenHours, byShops, byPhotos: action.byPhotos,
                 byClerks: action.byClerks, shopBoxes: action.shopBoxes, byShopBoxes: action.byShopBoxes
             };
+        case types.ADD_SHOP_BOX:
+            shopBoxes = state.shopBoxes;
+            if (shopBoxes.indexOf(action.shopBox.uid) == -1) {
+                shopBoxes.push(action.shopBox.uid);
+            }
+            byShopBoxes = { ...state.byShopBoxes, [action.shopBox.uid]: action.shopBox };
+            return { ...state, shopBoxes, byShopBoxes };
+        case types.FETCH_SHOP_BOXES:
+            return { ...state, shopBoxes: action.shopBoxes, byShopBoxes: action.byShopBoxes };
+        case types.REMOVE_SHOP_BOX:
+            shopBoxes = state.shopBoxes.filter(item => item != action.uid);
+            byShopBoxes = new Object();
+            shopBoxes.forEach(uid => {
+                if (!byShopBoxes[uid]) {
+                    byShopBoxes[uid] = state.byShopBoxes[uid];
+                }
+            });
+            return { ...state, shopBoxes, byShopBoxes };
         //////////////////////////////////////
         case types.FETCH_SHOP_INFO:
             return { ...state, shopInfo: action.shopInfo, byBoxes: action.byBoxes, byDisplay: action.byDisplay, byOpenHours: action.byOpenHours };

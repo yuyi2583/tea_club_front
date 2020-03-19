@@ -4,13 +4,14 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { getByClerks } from "../../../redux/modules/clerk";
 import { Route, Link } from "react-router-dom";
-import ClerkView from "./components/ClerkView";
-import BoxView from "./components/BoxView";
-import ShopList from "./components/ShopList";
-import ShopDetail from "./components/ShopDetail";
+// import ClerkView from "./components/ClerkView";
+// import BoxView from "./components/BoxView";
+// import ShopList from "./components/ShopList";
+// import ShopDetail from "./components/ShopDetail";
+import ShopBoxList from "./components/ShopBoxList";
 
 
-class ShopManagement extends React.Component {
+class ShopBoxManagement extends React.Component {
 
     render() {
         const { byClerks, match, addButtonVisible, history, alterInfo } = this.props;
@@ -19,27 +20,27 @@ class ShopManagement extends React.Component {
         return (
             <div>
                 <PageHeader
-                    title="门店管理"
+                    title="包厢管理"
                     subTitle={subTitle}
                     onBack={this.props.handleBack}
                     extra={extra}>
                     <div>
-                        <Route
+                         <Route
                             path={match.url}
                             exact
                             render={props =>
-                                <ShopList
+                                <ShopBoxList
                                     {...this.props}
                                     {...props} />
                             } />
-                        <Route
+                       {/* <Route
                             path={`${match.url}/shop/:shopId`}
                             render={props =>
                                 <ShopDetail
                                     {...this.props}
                                     {...props} />
                             } />
-                      
+                       */}
                         {/* <Route
                             path={`${match.url}/boxInfo/:shopId/:boxId`}
                             render={props =>
@@ -80,4 +81,4 @@ const mapDispatchToProps = (dispatch) => {
     };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ShopManagement);
+export default connect(mapStateToProps, mapDispatchToProps)(ShopBoxManagement);

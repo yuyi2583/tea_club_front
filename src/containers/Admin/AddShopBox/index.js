@@ -34,7 +34,8 @@ class AddBox extends React.Component {
                     onOk() {
                         console.log("values", values);
                         console.log("file list", fileList);
-                        const shopBox = { ...values, photos: fileList };
+                        const shop={uid:values.shopId};
+                        const shopBox = { ...values,shop, photos: fileList };
                         thiz.props.addBoxInfo(shopBox).then(() => {
                             thiz.props.callMessage("success", "新增包厢成功！");
                             thiz.setState({

@@ -20,7 +20,8 @@ export default {
     //"/mock/alterBoxInfo.json",
     fetchAllClerks: () => "/mock/allClerks.json",
     alterBoxInfo: () => "/mock/alterBoxInfo.json",
-    deleteBoxInfo: () => "/mock/alterBoxInfo.json",
+    removeShopBox: (uid) => HOME+`/shopBox/${uid}`,
+    // "/mock/alterBoxInfo.json",
     addBoxInfo: () => HOME+"/shopBox",
     // "/mock/addBoxInfo.json",
     alterShopInfo: () => "/mock/alterBoxInfo.json",
@@ -53,4 +54,5 @@ export default {
     deleteOrderByBatch: () => "/mock/ordersByCustomer.json",
     fetchOrderById: () => "/mock/order.json",
     uploadPhoto:()=>HOME+"/savephoto",
+    fetchShopBoxes:()=>HOME+"/shopBoxes",
 }
