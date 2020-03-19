@@ -30,8 +30,8 @@ export const types = {
     ADD_SHOP_BOX: "SHOP/ADD_SHOP_BOX",               //新增包厢
     FETCH_SHOP_BOXES: "SHOP/FETCH_SHOP_BOXES",//获取包厢列表
     REMOVE_SHOP_BOX: "SHOP/REMOVE_SHOP_BOX",         //删除包厢
+    FETCH_SHOP_BOX: "SHOP/FETCH_SHOP_BOX",//获取包厢信息
     //////////////////////////////////
-    FETCH_SHOP_LIST: "SHOP/FETCH_SHOP_LIST",      //获取门店列表
     REMOVE_SHOP_CLERK: "SHOP/REMOVE_SHOP_CLERK",     //移除门店职员
     ADD_SHOP_CLERK: "SHOP/ADD_SHOP_CLERK",           //添加门店职员
     SET_DISPLAY: "SHOP/SET_DISPLAY",             //设置门店图片
@@ -150,6 +150,20 @@ export const actions = {
             })
         }
     },
+    fetchShopBox: (uid) => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest());
+            return get(url.fetchShopBox(uid)).then((result) => {
+                dispatch(appActions.finishRequest());
+                if (!result.error) {
+                    dispatch(fetchShopBoxSuccess(convertShopBoxToPlainStructure(result.data)));
+                } else {
+                    dispatch(appActions.setError(result.msg));
+                    return Promise.reject(result.error);
+                }
+            })
+        }
+    },
     /////////////////////////////////////////////////////////////////////
     //移除门店职员:
     removeShopClerk: (clerkId) => ({
@@ -246,6 +260,12 @@ const fetchShopBoxesSuccess = ({ shopBoxes, byShopBoxes }) => ({
     byShopBoxes
 })
 
+const fetchShopBoxSuccess = ({ shopBox, byPhotos }) => ({
+    type: types.FETCH_SHOP_BOX,
+    shopBox,
+    byPhotos
+})
+
 const convertShopBoxesToPlainStructure = (data) => {
     let shopBoxes = new Array();
     let byShopBoxes = new Object();
@@ -317,6 +337,22 @@ const convertShopToPlainStructure = (data) => {
         shopBoxes,
         byShopBoxes,
     }
+}
+
+const convertShopBoxToPlainStructure = (data) => {
+    let byPhotos = new Object();
+    let photos = new Array();
+    data.photos.forEach(photo => {
+        photos.push(photo.uid);
+        if (!byPhotos[photo.uid]) {
+            byPhotos[photo.uid] = photo;
+        }
+    });
+    return {
+        shopBox: { ...data, photos },
+        byPhotos
+    }
+
 }
 ///////////////////////////////////// discard below
 const alterBoxInfoSuccess = (newBoxInfo) => ({
@@ -437,6 +473,13 @@ const reducer = (state = initialState, action) => {
                 }
             });
             return { ...state, shopBoxes, byShopBoxes };
+        case types.FETCH_SHOP_BOX:
+            shopBoxes = state.shopBoxes;
+            if (state.shopBoxes.indexOf(action.shopBox.uid) == -1) {
+                shopBoxes = state.shopBoxes.concat([action.shopBox.uid]);
+            }
+            byShopBoxes = { ...state.byShopBoxes, [action.shopBox.uid]: action.shopBox };
+            return { ...state, shopBoxes, byPhotos: action.byPhotos,byShopBoxes };
         //////////////////////////////////////
         case types.FETCH_SHOP_INFO:
             return { ...state, shopInfo: action.shopInfo, byBoxes: action.byBoxes, byDisplay: action.byDisplay, byOpenHours: action.byOpenHours };

@@ -55,4 +55,5 @@ export default {
     fetchOrderById: () => "/mock/order.json",
     uploadPhoto:()=>HOME+"/savephoto",
     fetchShopBoxes:()=>HOME+"/shopBoxes",
+    fetchShopBox:(uid)=>HOME+`/shopBox/${uid}`,
 }

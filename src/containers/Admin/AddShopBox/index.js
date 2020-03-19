@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, Input, Tooltip, Icon, Button, InputNumber, PageHeader, Select, Modal, Spin, Divider } from 'antd';
+import { Form, Input, Tooltip, Icon, Button, InputNumber, PageHeader, Select, Modal, Spin, Divider, Row, Col } from 'antd';
 import PictureCard from "../../../components/PictureCard";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
@@ -34,8 +34,9 @@ class AddBox extends React.Component {
                     onOk() {
                         console.log("values", values);
                         console.log("file list", fileList);
-                        const shop={uid:values.shopId};
-                        const shopBox = { ...values,shop, photos: fileList };
+                        const shop = { uid: values.shopId };
+                        const price = { ingot: values.ingot, credit: values.credit };
+                        const shopBox = { ...values, shop, photos: fileList, price };
                         thiz.props.addBoxInfo(shopBox).then(() => {
                             thiz.props.callMessage("success", "新增包厢成功！");
                             thiz.setState({
@@ -118,16 +119,30 @@ class AddBox extends React.Component {
                             label={
                                 <span>
                                     费用&nbsp;
-                                     <Tooltip title="包厢每小时费用">
+                                     <Tooltip title="包厢每泡茶费用">
                                         <Icon type="question-circle-o" />
                                     </Tooltip>
                                 </span>
                             }
                         >
-                            {getFieldDecorator('price', {
-                                initialValue: 50,
-                                rules: [{ required: true, message: '请输入包厢费用!' }],
-                            })(<InputNumber min={0} />)}元/小时
+                            <Row>
+                                <Col span={11}>
+                                    <Form.Item>
+                                        {getFieldDecorator('ingot', {
+                                            initialValue: 0,
+                                            rules: [{ required: true, message: '请输入包厢费用!' }],
+                                        })(<InputNumber min={0} />)}元宝/泡茶
+                                    </Form.Item>
+                                </Col>
+                                <Col span={11}>
+                                    <Form.Item>
+                                        {getFieldDecorator('credit', {
+                                            initialValue: 0,
+                                            rules: [{ required: true, message: '请输入包厢费用!' }],
+                                        })(<InputNumber min={0} />)}积分/泡茶
+                            </Form.Item>
+                                </Col>
+                            </Row>
                         </Form.Item>
                         <Form.Item label="一泡茶时间">
                             {getFieldDecorator('duration', {

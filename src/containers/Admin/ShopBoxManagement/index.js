@@ -7,7 +7,7 @@ import { Route, Link } from "react-router-dom";
 // import ClerkView from "./components/ClerkView";
 // import BoxView from "./components/BoxView";
 // import ShopList from "./components/ShopList";
-// import ShopDetail from "./components/ShopDetail";
+import ShopBoxDetail from "./components/ShopBoxDetail";
 import ShopBoxList from "./components/ShopBoxList";
 
 
@@ -33,14 +33,14 @@ class ShopBoxManagement extends React.Component {
                                     {...this.props}
                                     {...props} />
                             } />
-                       {/* <Route
-                            path={`${match.url}/shop/:shopId`}
+                       <Route
+                            path={`${match.url}/shop_box/:shopBoxId`}
                             render={props =>
-                                <ShopDetail
+                                <ShopBoxDetail
                                     {...this.props}
                                     {...props} />
                             } />
-                       */}
+                      
                         {/* <Route
                             path={`${match.url}/boxInfo/:shopId/:boxId`}
                             render={props =>
