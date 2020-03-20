@@ -3,6 +3,7 @@ import url from "../../utils/url";
 import { get, post, put, _delete } from "../../utils/request";
 import { actions as clerkActions } from "./clerk";
 import { actions as uiActions } from "./ui";
+import { requestType } from "../../utils/common";
 
 const initialState = {
     shops: new Array(),
@@ -31,6 +32,7 @@ export const types = {
     FETCH_SHOP_BOXES: "SHOP/FETCH_SHOP_BOXES",//获取包厢列表
     REMOVE_SHOP_BOX: "SHOP/REMOVE_SHOP_BOX",         //删除包厢
     FETCH_SHOP_BOX: "SHOP/FETCH_SHOP_BOX",//获取包厢信息
+    UPDATE_SHOP_BOX: "SHOP/UPDATE_SHOP_BOX",//更新包厢信息
     //////////////////////////////////
     REMOVE_SHOP_CLERK: "SHOP/REMOVE_SHOP_CLERK",     //移除门店职员
     ADD_SHOP_CLERK: "SHOP/ADD_SHOP_CLERK",           //添加门店职员
@@ -150,6 +152,7 @@ export const actions = {
             })
         }
     },
+    //获取包厢信息
     fetchShopBox: (uid) => {
         return (dispatch) => {
             dispatch(appActions.startRequest());
@@ -157,6 +160,22 @@ export const actions = {
                 dispatch(appActions.finishRequest());
                 if (!result.error) {
                     dispatch(fetchShopBoxSuccess(convertShopBoxToPlainStructure(result.data)));
+                } else {
+                    dispatch(appActions.setError(result.msg));
+                    return Promise.reject(result.error);
+                }
+            })
+        }
+    },
+    //更新包厢信息
+    updateShopBox: (shopBox) => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest(requestType.updateRequest));
+            const params = { ...shopBox };
+            return put(url.updateShopBox(), params).then((result) => {
+                dispatch(appActions.finishRequest(requestType.updateRequest));
+                if (!result.error) {
+                    dispatch(updateShopBoxSuccess(convertShopBoxToPlainStructure(result.data)));
                 } else {
                     dispatch(appActions.setError(result.msg));
                     return Promise.reject(result.error);
@@ -264,7 +283,13 @@ const fetchShopBoxSuccess = ({ shopBox, byPhotos }) => ({
     type: types.FETCH_SHOP_BOX,
     shopBox,
     byPhotos
-})
+});
+
+const updateShopBoxSuccess = ({ shopBox, byPhotos }) => ({
+    type: types.UPDATE_SHOP_BOX,
+    shopBox,
+    byPhotos
+});
 
 const convertShopBoxesToPlainStructure = (data) => {
     let shopBoxes = new Array();
@@ -479,7 +504,10 @@ const reducer = (state = initialState, action) => {
                 shopBoxes = state.shopBoxes.concat([action.shopBox.uid]);
             }
             byShopBoxes = { ...state.byShopBoxes, [action.shopBox.uid]: action.shopBox };
-            return { ...state, shopBoxes, byPhotos: action.byPhotos,byShopBoxes };
+            return { ...state, shopBoxes, byPhotos: action.byPhotos, byShopBoxes };
+        case types.UPDATE_SHOP_BOX:
+            byShopBoxes = { ...state.byShopBoxes, [action.shopBox.uid]: action.shopBox };
+            return { ...state, byPhotos: action.byPhotos, byShopBoxes };
         //////////////////////////////////////
         case types.FETCH_SHOP_INFO:
             return { ...state, shopInfo: action.shopInfo, byBoxes: action.byBoxes, byDisplay: action.byDisplay, byOpenHours: action.byOpenHours };

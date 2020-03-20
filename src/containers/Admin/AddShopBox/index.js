@@ -24,6 +24,7 @@ class AddBox extends React.Component {
         e.preventDefault();
         const { fileList } = this.state;
         const thiz = this;
+        console.log("file list111111", fileList);
         this.props.form.validateFieldsAndScroll((err, values) => {
             if (!err) {
                 confirm({
@@ -33,7 +34,6 @@ class AddBox extends React.Component {
                     },
                     onOk() {
                         console.log("values", values);
-                        console.log("file list", fileList);
                         const shop = { uid: values.shopId };
                         const price = { ingot: values.ingot, credit: values.credit };
                         const shopBox = { ...values, shop, photos: fileList, price };

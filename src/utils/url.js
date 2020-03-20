@@ -56,4 +56,5 @@ export default {
     uploadPhoto:()=>HOME+"/savephoto",
     fetchShopBoxes:()=>HOME+"/shopBoxes",
     fetchShopBox:(uid)=>HOME+`/shopBox/${uid}`,
+    updateShopBox:()=>HOME+`/shopBox`,
 }

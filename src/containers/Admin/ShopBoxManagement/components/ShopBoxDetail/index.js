@@ -2,7 +2,7 @@ import React from "react";
 import { Descriptions, Row, Col, Skeleton, Typography, Button, Spin, Input, Select, Empty, Form, DatePicker, Modal, InputNumber } from "antd";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { actions as shopActions, getShopBoxes, getByShopBoxes, getByPhotos } from "../../../../../redux/modules/shop";
+import { actions as shopActions, getShopBoxes, getByShopBoxes, getByPhotos, getShops, getbyshops, getByShops } from "../../../../../redux/modules/shop";
 // import { actions as customerActions, getCustomerType, getByCustomerType } from "../../../../redux/modules/customer";
 import { Prompt, Redirect } from "react-router-dom";
 // import { timeStampConvertToFormatTime, timeStringConvertToTimeStamp } from "../../../../utils/timeUtil";
@@ -30,24 +30,20 @@ class ShopBoxDetail extends React.Component {
         }
     }
 
-    getFileList = (item) => {
-        return item != null || item != undefined ? [{
-            uid: '-1',
-            name: 'image.png',
-            status: 'done',
-            url: item,
-        }] : [];
-    }
-
     componentDidMount() {
         const { shopBoxId } = this.props.match.params;
-        this.props.fetchShopBox(shopBoxId);
+        this.props.fetchShopBox(shopBoxId).then(() => {
+            this.setState({ fileList: this.props.byShopBoxes[shopBoxId].photos });
+        });
+        this.props.fetchShops();
+
     }
 
     handleSubmit = e => {
         e.preventDefault();
-        const { fileList } = this.state;;
-        const { byAuthority } = this.props;
+        const { fileList } = this.state;
+        const { shopBoxId } = this.props.match.params;
+        const { byPhotos, byShopBoxes } = this.props;
         const thiz = this;
         this.props.form.validateFieldsAndScroll((err, values) => {
             if (!err) {
@@ -57,17 +53,16 @@ class ShopBoxDetail extends React.Component {
                     onCancel() {
                     },
                     onOk() {
-                        console.log("submit values", values);
-                        thiz.props.alterProductInfo(values)
-                            .then(() => {
-                                thiz.props.callMessage("success", "修改产品信息成功！")
-                                thiz.setState({
-                                    from: map.admin.AdminHome() + `/product_management/products`
-                                });
-                            })
-                            .catch((err) => {
-                                thiz.props.callMessage("error", "修改产品信息失败！" + err)
-                            })
+                        const shop = { uid: values.shopId };
+                        const price = { ingot: values.ingot, credit: values.credit, uid: byShopBoxes[shopBoxId].price.uid };
+                        const shopBox = { ...values, price, photos: fileList, uid: shopBoxId, shop };
+                        console.log("new shop box", shopBox);
+                        thiz.props.updateShopBox(shopBox).then(() => {
+                            thiz.props.callMessage("success", "更新包厢成功！");
+                            thiz.props.finishAlterInfo();
+                        }).catch((err) => {
+                            thiz.props.callMessage("error", "更新包厢失败!" + err);
+                        });
                     },
                 });
 
@@ -79,7 +74,6 @@ class ShopBoxDetail extends React.Component {
         const { shopBoxId } = this.props.match.params;
         const { byPhotos, byShopBoxes } = this.props;
         let photoDisplay = new Array();
-        // byShopBoxes[shopBoxId].photos != null && byShopBoxes[shopBoxId].photos.length > 0 ? 
         try {
             photoDisplay = byShopBoxes[shopBoxId].photos.map((uid) => ({
                 uid,
@@ -96,7 +90,7 @@ class ShopBoxDetail extends React.Component {
 
     getPriceDisplay = () => {
         const { shopBoxId } = this.props.match.params;
-        const { alterInfo, retrieveRequestQuantity, form, shopBoxes, byShopBoxes } = this.props;
+        const { byShopBoxes } = this.props;
         const { price } = byShopBoxes[shopBoxId];
         let priceDisplay = "";
         if (price == null || price == undefined) {
@@ -111,23 +105,42 @@ class ShopBoxDetail extends React.Component {
         return priceDisplay;
     }
 
+    handleDisplayChange = (type, data) => {
+        console.log("add shop photo uid", data);
+        // this.setState({fileList});
+        const { fileList } = this.state;
+        switch (type) {
+            case "done":
+                if (fileList.indexOf(data.uid) == -1) {
+                    this.setState({ fileList: fileList.concat([data.uid]) });
+                }
+                break;
+            case "removed":
+                let newFileList = fileList.filter(uid => uid != data.uid);
+                this.setState({ fileList: newFileList });
+                break;
+        }
+
+    }
+
     render() {
         const { from } = this.state;
         if (from != null) {
             return <Redirect to={from} />;
         }
         const { shopBoxId } = this.props.match.params;
-        const { alterInfo, retrieveRequestQuantity, form, shopBoxes, byShopBoxes } = this.props;
+        const { alterInfo, retrieveRequestQuantity, form, shops, byShops,
+            updateRequestQuantity, shopBoxes, byShopBoxes } = this.props;
         const { getFieldDecorator } = form;
         const photoDisplay = this.getPhotosDisplay();
         const priceDisplay = this.getPriceDisplay();
         return (
             <div>
-                <Spin spinning={retrieveRequestQuantity > 0}>
+                <Spin spinning={updateRequestQuantity > 0}>
                     {retrieveRequestQuantity > 0 ?
                         <Skeleton active /> :
                         <Form onSubmit={this.handleSubmit}>
-                            <Descriptions bordered column={2}>
+                            <Descriptions bordered column={2} style={{marginBottom:"20px"}}>
                                 <Descriptions.Item label="包厢名称">
                                     {
                                         !alterInfo ?
@@ -136,7 +149,7 @@ class ShopBoxDetail extends React.Component {
                                                 {getFieldDecorator('name', {
                                                     rules: [{ required: true, message: '请输入包厢名称!' }],
                                                     initialValue: byShopBoxes[shopBoxId].name
-                                                })(<Input allowClear placeholder="请输入包厢名称" />)}
+                                                })(<Input name="name" allowClear placeholder="请输入包厢名称" />)}
                                             </Form.Item>
                                     }
                                 </Descriptions.Item>
@@ -148,7 +161,7 @@ class ShopBoxDetail extends React.Component {
                                                 {getFieldDecorator('boxNum', {
                                                     rules: [{ required: true, message: '请输入包厢编号!' }],
                                                     initialValue: byShopBoxes[shopBoxId].boxNum
-                                                })(<Input allowClear placeholder="请输入包厢编号" />)}
+                                                })(<Input name="boxNum" allowClear placeholder="请输入包厢编号" />)}
                                             </Form.Item>
                                     }
                                 </Descriptions.Item>
@@ -166,7 +179,7 @@ class ShopBoxDetail extends React.Component {
                                                     ],
                                                     initialValue: byShopBoxes[shopBoxId].description
                                                 })(
-                                                    <TextArea rows={4} allowClear placeholder="请输入包厢描述" />
+                                                    <TextArea name="description" rows={4} allowClear placeholder="请输入包厢描述" />
                                                 )}
                                             </Form.Item>
                                     }
@@ -175,19 +188,34 @@ class ShopBoxDetail extends React.Component {
                                     {
                                         !alterInfo ?
                                             priceDisplay :
-                                            <Form.Item>
-                                                {getFieldDecorator('price', {
-                                                    rules: [
-                                                        {
-                                                            required: true,
-                                                            message: "请输入包厢价格！",
-                                                        }
-                                                    ],
-                                                    initialValue: byShopBoxes[shopBoxId].price
-                                                })(
-                                                    <InputNumber min={0} allowClear />
-                                                )}元宝/泡茶
-                                            </Form.Item>
+                                            <div>
+                                                <Form.Item>
+                                                    {getFieldDecorator('ingot', {
+                                                        rules: [
+                                                            {
+                                                                required: true,
+                                                                message: "请输入包厢价格！",
+                                                            }
+                                                        ],
+                                                        initialValue: byShopBoxes[shopBoxId].price.ingot
+                                                    })(
+                                                        <InputNumber name="ingot" min={0} allowClear />
+                                                    )}元宝
+                                                </Form.Item>
+                                                <Form.Item>
+                                                    {getFieldDecorator('credit', {
+                                                        rules: [
+                                                            {
+                                                                required: true,
+                                                                message: "请输入包厢价格！",
+                                                            }
+                                                        ],
+                                                        initialValue: byShopBoxes[shopBoxId].price.credit
+                                                    })(
+                                                        <InputNumber name="credit" min={0} allowClear />
+                                                    )}积分
+                                                </Form.Item>
+                                            </div>
                                     }
                                 </Descriptions.Item>
                                 <Descriptions.Item label="一泡茶时间（分钟）">
@@ -204,15 +232,38 @@ class ShopBoxDetail extends React.Component {
                                                     ],
                                                     initialValue: byShopBoxes[shopBoxId].duration
                                                 })(
-                                                    <InputNumber min={0} allowClear />
+                                                    <InputNumber name="duration" min={0} allowClear />
                                                 )}分钟
                                             </Form.Item>
                                     }
                                 </Descriptions.Item>
-                                <Descriptions.Item label="照片">
+                                <Descriptions.Item label="所属门店" span={2}>
+                                    {
+                                        !alterInfo ?
+                                            byShopBoxes[shopBoxId].shop.name :
+                                            <Form.Item>
+                                                {getFieldDecorator('shopId', {
+                                                    rules: [
+                                                        {
+                                                            required: true,
+                                                            message: "请选择包厢所属门店！",
+                                                        }
+                                                    ],
+                                                    initialValue: byShopBoxes[shopBoxId].shop.uid
+                                                })(
+                                                    <Select name="shopId">
+                                                        {shops.map(uid => <Option key={uid} value={uid}>{byShops[uid].name}</Option>)}
+                                                    </Select>
+                                                )}
+                                            </Form.Item>
+                                    }
+                                </Descriptions.Item>
+                                <Descriptions.Item label="照片" span={2}>
                                     {
                                         alterInfo ?
-                                            null
+                                            <PictureCard
+                                                onChange={this.handleDisplayChange}
+                                                fileList={photoDisplay} />
                                             : <PictureCard
                                                 fileList={photoDisplay}
                                                 type={"display"}
@@ -244,6 +295,8 @@ const mapStateToProps = (state, props) => {
         shopBoxes: getShopBoxes(state),
         byShopBoxes: getByShopBoxes(state),
         byPhotos: getByPhotos(state),
+        shops: getShops(state),
+        byShops: getByShops(state),
     };
 };
 

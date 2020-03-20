@@ -1,3 +1,8 @@
 .display-photo {
-    width:auto
+    width: auto
+}
+
+.upload-photo a[class='ant-upload-list-item-thumbnail'] {
+    width: 86px !important;
+    height: 86px !important;
 }
