@@ -11,7 +11,7 @@ import { formItemLayout, tailFormItemLayout } from "../../../utils/common";
 const { confirm } = Modal;
 const { Option } = Select;
 
-class AddBox extends React.Component {
+class AddShopBox extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -52,11 +52,20 @@ class AddBox extends React.Component {
         });
     };
 
-    handleDisplayChange = (data) => {
-        console.log("add shop photo uid", data);
+    handleDisplayChange = (type,data) => {
         const { fileList } = this.state;
-        if (fileList.indexOf(data.uid) == -1) {
-            this.setState({ fileList: fileList.concat([data.uid]) });
+        switch (type) {
+            case "done":
+                console.log("add shop photo ", data);
+                if (fileList.indexOf(data.uid) == -1) {
+                    this.setState({ fileList: fileList.concat([data.uid]) });
+                }
+                break;
+            case "removed":
+                console.log("remove shop photo ", data);
+                let newFileList = fileList.filter(uid => uid != data.uid);
+                this.setState({ fileList: newFileList });
+                break;
         }
     }
 
@@ -182,6 +191,6 @@ const mapDispatchToProps = (dispatch) => {
         ...bindActionCreators(shopActions, dispatch),
     };
 };
-const AddBoxForm = Form.create({ name: 'addBox' })(AddBox);
+const AddShopBoxForm = Form.create({ name: 'addBox' })(AddShopBox);
 
-export default connect(mapStateToProps, mapDispatchToProps)(AddBoxForm);
+export default connect(mapStateToProps, mapDispatchToProps)(AddShopBoxForm);

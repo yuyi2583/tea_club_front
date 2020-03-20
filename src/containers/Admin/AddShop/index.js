@@ -67,11 +67,20 @@ class AddShop extends React.Component {
         });
     };
 
-    handleDisplayChange = (data) => {
-        console.log("add shop photo uid", data);
+    handleDisplayChange = (type,data) => {
         const { fileList } = this.state;
-        if (fileList.indexOf(data.uid) == -1) {
-            this.setState({ fileList: fileList.concat([data.uid]) });
+        switch (type) {
+            case "done":
+                console.log("add shop photo", data);
+                if (fileList.indexOf(data.uid) == -1) {
+                    this.setState({ fileList: fileList.concat([data.uid]) });
+                }
+                break;
+            case "removed":
+                console.log("remove shop photo", data);
+                let newFileList = fileList.filter(uid => uid != data.uid);
+                this.setState({ fileList: newFileList });
+                break;
         }
     }
 

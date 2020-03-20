@@ -114,7 +114,7 @@ class ShopBoxDetail extends React.Component {
                 if (fileList.indexOf(data.uid) == -1) {
                     this.setState({ fileList: fileList.concat([data.uid]) });
                 }
-                break;
+                break; 
             case "removed":
                 let newFileList = fileList.filter(uid => uid != data.uid);
                 this.setState({ fileList: newFileList });

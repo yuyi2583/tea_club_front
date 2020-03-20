@@ -2,7 +2,6 @@ import React from "react";
 import { Upload, Modal, Icon } from "antd";
 import PropTypes from "prop-types";
 import { callNotification } from "../../utils/commonUtils";
-import { getBase64 } from "../../utils/imageUtil";
 import "./style.css";
 
 class PictureCard extends React.Component {
@@ -26,10 +25,8 @@ class PictureCard extends React.Component {
     handleCancel = () => this.setState({ previewVisible: false });
 
     handleDisplayChange = ({ file, fileList }) => {
-        console.log("file list change---------------------");
+        console.log("handle display change file",file);
         
-        console.log("file", file);
-        console.log("file list", fileList);
         if (file.response != undefined && file.response.code == 606) {
             callNotification("error", "照片过大，请上传1M以下的照片");
             fileList = fileList.map(item => {
@@ -39,25 +36,24 @@ class PictureCard extends React.Component {
                 return item;
             })
         } else if (file.status == "done") {
-            this.props.onChange("done",file.response.data);
-        }else if(file.status=="removed"){
-            this.props.onChange("removed",file);
+            this.props.onChange("done", file.response.data);
+        } else if (file.status == "removed") {
+            if (file.response != null || file.response != undefined) {
+                this.props.onChange("removed", file.response.data);
+            } else {
+                this.props.onChange("removed", file);
+            }
         }
         this.setState({ fileList })
     }
 
     componentDidUpdate(prevProps) {
         if (this.props.type != "display" && prevProps.type != this.props.type) {
-            // const { fileList } = this.state;
-            // let newFileList = fileList.concat(this.props.fileList);
-            // this.setState({ fileList: newFileList });
             this.setState({ fileList: this.props.fileList });
         }
     }
 
     render() {
-        console.log("file list in porps", this.props.fileList);
-
         const { alterInfo, max, type } = this.props;
         const { previewVisible, previewImage, fileList } = this.state;
         const uploadButton = (
@@ -89,7 +85,6 @@ class PictureCard extends React.Component {
                         listType="picture-card"
                         className="upload-photo"
                         fileList={fileList}
-                        // this.props.fileList.length==0?fileList:this.props.fileList}
                         onPreview={this.handlePreview}
                         disabled={alterInfo ? false : true}
                         onChange={this.handleDisplayChange}
@@ -122,16 +117,4 @@ PictureCard.defaultProps = {
     type: "upload"
 }
 
-
-// const mapStateToProps = (state, props) => {
-//     return {
-//     };
-// };
-
-// const mapDispatchToProps = (dispatch) => {
-//     return {
-//         ...bindActionCreators(photoActions, dispatch),
-//     };
-// };
-
-export default PictureCard//connect(mapStateToProps, mapDispatchToProps)(PictureCard);
+export default PictureCard;
