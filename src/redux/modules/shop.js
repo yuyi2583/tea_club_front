@@ -11,7 +11,7 @@ const initialState = {
     // openHours:new Array(),
     byOpenHours: new Object(),//营业时间
     byPhotos: new Object(),//门店照片
-    byClerks: new Object(),//门店职员
+    // byClerks: new Object(),//门店职员
     shopBoxes: new Array(),
     byShopBoxes: new Object(),
     ////////////////////////////////
@@ -95,8 +95,9 @@ export const actions = {
             return get(url.fetchShop(shopId)).then((result) => {
                 dispatch(appActions.finishRequest());
                 if (!result.error) {
-                    const { shop, byOpenHours, byPhotos, byClerks, shopBoxes, byShopBoxes } = convertShopToPlainStructure(result.data);
-                    dispatch(fetchShopSuccess(shop, byOpenHours, byPhotos, byClerks, shopBoxes, byShopBoxes));
+                    const { shop, byOpenHours, clerks, byPhotos, byClerks, shopBoxes, byShopBoxes } = convertShopToPlainStructure(result.data);
+                    dispatch(clerkActions.fetchShopClerks(clerks, byClerks));
+                    dispatch(fetchShopSuccess(shop, byOpenHours, byPhotos, shopBoxes, byShopBoxes));
                 } else {
                     dispatch(appActions.setError(result.msg));
                     return Promise.reject(result.error);
@@ -258,12 +259,11 @@ const fetchShopsSuccess = ({ shops, byShops }) => ({
     byShops
 });
 
-const fetchShopSuccess = (shop, byOpenHours, byPhotos, byClerks, shopBoxes, byShopBoxes) => ({
+const fetchShopSuccess = (shop, byOpenHours, byPhotos, shopBoxes, byShopBoxes) => ({
     type: types.FETCH_SHOP,
     shop,
     byOpenHours,
     byPhotos,
-    byClerks,
     shopBoxes,
     byShopBoxes
 });
@@ -358,6 +358,7 @@ const convertShopToPlainStructure = (data) => {
         shop: { ...data, openHours, photos, clerks, shopBoxes },
         byOpenHours,
         byPhotos,
+        clerks,
         byClerks,
         shopBoxes,
         byShopBoxes,
@@ -478,7 +479,7 @@ const reducer = (state = initialState, action) => {
             byShops = { ...state.byShops, [action.shop.uid]: action.shop };
             return {
                 ...state, byOpenHours: action.byOpenHours, byShops, byPhotos: action.byPhotos,
-                byClerks: action.byClerks, shopBoxes: action.shopBoxes, byShopBoxes: action.byShopBoxes
+                shopBoxes: action.shopBoxes, byShopBoxes: action.byShopBoxes
             };
         case types.ADD_SHOP_BOX:
             shopBoxes = state.shopBoxes;
@@ -555,7 +556,7 @@ export const getShops = (state) => state.shop.shops;
 export const getByShops = (state) => state.shop.byShops;
 export const getByOpenHours = (state) => state.shop.byOpenHours;
 export const getByPhotos = (state) => state.shop.byPhotos;
-export const getByShopClerks = (state) => state.shop.byClerks;
+// export const getByShopClerks = (state) => state.shop.byClerks;
 export const getShopBoxes = (state) => state.shop.shopBoxes;
 export const getByShopBoxes = (state) => state.shop.byShopBoxes;
 //////////////////////////////////////////

@@ -5,7 +5,7 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actions as shopActions } from "../../../redux/modules/shop";
 import { getRetrieveRequestQuantity } from "../../../redux/modules/app";
-import { Redirect } from "react-router-dom";
+import { Redirect,Prompt } from "react-router-dom";
 import { map } from "../../../router"
 import "./style.css";
 import { formItemLayout, tailFormItemLayout } from "../../../utils/common";
@@ -27,6 +27,8 @@ class AddShop extends React.Component {
         e.preventDefault();
         const { fileList } = this.state;
         const thiz = this;
+        const {getFieldsValue}=this.props.form;
+        console.log("field value", getFieldsValue());
         this.props.form.validateFieldsAndScroll((err, values) => {
             if (!err) {
                 confirm({
@@ -91,12 +93,6 @@ class AddShop extends React.Component {
         if (from != null) {
             return <Redirect to={from} />;
         }
-        if (connectError) {
-            return <Redirect to={{
-                pathname: map.error(),
-                state: {  from: { pathname: map.admin.AdminHome() } }
-            }} />
-        }
         const { getFieldDecorator } = this.props.form;
         return (
             <PageHeader
@@ -150,6 +146,7 @@ class AddShop extends React.Component {
                         </Form.Item>
                     </Form>
                 </Spin>
+                <Prompt message="当前页面正在输入中，离开此页面您输入的数据不会被保存，是否离开?" when={true} />
             </PageHeader>
         );
     }
@@ -166,6 +163,6 @@ const mapDispatchToProps = (dispatch) => {
         ...bindActionCreators(shopActions, dispatch),
     };
 };
-const AddShopForm = Form.create({ name: 'addBox' })(AddShop);
+const AddShopForm = Form.create({ name: 'addShop' })(AddShop);
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddShopForm);

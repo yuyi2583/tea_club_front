@@ -4,7 +4,7 @@ import { Link, Prompt } from "react-router-dom";
 
 const { Meta } = Card;
 
-class BoxCard extends React.Component {
+class ShopBoxCard extends React.Component {
 
     deleteBox = () => {
         const { alterInfo, boxInfo, match, shopId } = this.props;
@@ -12,7 +12,8 @@ class BoxCard extends React.Component {
     }
 
     render() {
-        const { alterInfo, boxInfo, match, shopId ,requestQuantity} = this.props;
+        const { alterInfo, shopBox, match, shopId ,requestQuantity} = this.props;
+        const boxInfo=shopBox;
         return (
             <div style={{ display: "inline-block" }}>
                 <Card
@@ -20,7 +21,7 @@ class BoxCard extends React.Component {
                     size="small"
                     cover={
                         <Carousel autoplay>
-                            {boxInfo.img.map((img, index) => (
+                            {shopBox.img.map((img, index) => (
                                 <img
                                     key={index}
                                     alt="example"
@@ -57,4 +58,4 @@ class BoxCard extends React.Component {
     }
 }
 
-export default BoxCard;
+export default ShopBoxCard;

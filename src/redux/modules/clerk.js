@@ -2,10 +2,12 @@ import { actions as appActions } from "./app";
 import url from "../../utils/url";
 import { get } from "../../utils/request";
 import { actions as uiActions } from "./ui";
+import { requestType } from "../../utils/common";
 
 const initialState = {
-    clerks: null,
-    byClerks: null,
+    clerks: new Array(),
+    byClerks: new Object(),
+    ///////////////////////
     byAuthority: null,
     byBelong: null,
     allAuthority: null,
@@ -17,6 +19,7 @@ const initialState = {
 export const types = {
     FETCH_ALL_CLERKS: "CLERK/FETCH_ALL_CLERKS",          //获取所有员工信息
     FETCH_SHOP_CLERKS: "CLERK/FETCH_SHOP_CLERKS",        //获取门店员工信息
+    /////////////////////////////////////////////
     ALTER_CLERK_POSITION: "CLERK/ALTER_CLERK_POSITION",      //修改员工职位信息
     FETCH_ALL_AUTHORITY: "CLERK/FETCH_ALL_AUTHORITY",        //获取所有权限信息
     FETCH_ALL_POSITION: "CLERK/FETCH_ALL_POSITION",          //获取所有职位信息
@@ -27,18 +30,27 @@ export const types = {
 
 export const actions = {
     //获取所有员工数据
-    fetchAllClerks: () => {
+    fetchAllClerks: (reqType = requestType.retrieveRequest) => {
         return (dispatch) => {
-            return get(url.fetchAllClerks()).then((data) => {
-                dispatch(appActions.finishRequest());
-                if (!data.error) {
-                    dispatch(fetchAllClerksSuccess(convertClerksToPlainStructure(data.clerks)));
+            dispatch(appActions.startRequest(reqType));
+            return get(url.fetchAllClerks()).then((result) => {
+                dispatch(appActions.finishRequest(reqType));
+                if (!result.error) {
+                    dispatch(fetchAllClerksSuccess(convertClerksToPlainStructure(result.data)));
+                    return Promise.resolve();
                 } else {
-                    dispatch(actions.setError(data.error));
+                    dispatch(appActions.setError(result.msg));
+                    return Promise.reject(result.error);
                 }
             })
         }
     },
+    fetchShopClerks: (clerks, byClerks) => ({
+        type: types.FETCH_SHOP_CLERKS,
+        clerks,
+        byClerks
+    }),
+    ////////////////////////////////
     fetchClerks: (byClerks) => ({
         type: types.FETCH_SHOP_CLERKS,
         byClerks
@@ -139,6 +151,29 @@ export const actions = {
     }
 }
 
+
+const convertClerksToPlainStructure = (data) => {
+    let clerks = new Array();
+    let byClerks = new Object();
+    data.forEach(clerk => {
+        clerks.push(clerk.uid);
+        if (!byClerks[clerk.uid]) {
+            byClerks[clerk.uid] = clerk;
+        }
+    });
+    return {
+        clerks,
+        byClerks
+    }
+}
+
+const fetchAllClerksSuccess = ({ clerks, byClerks }) => ({
+    type: types.FETCH_ALL_CLERKS,
+    clerks,
+    byClerks
+})
+///////////////////////////////////////
+
 const addClerkSuccess = ({ clerks, byClerks, byAuthorityTop, byBelongTop }) => ({
     type: types.ADD_CLERK,
     clerks,
@@ -171,13 +206,13 @@ const fetchAllAuthoritySuccess = ({ authority, byAuthority, byBelongSecond, belo
     allBelong: belong
 })
 
-const fetchAllClerksSuccess = ({ clerks, byClerks, byAuthorityTop, byBelongTop }) => ({
-    type: types.FETCH_ALL_CLERKS,
-    clerks,
-    byClerks,
-    byAuthority: byAuthorityTop,
-    byBelong: byBelongTop,
-})
+// const fetchAllClerksSuccess = ({ clerks, byClerks, byAuthorityTop, byBelongTop }) => ({
+//     type: types.FETCH_ALL_CLERKS,
+//     clerks,
+//     byClerks,
+//     byAuthority: byAuthorityTop,
+//     byBelong: byBelongTop,
+// })
 
 const convertPositionToPlainStructure = (data) => {
     console.log("all positins", data);
@@ -195,38 +230,39 @@ const convertPositionToPlainStructure = (data) => {
     }
 }
 
-const convertClerksToPlainStructure = (data) => {
-    console.log("length of data",data.length);
-    let clerks = [];
-    let byClerks = {};
-    let byAuthorityTop = new Object();
-    let byBelongTop = new Object();
-    if(data.length==undefined){
-        clerks.push(data.uid);
-        if (!byClerks[data.uid]) {
-            const { authority, byAuthority, byBelongSecond, belong } = convertAuthorityToPlainStructure(data.authority);
-            byClerks[data.uid] = { ...data, authority, belong };
-            byAuthorityTop = { ...byAuthorityTop, ...byAuthority };
-            byBelongTop = { ...byBelongTop, ...byBelongSecond };
-        }
-    }else{
-        data.forEach((item) => {
-            clerks.push(item.uid);
-            if (!byClerks[item.uid]) {
-                const { authority, byAuthority, byBelongSecond, belong } = convertAuthorityToPlainStructure(item.authority);
-                byClerks[item.uid] = { ...item, authority, belong };
-                byAuthorityTop = { ...byAuthorityTop, ...byAuthority };
-                byBelongTop = { ...byBelongTop, ...byBelongSecond };
-            }
-        });
-    }
-    return {
-        clerks,
-        byClerks,
-        byAuthorityTop,
-        byBelongTop
-    }
-};
+// const convertClerksToPlainStructure = (data) => {
+//     console.log("length of data",data.length);
+//     let clerks = [];
+//     let byClerks = {};
+//     let byAuthorityTop = new Object();
+//     let byBelongTop = new Object();
+//     if(data.length==undefined){
+//         clerks.push(data.uid);
+//         if (!byClerks[data.uid]) {
+//             const { authority, byAuthority, byBelongSecond, belong } = convertAuthorityToPlainStructure(data.authority);
+//             byClerks[data.uid] = { ...data, authority, belong };
+//             byAuthorityTop = { ...byAuthorityTop, ...byAuthority };
+//             byBelongTop = { ...byBelongTop, ...byBelongSecond };
+//         }
+//     }else{
+//         data.forEach((item) => {
+//             clerks.push(item.uid);
+//             if (!byClerks[item.uid]) {
+//                 const { authority, byAuthority, byBelongSecond, belong } = convertAuthorityToPlainStructure(item.authority);
+//                 byClerks[item.uid] = { ...item, authority, belong };
+//                 byAuthorityTop = { ...byAuthorityTop, ...byAuthority };
+//                 byBelongTop = { ...byBelongTop, ...byBelongSecond };
+//             }
+//         });
+//     }
+//     return {
+//         clerks,
+//         byClerks,
+//         byAuthorityTop,
+//         byBelongTop
+//     }
+// };
+
 
 const convertAuthorityToPlainStructure = (data) => {
     let authority = [];
@@ -266,16 +302,17 @@ const convertAuthorityBelongToPlainStructure = (data) => {
 
 const reducer = (state = initialState, action) => {
     switch (action.type) {
-        case types.FETCH_SHOP_CLERKS:
-            return { ...state, byClerks: action.byClerks };
         case types.FETCH_ALL_CLERKS:
             return {
                 ...state,
                 clerks: action.clerks,
                 byClerks: action.byClerks,
-                byAuthority: action.byAuthority,
-                byBelong: action.byBelong
+                // byAuthority: action.byAuthority,
+                // byBelong: action.byBelong
             };
+        case types.FETCH_SHOP_CLERKS:
+            return { ...state, byClerks: action.byClerks,clerks:action.clerks };
+        ////////////////////////////////
         case types.ALTER_CLERK_POSITION:
             const { byClerks } = state;
             let newByClerks = { ...byClerks };
@@ -325,6 +362,7 @@ export default reducer;
 
 export const getByClerks = (state) => state.clerk.byClerks;
 export const getClerks = (state) => state.clerk.clerks;
+/////////////////////////////////////
 export const getByAuthority = (state) => state.clerk.byAuthority;
 export const getByBelong = (state) => state.clerk.byBelong;
 export const getAllBelong = (state) => state.clerk.allBelong;

@@ -1,24 +1,13 @@
 import React from "react";
-import { Descriptions, Row, Col, Skeleton, Typography, Button, Spin, Input, Select, Empty, Form, DatePicker, Modal, InputNumber } from "antd";
+import { Descriptions, Row, Col, Skeleton, Button, Spin, Input, Select, Form, Modal, InputNumber } from "antd";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { actions as shopActions, getShopBoxes, getByShopBoxes, getByPhotos, getShops, getbyshops, getByShops } from "../../../../../redux/modules/shop";
-// import { actions as customerActions, getCustomerType, getByCustomerType } from "../../../../redux/modules/customer";
+import { actions as shopActions, getShopBoxes, getByShopBoxes, getByPhotos, getShops, getByShops } from "../../../../../redux/modules/shop";
 import { Prompt, Redirect } from "react-router-dom";
-// import { timeStampConvertToFormatTime, timeStringConvertToTimeStamp } from "../../../../utils/timeUtil";
-import moment from 'moment';
-import { activityType, requestType } from "../../../../../utils/common";
 import PictureCard from "../../../../../components/PictureCard";
-// import ActivityRuleInput from "../../../../components/ActivityRuleInput";
-// import DynamicFieldSet from "../../../../components/DynamicFieldSet";
-// import { activityApplyForProduct } from "../../../../utils/commonUtils";
-import { map } from "../../../../../router";
 
-const { RangePicker } = DatePicker;
-const { Paragraph } = Typography;
 const { TextArea } = Input;
 const { Option } = Select;
-const dateFormat = 'YYYY-MM-DD HH:mm:ss';
 const { confirm } = Modal;
 
 class ShopBoxDetail extends React.Component {
@@ -43,7 +32,7 @@ class ShopBoxDetail extends React.Component {
         e.preventDefault();
         const { fileList } = this.state;
         const { shopBoxId } = this.props.match.params;
-        const { byPhotos, byShopBoxes } = this.props;
+        const { byShopBoxes } = this.props;
         const thiz = this;
         this.props.form.validateFieldsAndScroll((err, values) => {
             if (!err) {
@@ -106,16 +95,16 @@ class ShopBoxDetail extends React.Component {
     }
 
     handleDisplayChange = (type, data) => {
-        console.log("add shop photo uid", data);
-        // this.setState({fileList});
         const { fileList } = this.state;
         switch (type) {
             case "done":
+                console.log("add shop photo", data);
                 if (fileList.indexOf(data.uid) == -1) {
                     this.setState({ fileList: fileList.concat([data.uid]) });
                 }
-                break; 
+                break;
             case "removed":
+                console.log("remove shop photo", data);
                 let newFileList = fileList.filter(uid => uid != data.uid);
                 this.setState({ fileList: newFileList });
                 break;
@@ -130,7 +119,7 @@ class ShopBoxDetail extends React.Component {
         }
         const { shopBoxId } = this.props.match.params;
         const { alterInfo, retrieveRequestQuantity, form, shops, byShops,
-            updateRequestQuantity, shopBoxes, byShopBoxes } = this.props;
+            updateRequestQuantity, byShopBoxes } = this.props;
         const { getFieldDecorator } = form;
         const photoDisplay = this.getPhotosDisplay();
         const priceDisplay = this.getPriceDisplay();
@@ -140,7 +129,7 @@ class ShopBoxDetail extends React.Component {
                     {retrieveRequestQuantity > 0 ?
                         <Skeleton active /> :
                         <Form onSubmit={this.handleSubmit}>
-                            <Descriptions bordered column={2} style={{marginBottom:"20px"}}>
+                            <Descriptions bordered column={2} style={{ marginBottom: "20px" }}>
                                 <Descriptions.Item label="包厢名称">
                                     {
                                         !alterInfo ?
@@ -240,7 +229,7 @@ class ShopBoxDetail extends React.Component {
                                 <Descriptions.Item label="所属门店" span={2}>
                                     {
                                         !alterInfo ?
-                                            byShopBoxes[shopBoxId].shop.name :
+                                            byShopBoxes[shopBoxId].shop==null?null:byShopBoxes[shopBoxId].shop.name :
                                             <Form.Item>
                                                 {getFieldDecorator('shopId', {
                                                     rules: [

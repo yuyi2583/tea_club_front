@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import CompanyInfo from "../containers/Admin/CompanyInfo";
 import { handleBack, callMessage } from "./commonUtils";
 import { Button } from "antd";
 import { actions as uiActions, getAlterInfoState, getModalLoading, getModalVisible, getShopId_shopManagement, getAddButtonVisible_shopManagement } from "../redux/modules/ui";
@@ -95,12 +94,14 @@ export default function asyncComponent(importComponent) {
 
     render() {
       const C = this.state.component;
-      return C ? <C {...this.props}
-        callMessage={callMessage}
-        handleBack={handleBack}
-        getExtra={this.getExtra}
-        getSubTitle={this.getSubTitle}
-      /> : null;
+      return C ?
+        <C {...this.props}
+          callMessage={callMessage}
+          handleBack={handleBack}
+          getExtra={this.getExtra}
+          getSubTitle={this.getSubTitle}
+        />
+        : null;
     }
   }
 

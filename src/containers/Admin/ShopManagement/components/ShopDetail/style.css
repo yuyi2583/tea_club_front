@@ -1,0 +1,13 @@
+span[class="ant-tag ant-tag-volcano"]:hover,span[class="ant-tag ant-tag-purple"]:hover
+,span[class="ant-tag"]:hover{
+    cursor: pointer !important;
+}
+div[class="ant-col ant-col-1"],div[class="ant-col ant-col-2"]{
+    align-items: center;
+    display: flex;
+    height: 40px;
+}
+div[class="ant-col ant-col-7"]{
+    display: flex;
+    justify-content: center;
+}

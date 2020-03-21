@@ -57,6 +57,11 @@ class DynamicFieldSet extends React.Component {
     getFieldDecorator('keys', { initialValue });
   }
 
+  componentWillUnmount(){
+    id=0;
+    initialValue = new Array()
+  }
+
   getFormItems = () => {
     const { getFieldValue } = this.props.form;
     const { template } = this.props;

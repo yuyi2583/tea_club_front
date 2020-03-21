@@ -73,9 +73,6 @@ export const actions = {
                     return Promise.resolve();
                 } else {
                     dispatch(actions.setError(result.msg));
-                    if (result.error.code == 404) {
-                        dispatch(actions.setConnectError());
-                    }
                     return Promise.reject(result.error);
                 }
             })
@@ -94,9 +91,6 @@ export const actions = {
                     return Promise.resolve()
                 } else {
                     dispatch(actions.setError(result.msg));
-                    if (result.error.code == 404) {
-                        dispatch(actions.setConnectError());
-                    }
                     return Promise.reject(result.error);
                 }
             })

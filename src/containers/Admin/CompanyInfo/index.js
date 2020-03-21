@@ -43,14 +43,7 @@ class CompanyInfo extends React.Component {
     }
 
     render() {
-        const { from } = this.props.location.state || { from: { pathname: map.admin.AdminHome() } };
-        const { companyInfo, alterInfo, retrieveRequestQuantity, updateRequestQuantity, connectError } = this.props;
-        if (connectError) {
-            return <Redirect to={{
-                pathname: map.error(),
-                state: { from }
-            }} />
-        }
+        const { companyInfo, alterInfo, retrieveRequestQuantity, updateRequestQuantity } = this.props;
         const subTitle = this.props.getSubTitle();
         const extra = this.props.getExtra();
         const { getFieldDecorator } = this.props.form;
