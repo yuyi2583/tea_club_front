@@ -413,6 +413,5 @@ export const getShops = (state) => state.shop.shops;
 export const getByShops = (state) => state.shop.byShops;
 export const getByOpenHours = (state) => state.shop.byOpenHours;
 export const getByPhotos = (state) => state.shop.byPhotos;
-// export const getByShopClerks = (state) => state.shop.byClerks;
 export const getShopBoxes = (state) => state.shop.shopBoxes;
 export const getByShopBoxes = (state) => state.shop.byShopBoxes;

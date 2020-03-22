@@ -70,7 +70,7 @@ class AddShopBox extends React.Component {
     }
 
     componentDidMount() {
-        this.props.fetchShops()
+        this.props.fetchShops();
     }
 
     render() {

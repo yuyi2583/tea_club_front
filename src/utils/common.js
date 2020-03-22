@@ -1,8 +1,8 @@
 import { getNDaysAgoTimeStamp } from "./timeUtil";
 
 export const sex = {
-    "0": "男",
-    "1": "女"
+    0: "男",
+    1: "女"
 }
 
 export const activityType = {

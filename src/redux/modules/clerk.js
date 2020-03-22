@@ -1,28 +1,29 @@
 import { actions as appActions } from "./app";
 import url from "../../utils/url";
-import { get } from "../../utils/request";
+import { get, post, put, _delete } from "../../utils/request";
 import { actions as uiActions } from "./ui";
 import { requestType } from "../../utils/common";
 
 const initialState = {
     clerks: new Array(),
     byClerks: new Object(),
+    positions: new Array(),
+    byPositions: new Object(),
+    byAvatar: new Object(),
     ///////////////////////
     byAuthority: null,
     byBelong: null,
     allAuthority: null,
     allBelong: null,
-    allPosition: null,
-    byAllPosition: null,
 };
 
 export const types = {
     FETCH_ALL_CLERKS: "CLERK/FETCH_ALL_CLERKS",          //获取所有员工信息
     FETCH_SHOP_CLERKS: "CLERK/FETCH_SHOP_CLERKS",        //获取门店员工信息
+    FETCH_POSITIONS: "CLERK/FETCH_POSITIONS",          //获取所有职位信息
     /////////////////////////////////////////////
     ALTER_CLERK_POSITION: "CLERK/ALTER_CLERK_POSITION",      //修改员工职位信息
     FETCH_ALL_AUTHORITY: "CLERK/FETCH_ALL_AUTHORITY",        //获取所有权限信息
-    FETCH_ALL_POSITION: "CLERK/FETCH_ALL_POSITION",          //获取所有职位信息
     ALTER_CLERK_INFO: "CLERK/ALTER_CLERK_INFO",              //修改职员信息
     DELETE_CLERK: "CLERK/DELETE_CLERK",                      //删除职员
     ADD_CLERK: "CLERK/ADD_CLERK",                            //添加职员
@@ -50,6 +51,39 @@ export const actions = {
         clerks,
         byClerks
     }),
+    //获取所有职位信息
+    fetchPositions: () => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest());
+            return get(url.fetchPositions()).then((result) => {
+                dispatch(appActions.finishRequest());
+                if (!result.error) {
+                    dispatch(fetchPositionsSuccess(convertPositionsToPlainStructure(result.data)));
+                    return Promise.resolve();
+                } else {
+                    dispatch(appActions.setError(result.msg));
+                    return Promise.reject(result.error);
+                }
+            })
+        }
+    },
+    //添加职员
+    addClerk: (clerk) => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest());
+            const params = { ...clerk };
+            return post(url.addClerk(), params).then((result) => {
+                dispatch(appActions.finishRequest());
+                if (!result.error) {
+                    dispatch(addClerkSuccess(convertClerkToPlainStructure(result.data)));
+                    return Promise.resolve();
+                } else {
+                    dispatch(appActions.setError(result.msg));
+                    return Promise.reject(result.error);
+                }
+            })
+        }
+    },
     ////////////////////////////////
     fetchClerks: (byClerks) => ({
         type: types.FETCH_SHOP_CLERKS,
@@ -69,20 +103,6 @@ export const actions = {
                 dispatch(appActions.finishRequest());
                 if (!data.error) {
                     dispatch(fetchAllAuthoritySuccess(convertAuthorityToPlainStructure(data.authority)));
-                } else {
-                    dispatch(actions.setError(data.error));
-                }
-            })
-        }
-    },
-    //获取所有职位信息
-    fetchAllPosition: () => {
-        return (dispatch) => {
-            dispatch(appActions.startRequest());
-            return get(url.fetchAllPosition()).then((data) => {
-                dispatch(appActions.finishRequest());
-                if (!data.error) {
-                    dispatch(fetchAllPositionSuccess(convertPositionToPlainStructure(data.positions)));
                 } else {
                     dispatch(actions.setError(data.error));
                 }
@@ -132,23 +152,6 @@ export const actions = {
             })
         }
     },
-    //添加职员
-    addClerk: (clerk) => {
-        return (dispatch) => {
-            dispatch(appActions.startRequest());
-            const params = { clerk };
-            return get(url.addClerk(), params).then((data) => {
-                dispatch(appActions.finishRequest());
-                if (!data.error) {
-                    dispatch(addClerkSuccess(convertClerksToPlainStructure(data.clerk)));
-                    return Promise.resolve(data.clerk.uid);
-                } else {
-                    dispatch(actions.setError(data.error));
-                    return Promise.reject(data.error);
-                }
-            })
-        }
-    }
 }
 
 
@@ -167,20 +170,48 @@ const convertClerksToPlainStructure = (data) => {
     }
 }
 
+const convertPositionsToPlainStructure = (data) => {
+    let positions = new Array();
+    let byPositions = new Object();
+    data.forEach(position => {
+        positions.push(position.uid);
+        if (!byPositions[position.uid]) {
+            byPositions[position.uid] = position;
+        }
+    });
+    return {
+        positions,
+        byPositions,
+    }
+}
+
+const convertClerkToPlainStructure = (data) => {
+    let byAvatar = new Object();
+    byAvatar[data.avatar.uid] = data.avatar;
+    return {
+        clerk: { ...data, avatar: data.avatar.uid },
+        byAvatar
+    }
+}
+
+const addClerkSuccess = ({ clerk, byAvatar }) => ({
+    type: types.ADD_CLERK,
+    clerk,
+    byAvatar
+})
+
+const fetchPositionsSuccess = ({ positions, byPositions }) => ({
+    type: types.FETCH_POSITIONS,
+    positions,
+    byPositions
+})
+
 const fetchAllClerksSuccess = ({ clerks, byClerks }) => ({
     type: types.FETCH_ALL_CLERKS,
     clerks,
     byClerks
 })
 ///////////////////////////////////////
-
-const addClerkSuccess = ({ clerks, byClerks, byAuthorityTop, byBelongTop }) => ({
-    type: types.ADD_CLERK,
-    clerks,
-    byClerks,
-    byAuthority: byAuthorityTop,
-    byBelong: byBelongTop,
-})
 
 const deleteClerkSuccess = (id) => ({
     type: types.DELETE_CLERK,
@@ -301,58 +332,61 @@ const convertAuthorityBelongToPlainStructure = (data) => {
 }
 
 const reducer = (state = initialState, action) => {
+    let clerks;
+    let byClerks;
     switch (action.type) {
         case types.FETCH_ALL_CLERKS:
             return {
                 ...state,
                 clerks: action.clerks,
                 byClerks: action.byClerks,
-                // byAuthority: action.byAuthority,
-                // byBelong: action.byBelong
             };
         case types.FETCH_SHOP_CLERKS:
-            return { ...state, byClerks: action.byClerks,clerks:action.clerks };
-        ////////////////////////////////
-        case types.ALTER_CLERK_POSITION:
-            const { byClerks } = state;
-            let newByClerks = { ...byClerks };
-            action.clerks.forEach(id => {
-                if (byClerks[id]) {
-                    const item = { ...byClerks[id], position: "服务员" };
-                    newByClerks = { ...newByClerks, [id]: item };
-                    console.log("clerks:" + id, newByClerks)
-                }
-            });
-            action.managers.forEach(id => {
-                if (byClerks[id]) {
-                    const item = { ...byClerks[id], position: "店长" };
-                    newByClerks = { ...newByClerks, [id]: item };
-                }
-            });
-            return { ...state, byClerks: newByClerks };
-        case types.FETCH_ALL_AUTHORITY:
-            return { ...state, allAuthority: action.allAuthority, allBelong: action.allBelong, byAuthority: action.byAuthority, byBelong: action.byBelong };
-        case types.FETCH_ALL_POSITION:
-            return { ...state, allPosition: action.allPosition, byAllPosition: action.byAllPosition };
-        case types.ALTER_CLERK_INFO:
-            const byClerks1 = { ...state.byClerks, [action.newClerkInfo.uid]: action.newClerkInfo };
-            return { ...state, byClerks: byClerks1 };
-        case types.DELETE_CLERK:
-            let byClerks2 = new Object();
-            for (var key in state.byClerks) {
-                if (key !== action.id) {
-                    byClerks2[key] = state.byClerks[key];
-                }
-            }
-            return { ...state, byClerks: byClerks2, clerks: state.clerks.filter(item => item !== action.id) };
+            return { ...state, byClerks: action.byClerks, clerks: action.clerks };
+        case types.FETCH_POSITIONS:
+            return { ...state, positions: action.positions, byPositions: action.byPositions }
         case types.ADD_CLERK:
-            return {
-                ...state,
-                clerks: action.clerks,
-                byClerks: action.byClerks,
-                byAuthority: action.byAuthority,
-                byBelong: action.byBelong
-            };
+            clerks = state.clerks;
+            if (clerks.indexOf(action.clerk.uid) == -1) {
+                clerks.push(action.clerk.uid);
+            }
+            // byClerks=new Object();
+            byClerks = { ...state.byClerks, [action.clerk.uid]: action.clerk };
+            return { ...state, clerks, byClerks, byAvatar: action.byAvatar };
+        ////////////////////////////////
+        // case types.ALTER_CLERK_POSITION:
+        //     const { byClerks } = state;
+        //     let newByClerks = { ...byClerks };
+        //     action.clerks.forEach(id => {
+        //         if (byClerks[id]) {
+        //             const item = { ...byClerks[id], position: "服务员" };
+        //             newByClerks = { ...newByClerks, [id]: item };
+        //             console.log("clerks:" + id, newByClerks)
+        //         }
+        //     });
+        //     action.managers.forEach(id => {
+        //         if (byClerks[id]) {
+        //             const item = { ...byClerks[id], position: "店长" };
+        //             newByClerks = { ...newByClerks, [id]: item };
+        //         }
+        //     });
+        //     return { ...state, byClerks: newByClerks };
+        // case types.FETCH_ALL_AUTHORITY:
+        //     return { ...state, allAuthority: action.allAuthority, allBelong: action.allBelong, byAuthority: action.byAuthority, byBelong: action.byBelong };
+        // case types.FETCH_ALL_POSITION:
+        //     return { ...state, allPosition: action.allPosition, byAllPosition: action.byAllPosition };
+        // case types.ALTER_CLERK_INFO:
+        //     const byClerks1 = { ...state.byClerks, [action.newClerkInfo.uid]: action.newClerkInfo };
+        //     return { ...state, byClerks: byClerks1 };
+        // case types.DELETE_CLERK:
+        //     let byClerks2 = new Object();
+        //     for (var key in state.byClerks) {
+        //         if (key !== action.id) {
+        //             byClerks2[key] = state.byClerks[key];
+        //         }
+        //     }
+        //     return { ...state, byClerks: byClerks2, clerks: state.clerks.filter(item => item !== action.id) };
+
         default:
             return state;
     }
@@ -362,6 +396,9 @@ export default reducer;
 
 export const getByClerks = (state) => state.clerk.byClerks;
 export const getClerks = (state) => state.clerk.clerks;
+export const getPositions = (state) => state.clerk.positions;
+export const getByPositions = (state) => state.clerk.byPositions;
+export const getByAvatar = (state) => state.clerk.byAvatar;
 /////////////////////////////////////
 export const getByAuthority = (state) => state.clerk.byAuthority;
 export const getByBelong = (state) => state.clerk.byBelong;
