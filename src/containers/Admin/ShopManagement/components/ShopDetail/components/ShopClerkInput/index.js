@@ -34,7 +34,7 @@ class ShopClerkInput extends React.Component {
     }
 
     showOtherClerks = () => {
-        this.props.fetchAllClerks(requestType.updateRequest)
+        this.props.fetchClerks(requestType.updateRequest)
             .then(() => {
                 this.setState({ visible: true });
             });

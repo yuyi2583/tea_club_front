@@ -18,26 +18,26 @@ const initialState = {
 };
 
 export const types = {
-    FETCH_ALL_CLERKS: "CLERK/FETCH_ALL_CLERKS",          //获取所有员工信息
+    FETCH_CLERKS: "CLERK/FETCH_CLERKS",          //获取所有员工信息
     FETCH_SHOP_CLERKS: "CLERK/FETCH_SHOP_CLERKS",        //获取门店员工信息
     FETCH_POSITIONS: "CLERK/FETCH_POSITIONS",          //获取所有职位信息
+    REMOVE_CLERK: "CLERK/REMOVE_CLERK",                      //删除职员
     /////////////////////////////////////////////
     ALTER_CLERK_POSITION: "CLERK/ALTER_CLERK_POSITION",      //修改员工职位信息
     FETCH_ALL_AUTHORITY: "CLERK/FETCH_ALL_AUTHORITY",        //获取所有权限信息
     ALTER_CLERK_INFO: "CLERK/ALTER_CLERK_INFO",              //修改职员信息
-    DELETE_CLERK: "CLERK/DELETE_CLERK",                      //删除职员
     ADD_CLERK: "CLERK/ADD_CLERK",                            //添加职员
 }
 
 export const actions = {
     //获取所有员工数据
-    fetchAllClerks: (reqType = requestType.retrieveRequest) => {
+    fetchClerks: (reqType = requestType.retrieveRequest) => {
         return (dispatch) => {
             dispatch(appActions.startRequest(reqType));
-            return get(url.fetchAllClerks()).then((result) => {
+            return get(url.fetchClerks()).then((result) => {
                 dispatch(appActions.finishRequest(reqType));
                 if (!result.error) {
-                    dispatch(fetchAllClerksSuccess(convertClerksToPlainStructure(result.data)));
+                    dispatch(fetchClerksSuccess(convertClerksToPlainStructure(result.data)));
                     return Promise.resolve();
                 } else {
                     dispatch(appActions.setError(result.msg));
@@ -84,11 +84,23 @@ export const actions = {
             })
         }
     },
+    //删除职员
+    removeClerk: (uid) => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest());
+            return _delete(url.removeClerk(uid)).then((result) => {
+                dispatch(appActions.finishRequest());
+                if (!result.error) {
+                    dispatch(removeClerkSuccess(uid));
+                    return Promise.resolve();
+                } else {
+                    dispatch(appActions.setError(result.msg));
+                    return Promise.reject(result.error);
+                }
+            })
+        }
+    },
     ////////////////////////////////
-    fetchClerks: (byClerks) => ({
-        type: types.FETCH_SHOP_CLERKS,
-        byClerks
-    }),
     //用于门店管理中门店员工职位修改
     alterClerkPosition: (clerks = new Array(), managers = new Array()) => ({
         type: types.ALTER_CLERK_POSITION,
@@ -130,23 +142,6 @@ export const actions = {
                 } else {
                     dispatch(actions.setError(data.error));
                     dispatch(uiActions.finishAlterInfo());
-                    return Promise.reject(data.error);
-                }
-            })
-        }
-    },
-    //删除职员
-    deleteClerk: (clerkId) => {
-        return (dispatch) => {
-            dispatch(appActions.startRequest());
-            const params = { id: clerkId };
-            return get(url.deleteClerk(), params).then((data) => {
-                dispatch(appActions.finishRequest());
-                if (!data.error) {
-                    dispatch(deleteClerkSuccess(clerkId));
-                    return Promise.resolve();
-                } else {
-                    dispatch(actions.setError(data.error));
                     return Promise.reject(data.error);
                 }
             })
@@ -206,17 +201,18 @@ const fetchPositionsSuccess = ({ positions, byPositions }) => ({
     byPositions
 })
 
-const fetchAllClerksSuccess = ({ clerks, byClerks }) => ({
-    type: types.FETCH_ALL_CLERKS,
+const fetchClerksSuccess = ({ clerks, byClerks }) => ({
+    type: types.FETCH_CLERKS,
     clerks,
     byClerks
 })
+
+const removeClerkSuccess = (uid) => ({
+    type: types.REMOVE_CLERK,
+    uid
+})
 ///////////////////////////////////////
 
-const deleteClerkSuccess = (id) => ({
-    type: types.DELETE_CLERK,
-    id
-})
 
 const alterClerkInfoSuccess = (newClerkInfo) => ({
     type: types.ALTER_CLERK_INFO,
@@ -335,7 +331,7 @@ const reducer = (state = initialState, action) => {
     let clerks;
     let byClerks;
     switch (action.type) {
-        case types.FETCH_ALL_CLERKS:
+        case types.FETCH_CLERKS:
             return {
                 ...state,
                 clerks: action.clerks,
@@ -350,9 +346,11 @@ const reducer = (state = initialState, action) => {
             if (clerks.indexOf(action.clerk.uid) == -1) {
                 clerks.push(action.clerk.uid);
             }
-            // byClerks=new Object();
             byClerks = { ...state.byClerks, [action.clerk.uid]: action.clerk };
             return { ...state, clerks, byClerks, byAvatar: action.byAvatar };
+        case types.REMOVE_CLERK:
+            clerks = state.clerks.filter(uid => uid != action.uid);
+            return { ...state, clerks };
         ////////////////////////////////
         // case types.ALTER_CLERK_POSITION:
         //     const { byClerks } = state;
