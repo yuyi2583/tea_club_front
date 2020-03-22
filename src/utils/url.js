@@ -62,4 +62,6 @@ export default {
     fetchShopBox:(uid)=>HOME+`/shopBox/${uid}`,
     updateShopBox:()=>HOME+`/shopBox`,
     updateShop:()=>HOME+"/shop",
+    fetchClerk:(uid)=>HOME+`/clerk/${uid}`,
+    updateClerk:()=>HOME+"/clerk",
 }

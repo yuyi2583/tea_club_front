@@ -51,6 +51,8 @@ export default function asyncComponent(importComponent) {
         extra = (<Button type="primary" onClick={this.props.startAlterInfo}>修改门店信息</Button>);
       } else if (history.location.pathname.indexOf("/shop_box/") != -1) {
         extra = (<Button type="primary" onClick={this.props.startAlterInfo}>修改包厢信息</Button>);
+      } else if (history.location.pathname.indexOf("/clerk/") != -1) {
+        extra = (<Button type="primary" onClick={this.props.startAlterInfo}>修改职员信息</Button>);
       } else {
         extra = null;
       }
@@ -86,6 +88,8 @@ export default function asyncComponent(importComponent) {
         subTitle = "门店信息";
       } else if (history.location.pathname.indexOf("/shop_box/") != -1) {
         subTitle = "包厢信息";
+      }  else if (history.location.pathname.indexOf("/clerk/") != -1) {
+        subTitle = "职员信息";
       } else {
         subTitle = null;
       }

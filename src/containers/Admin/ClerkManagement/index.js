@@ -1,7 +1,8 @@
 import React from "react";
-import { PageHeader} from "antd";
+import { PageHeader } from "antd";
 import { Route } from "react-router-dom";
 import ClerkList from "./components/ClerkList";
+import ClerkDetail from "./components/ClerkDetail";
 
 class ClerkManagement extends React.Component {
 
@@ -11,7 +12,7 @@ class ClerkManagement extends React.Component {
         const { match } = this.props;
         return (
             <PageHeader
-                title="门店管理"
+                title="职员管理"
                 subTitle={subTitle}
                 onBack={this.props.handleBack}
                 extra={extra}>
@@ -25,16 +26,16 @@ class ClerkManagement extends React.Component {
                         />
                     }
                 />
-                {/* <Route
-                    path={`${match.url}/role_detail/:clerkId`}
+                <Route
+                    path={`${match.url}/clerk/:clerkId`}
                     exact
                     render={props =>
-                        <RoleDetail
+                        <ClerkDetail
+                            {...this.props}
                             {...props}
-                        // callMessage={this.callMessage} 
                         />
                     }
-                /> */}
+                />
             </PageHeader>
         );
     }
