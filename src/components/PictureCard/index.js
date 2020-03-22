@@ -54,7 +54,7 @@ class PictureCard extends React.Component {
     }
 
     render() {
-        const { alterInfo, max, type } = this.props;
+        const { max, type } = this.props;
         const { previewVisible, previewImage, fileList } = this.state;
         const uploadButton = (
             <div>
@@ -73,8 +73,7 @@ class PictureCard extends React.Component {
                                 onPreview={this.handlePreview}
                                 key={index}
                                 className="display-photo"
-                                disabled={alterInfo ? false : true}
-                                onChange={this.handleDisplayChange}
+                                disabled={true}
                             >
                                 <img src={file.thumbUrl} alt="avatar" style={{ width: '100%' }} />
                             </Upload>
@@ -86,10 +85,9 @@ class PictureCard extends React.Component {
                         className="upload-photo"
                         fileList={fileList}
                         onPreview={this.handlePreview}
-                        disabled={alterInfo ? false : true}
                         onChange={this.handleDisplayChange}
                     >
-                        {fileList.length >= max ? null : alterInfo ? uploadButton : null}
+                        {fileList.length >= max ? null : uploadButton }
                     </Upload>
                 }
                 <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
@@ -104,14 +102,12 @@ class PictureCard extends React.Component {
 
 PictureCard.propTypes = {
     fileList: PropTypes.array,
-    alterInfo: PropTypes.bool,
     onChange: PropTypes.func,
     max: PropTypes.number,
     type: PropTypes.string,
 }
 
 PictureCard.defaultProps = {
-    alterInfo: true,
     max: 4,
     fileList: new Array(),
     type: "upload"

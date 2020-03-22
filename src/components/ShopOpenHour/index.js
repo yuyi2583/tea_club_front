@@ -64,13 +64,13 @@ class ShopOpenHour extends React.Component {
                             rules: [{ required: true, message: '请选择重复日期!' }],
                             initialValue:isUpdate?this.props.openHour.date:new Array()
                         })(<Select mode="tags" tokenSeparators={[',']} name={'date_' + index}>
-                            <Option key={1} value={1}>周一</Option>
-                            <Option key={2} value={2}>周二</Option>
-                            <Option key={3} value={3}>周三</Option>
-                            <Option key={4} value={4}>周四</Option>
-                            <Option key={5} value={5}>周五</Option>
-                            <Option key={6} value={6}>周六</Option>
-                            <Option key={7} value={7}>周日</Option>
+                            <Option key={1} value={"1"}>周一</Option>
+                            <Option key={2} value={"2"}>周二</Option>
+                            <Option key={3} value={"3"}>周三</Option>
+                            <Option key={4} value={"4"}>周四</Option>
+                            <Option key={5} value={"5"}>周五</Option>
+                            <Option key={6} value={"6"}>周六</Option>
+                            <Option key={7} value={"7"}>周日</Option>
                         </Select>
                         )}
                     </Form.Item>

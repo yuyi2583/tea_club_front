@@ -1,7 +1,6 @@
 import React from "react";
 import { Tag, Icon, Modal } from "antd";
 import { TweenOneGroup } from 'rc-tween-one';
-// import PropTypes from "prop-types";
 import { actions as shopActions } from "../../../../../../../redux//modules/shop";
 import { actions as clerkActions, getClerks, getByClerks } from "../../../../../../../redux//modules/clerk";
 import { bindActionCreators } from "redux";
@@ -42,8 +41,6 @@ class ShopClerkInput extends React.Component {
     }
 
     handleClickOtherClerk = (uid) => {
-        console.log("handle Click Other Clerk",uid);
-        
         const { addNewClerk } = this.state;
         if (addNewClerk.indexOf(uid) == -1) {
             this.setState({ addNewClerk: addNewClerk.concat([uid]) });
@@ -56,8 +53,6 @@ class ShopClerkInput extends React.Component {
         const { addNewClerk } = this.state;
         const { value } = this.props;
         const updateShopClerks = value.concat(addNewClerk);
-        console.log("handle add clerk ok",updateShopClerks);
-        
         this.triggerChange(updateShopClerks);
         this.setState({ addNewClerk: new Array(),visible:false });
     }
@@ -65,7 +60,6 @@ class ShopClerkInput extends React.Component {
     render() {
         const { value, byClerks, clerks } = this.props;
         const { visible } = this.state;
-        console.log("value in shop clerk input", value);
         return (
             <div>
                 <TweenOneGroup
@@ -120,7 +114,6 @@ class ShopClerkInput extends React.Component {
 
 const mapStateToProps = (state, props) => {
     return {
-        // byShopClerks: getByShopClerks(state),
         clerks: getClerks(state),
         byClerks: getByClerks(state),
     };

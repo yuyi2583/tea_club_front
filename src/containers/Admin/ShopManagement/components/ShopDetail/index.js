@@ -1,31 +1,22 @@
 import React from "react";
 import {
-    Descriptions, Tooltip, Empty, Select, Spin, Button,
-    Input, Row, Col, Tag, Icon, Typography, Form, Skeleton, Modal
+    Descriptions, Tooltip, Empty, Spin, Button,
+    Input, Row, Col, Tag, Form, Skeleton, Modal
 } from "antd";
-import { Link, Prompt, Redirect } from "react-router-dom";
-import { TweenOneGroup } from 'rc-tween-one';
+import { Link, Prompt } from "react-router-dom";
 import PictureCard from "../../../../../components/PictureCard";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import {
-    actions as appActions, getError,
-    // getRetrieveRequestQuantity, getModalRequestQuantity 
-} from "../../../../../redux/modules/app";
 import { actions as shopActions, getShops, getByShops, getByOpenHours, getByPhotos, getShopBoxes, getByShopBoxes } from "../../../../../redux/modules/shop";
 import { actions as clerkActions, getByClerks, getClerks } from "../../../../../redux/modules/clerk";
-import AddClerkModal from "../AddClerkModal";
-// import ShopBoxCard from "../ShopBoxCard";
 import { convertToDay } from "../../../../../utils/commonUtils";
-import AlterOpenHourModal from "../AlterOpenHourModal";
 import { map } from "../../../../../router";
 import "./style.css";
 import DynamicFieldSet from "../../../../../components/DynamicFieldSet";
 import ShopOpenHour from "../../../../../components/ShopOpenHour";
 import ShopClerkInput from "./components/ShopClerkInput";
+import ShopBoxInput from "./components/ShopBoxInput";
 
-const { Option } = Select;
-const { Text } = Typography;
 const { confirm } = Modal;
 
 class ShopDetail extends React.Component {
@@ -35,290 +26,68 @@ class ShopDetail extends React.Component {
             fileList: new Array(),
         }
     }
-    onChange = (value) => {
-        console.log("on change", value);
-        this.props.fetchShopInfo(value);
-        this.props.selectShop_shopManagement(value);
-    }
-    showClerkInfo = () => {
-        this.props.setAddButtonInvisible();
-    }
 
-
-    completeAlter = () => {
-        const newShopInfo = this.state;
-        const { shopInfo } = newShopInfo;
-        console.log(newShopInfo);
-        let flag = true;
-        for (var key in shopInfo) {
-            if (shopInfo[key] == null || shopInfo[key] === "") {
-                this.props.callMessage("error", "输入框不能为空");
-                flag = false;
-                return;
-            }
-        }
-        // if(!flag){
-        //     return;
-        // }
-        this.setState({ shopInfo: this.props.shop.shopInfo, selectClerks: new Array(), selectManagers: new Array(), byOpenHours: this.props.byOpenHours });
-        this.props.alterShopInfo(newShopInfo)
-            .then((data) => {
-                this.props.callMessage("success", "修改信息成功！");
-            })
-            .catch((err) => {
-                this.props.callMessage("error", err);
-            });
-    }
-
-    handleCancelAlter = () => {
-        const { shopInfo } = this.props.shop;
-        this.setState({ shopInfo });
-        this.props.finishAlterInfo();
-    }
-    handleChange = (e) => {
-        const name = e.target.name;
-        const { shopInfo } = this.state;
-        const newShopInfo = { ...shopInfo, [name]: e.target.value };
-        this.setState({
-            shopInfo: newShopInfo
-        })
-    }
-
-    handleRemoveClerk = (clerkId) => {
-        const { shopInfo, selectClerks, selectManagers } = this.state;
-        const newClerks = shopInfo.clerks.filter((item) => item !== clerkId);
-        const newSelectClerks = selectClerks.filter((item) => item !== clerkId);
-        const newSelectManagers = selectManagers.filter((item) => item !== clerkId);
-        const newShopInfo = { ...shopInfo, clerks: newClerks };
-        this.setState({ shopInfo: newShopInfo, selectClerks: newSelectClerks, selectManagers: newSelectManagers });
-        // this.props.removeShopClerk(clerkId);
-    }
-
-    handleAddClerk = (clerks) => {
-        this.props.addShopClerk(clerks);
-    }
-
-
-    deleteBoxInfo = (shopId, boxId) => {
-        this.props.deleteBoxInfo(shopId, boxId);
-    }
-
-
-
-    showModal = () => {
-        this.props.openModal();
-        this.props.startModalRequest();
-        this.props.fetchAllClerks();
-    };
-
-    fetchAllClerks = () => {
-        this.props.fetchAllClerks();
-    }
-
-    handleModalOk = (type = 0) => {
-        // this.props.addShopClerk(clerks);
-        if (type === 0) {
-            const { shopInfo, selectClerks, selectManagers } = this.state;
-            const { clerks } = shopInfo;
-            const newClerks = [...clerks, ...selectClerks, ...selectManagers];
-            const newShopInfo = { ...shopInfo, clerks: newClerks };
-            this.setState({ shopInfo: newShopInfo, selectClerks, selectManagers });
-            this.props.closeModal();
-        } else if (type === 1) {
-            const { byOpenHours } = this.state;
-            const { openHours } = this.state.shopInfo;
-            let breakFlag = true;
-            openHours.forEach((item) => {
-                let startStatus = "success";
-                let endStatus = "success";
-                let repeatStatus = "success";
-                if (byOpenHours[item].startTime == null || byOpenHours[item].startTime === "") {
-                    startStatus = "error";
-                    breakFlag = false;
-                } else {
-                    startStatus = "success";
-                }
-                if (byOpenHours[item].endTime == null || byOpenHours[item].endTime === "") {
-                    endStatus = "error";
-                    breakFlag = false;
-                } else {
-                    endStatus = "success";
-                }
-                if (byOpenHours[item].repeat.length === 0) {
-                    repeatStatus = "error";
-                    breakFlag = false;
-                } else {
-                    repeatStatus = "success";
-                }
-                let byOpenHoursItem = {
-                    ...byOpenHours[item],
-                    repeatStatus: repeatStatus,
-                    startStatus: startStatus,
-                    endStatus: endStatus
-                };
-                this.setState({ byOpenHours: { ...byOpenHours, [item]: byOpenHoursItem } });
-            })
-            if (!breakFlag) {
-                return;
-            }
-            this.setState({ alterOpenHour: false });
-        }
-
-    }
-
-    handleModalCancel = (type = 0) => {
-        if (type === 0) {
-            this.setState({ selectClerks: new Array(), selectManagers: new Array() });
-            this.props.closeModal();
-        } else if (type === 1) {
-            this.setState({ alterOpenHour: false });
-        }
-    }
-
-    alterOpenHour = () => {
-        this.setState({ alterOpenHour: true });
-    }
-
-    //新增服务员处理器
-    handleClerksChange = (value) => {
-        this.setState({ selectClerks: value });
-    }
-
-    //新增店长处理器
-    handleManagersChange = (value) => {
-        this.setState({ selectManagers: value });
-    }
-
-    forDisplay = () => {
-        const { shopInfo } = this.props.shop;
-        if (shopInfo === null) {
-            return {
-                fileListInProps: new Array(),
-                fileListInState: new Array()
-            };
-        }
-        const { byDisplay } = this.props;
-        const fileListInProps = shopInfo.display.map((displayId) => byDisplay[displayId]);
-        const shopInfoInState = this.state.shopInfo;
-        const fileListInState = shopInfoInState.display.map((displayId) => byDisplay[displayId]);
-        return {
-            fileListInProps,
-            fileListInState
-        };
-    }
-
-    getOpenHours = () => {
-        const { byOpenHours } = this.props;
-        const { openHours } = this.props.shop.shopInfo;
-        let openHoursChildrenInProps = openHours.map((item) => {
-            const day = convertToDay(byOpenHours[item].repeat);
-            // const dayChildren=day.map((item)=>)
-            return (
-                <div key={item} style={{ margin: "5px" }}>
-                    <Text>
-                        {byOpenHours[item].startTime}~{byOpenHours[item].endTime}&nbsp;&nbsp;{day}
-                    </Text>
-                </div>
-            )
-        });
-        let openHoursChildrenInState = null;
-        if (this.state.byOpenHours) {
-            const byOpenHours1 = this.state.byOpenHours;
-            const openHours1 = this.state.shopInfo.openHours;
-            openHoursChildrenInState = openHours1.map((item) => {
-                const day1 = convertToDay(byOpenHours1[item].repeat);
-                // const dayChildren=day.map((item)=>)
-                return (
-                    <div key={item} style={{ margin: "5px" }}>
-                        <Text>
-                            {byOpenHours1[item].startTime}~{byOpenHours1[item].endTime}&nbsp;&nbsp;{day1}
-                        </Text>
-                    </div>
-                )
-            });
-        }
-        return {
-            openHoursChildrenInProps,
-            openHoursChildrenInState
-        };
-    }
-
-    handleStartTimePickerChange = (time, timeString, index) => {
-        const newOpenHour = { ...this.state.byOpenHours[index], startTime: timeString };
-        this.setState({ byOpenHours: { ...this.state.byOpenHours, [index]: newOpenHour } });
-    }
-
-    handleEndTimePickerChange = (time, timeString, index) => {
-        const newOpenHour = { ...this.state.byOpenHours[index], endTime: timeString };
-        this.setState({ byOpenHours: { ...this.state.byOpenHours, [index]: newOpenHour } });
-    }
-
-    handleRepeatChange = (value, index) => {
-        const newOpenHour = { ...this.state.byOpenHours[index], repeat: value };
-        this.setState({ byOpenHours: { ...this.state.byOpenHours, [index]: newOpenHour } });
-    }
-
-    handleAddOpenHour = () => {
-        let openHours = new Array();
-        this.state.shopInfo.openHours.forEach((item) => {
-            openHours.push(item);
-        })
-        openHours.push(openHours[openHours.length - 1] + 1);
-        const byOpenHours = { ...this.state.byOpenHours, [openHours[openHours.length - 1]]: { endTime: null, startTime: null, repeat: new Array(), endStatus: "success", startStatus: "success", repeatStatus: "success" } };
-        const shopInfo = { ...this.state.shopInfo, openHours };
-        this.setState({ shopInfo, byOpenHours })
-    }
-
-    handleRemoveOpenHour = (index) => {
-        const openHours = this.state.shopInfo.openHours.filter((item) => item !== index);
-        const shopInfo = { ...this.state.shopInfo, openHours };
-        this.setState({ shopInfo });
-    }
-    //////////////////////////////////////////////////////////////////////above discard
     componentDidMount() {
         const { shopId } = this.props.match.params;
-        this.props.fetchShop(shopId);
+        this.props.fetchShop(shopId)
+            .then(() => {
+                this.setState({ fileList: this.props.byShops[shopId].photos })
+            });
     }
 
     getOpenHoursDisplay = () => {
         const { shopId } = this.props.match.params;
         const { byShops, byOpenHours } = this.props;
-        let openHoursDisplay = byShops[shopId].openHours != null ? byShops[shopId].openHours.map(uid =>
-            <div key={uid}>
-                {byOpenHours[uid].startTime}~{byOpenHours[uid].endTime}&nbsp;&nbsp;
+        let openHoursDisplay = null;
+        try {
+            openHoursDisplay = byShops[shopId].openHours.map(uid =>
+                <div key={uid}>
+                    {byOpenHours[uid].startTime}~{byOpenHours[uid].endTime}&nbsp;&nbsp;
                 {byOpenHours[uid].date != undefined ?
-                    convertToDay(byOpenHours[uid].date)
-                    : null}
-            </div>
-        ) : null;
+                        convertToDay(byOpenHours[uid].date)
+                        : null}
+                </div>
+            )
+        } catch (err) {
+            openHoursDisplay = null;
+        }
         return openHoursDisplay
     }
 
     getClerksDisplay = () => {
         const { shopId } = this.props.match.params;
         const { byClerks, byShops } = this.props;
-        let clerksDisplay = byShops[shopId].clerks != null ? byShops[shopId].clerks.map((uid) => (
-            <Tooltip key={uid} title={"点击查看员工详情"} placement="topLeft">
-                <Link to={`${map.admin.AdminHome()}/clerk_management/clerks/${uid}`}>
-                    <Tag color="purple" onClick={this.showClerkInfo} style={{ margin: "10px" }}>
-                        {byClerks[uid].name} · {byClerks[uid].position==null||byClerks[uid].position==undefined?"暂未分配职务":byClerks[uid].position.name}
-                    </Tag></Link>
-            </Tooltip>
-        )) : <Empty />;
+        let clerksDisplay = <Empty />;
+        try {
+            clerksDisplay = byShops[shopId].clerks.map((uid) => (
+                <Tooltip key={uid} title={"点击查看员工详情"} placement="topLeft">
+                    <Link to={`${map.admin.AdminHome()}/clerk_management/clerks/${uid}`}>
+                        <Tag color="purple" onClick={this.showClerkInfo} style={{ margin: "10px" }}>
+                            {byClerks[uid].name} · {byClerks[uid].position == null || byClerks[uid].position == undefined ? "暂未分配职务" : byClerks[uid].position.name}
+                        </Tag></Link>
+                </Tooltip>
+            ))
+        } catch (err) {
+            clerksDisplay = <Empty />;
+        }
         return clerksDisplay;
     }
 
     getPhotosDisplay = () => {
         const { shopId } = this.props.match.params;
         const { byPhotos, byShops } = this.props;
-        let photoDisplay = byShops[shopId].photos != null && byShops[shopId].photos.length > 0 ? byShops[shopId].photos.map((uid) => ({
-            uid,
-            name: 'image.png',
-            status: 'done',
-            type: "image/jpeg",
-            // url:byPhotos[uid].photo
-            thumbUrl: `data:image/png;base64,${byPhotos[uid].photo}`,
-        })) : new Array();
+        let photoDisplay = new Array();
+        try {
+            photoDisplay = byShops[shopId].photos.map((uid) => ({
+                uid,
+                name: 'image.png',
+                status: 'done',
+                type: "image/jpeg",
+                thumbUrl: `data:image/png;base64,${byPhotos[uid].photo}`,
+            }))
+        } catch (err) {
+            photoDisplay = new Array();
+        }
         return photoDisplay;
     }
 
@@ -362,30 +131,41 @@ class ShopDetail extends React.Component {
 
     handleSubmit = e => {
         e.preventDefault();
-        // const { fileList } = this.state;
-        // const { shopBoxId } = this.props.match.params;
-        // const { byShopBoxes } = this.props;
-        // const thiz = this;
+        const { fileList } = this.state;
+        const { shopId } = this.props.match.params;
+        const { byShops } = this.props;
+        const thiz = this;
         this.props.form.validateFieldsAndScroll((err, values) => {
             if (!err) {
                 confirm({
                     title: '确认修改?',
-                    content: '输入数据是否无误，确认修改该产品信息',
+                    content: '输入数据是否无误，确认修改门店信息',
                     onCancel() {
                     },
                     onOk() {
-                        console.log(values);
-
-                        // const shop = { uid: values.shopId };
-                        // const price = { ingot: values.ingot, credit: values.credit, uid: byShopBoxes[shopBoxId].price.uid };
-                        // const shopBox = { ...values, price, photos: fileList, uid: shopBoxId, shop };
-                        // console.log("new shop box", shopBox);
-                        // thiz.props.updateShopBox(shopBox).then(() => {
-                        //     thiz.props.callMessage("success", "更新包厢成功！");
-                        //     thiz.props.finishAlterInfo();
-                        // }).catch((err) => {
-                        //     thiz.props.callMessage("error", "更新包厢失败!" + err);
-                        // });
+                        const { keys } = values;
+                        let openHours = new Array();
+                        keys.forEach(index => {
+                            let openHour = new Object();
+                            for (let key in values) {
+                                if (key.indexOf(index) != -1) {
+                                    if (key.indexOf("date") == -1) {
+                                        openHour[key.split("_")[0]] = values[key].format("HH:mm");
+                                    } else {
+                                        openHour[key.split("_")[0]] = values[key];
+                                    }
+                                }
+                            }
+                            openHours.push(openHour);
+                        })
+                        const shop = { ...values, photos: fileList, uid: shopId, openHours };
+                        console.log(shop);
+                        thiz.props.updateShop(shop).then(() => {
+                            thiz.props.callMessage("success", "更新门店信息成功！");
+                            thiz.props.finishAlterInfo();
+                        }).catch((err) => {
+                            thiz.props.callMessage("error", "更新门店信息失败!" + err);
+                        });
                     },
                 });
 
@@ -394,26 +174,14 @@ class ShopDetail extends React.Component {
     };
 
     render() {
-        const { from } = this.props.location.state || { from: { pathname: map.admin.AdminHome() } };
-        if (this.props.connectError) {
-            return <Redirect to={{
-                pathname: map.error(),
-                state: { from }
-            }} />
-        }
         const { shopId } = this.props.match.params;
-        // const { shopList, shopInfo } = this.props.shop;
-        // const { byClerks, match, byShopList, modalRequestQuantity, clerks,
-        //     retrieveRequestQuantity, byBoxes, alterInfo, modalVisible, shop, shops, byShops } = this.props;
-        const { retrieveRequestQuantity, alterInfo, byShops, updateRequestQuantity, byOpenHours, byClerks } = this.props;
-        // const { fileListInProps, fileListInState } = this.forDisplay();
+        const { retrieveRequestQuantity, alterInfo, byShops, updateRequestQuantity, byOpenHours } = this.props;
         const { getFieldDecorator } = this.props.form;
         const isDataNull = byShops[shopId] == undefined || byShops[shopId] == null;
         const openHoursDisplay = this.getOpenHoursDisplay();
         const clerksDisplay = this.getClerksDisplay();
         const photoDisplay = this.getPhotosDisplay();
         const shopBoxesDisplay = this.getShopBoxesDisplay();
-        // const { openHoursChildrenInProps, openHoursChildrenInState } = this.props.shop.shopInfo != null && this.getOpenHours();
         return (
             <Spin spinning={updateRequestQuantity > 0}>
                 {retrieveRequestQuantity > 0 ?
@@ -487,45 +255,11 @@ class ShopDetail extends React.Component {
                             </Descriptions.Item>
                             <Descriptions.Item label="职员" span={2} >
                                 {alterInfo ?
-                                    <div>
-                                        {/* <TweenOneGroup
-                                            enter={{
-                                                scale: 0.8,
-                                                opacity: 0,
-                                                type: 'from',
-                                                duration: 100,
-                                                onComplete: e => {
-                                                    e.target.style = '';
-                                                },
-                                            }}
-                                            leave={{ opacity: 0, width: 0, scale: 0, duration: 200 }}
-                                            appear={false}
-                                        >
-                                            {byShops[shopId].clerks.map((uid) => (
-                                                <span key={uid} style={{ display: 'inline-block' }}>
-                                                    <Tag
-                                                        closable
-                                                        color="purple" 
-                                                        style={{ margin: "10px" }}
-                                                        onClose={e => {
-                                                            e.preventDefault();
-                                                            this.removeShopClerk(uid);
-                                                        }}
-                                                    >
-                                                       {byShopClerks[uid].name} · {byShopClerks[uid].position.name}
-                                                    </Tag>
-                                                </span>))
-                                            }
-                                        </TweenOneGroup> */}
-                                        <Form.Item>
-                                            {getFieldDecorator('clerks', {
-                                                initialValue: byShops[shopId].clerks ,
-                                            })(<ShopClerkInput />)}
-                                        </Form.Item>
-                                        {/* {alterInfo && <Tag onClick={this.showModal} style={{ background: '#fff', borderStyle: 'dashed', margin: "10px" }}>
-                                            <Icon type="plus" /> 添加职员
-                                                    </Tag>} */}
-                                    </div>
+                                    <Form.Item>
+                                        {getFieldDecorator('clerks', {
+                                            initialValue: byShops[shopId].clerks,
+                                        })(<ShopClerkInput />)}
+                                    </Form.Item>
                                     : clerksDisplay
                                 }
                             </Descriptions.Item>
@@ -537,22 +271,18 @@ class ShopDetail extends React.Component {
                                     :
                                     <PictureCard
                                         fileList={photoDisplay}
-                                        type={"display"}
-                                        alterInfo={alterInfo} />
+                                        type={"display"} />
                                 }
                             </Descriptions.Item>
                             <Descriptions.Item label="包厢" span={2}>
-                                <div>
-                                    {/* <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                                    <Link to={{
-                                        pathname: `${match.url}/addBox/${shopId}`,
-                                        state: { from: this.props.location }
-                                    }}>
-                                        <Button type="primary">新增包厢</Button>
-                                    </Link>
-                                </div> */}
-                                    {shopBoxesDisplay}
-                                </div>
+                                {alterInfo ?
+                                    <Form.Item>
+                                        {getFieldDecorator('shopBoxes', {
+                                            initialValue: byShops[shopId].shopBoxes,
+                                        })(<ShopBoxInput />)}
+                                    </Form.Item>
+                                    : shopBoxesDisplay
+                                }
                             </Descriptions.Item>
                         </Descriptions>
                         {alterInfo &&
@@ -566,77 +296,29 @@ class ShopDetail extends React.Component {
                             </Row>
                         }
                     </Form>}
-                {/* : <Empty /> */}
-                {/* } */}
-                {/* </div> */}
-                {/* } */}
-                {/* <AddClerkModal
-                    visible={modalVisible}
-                    requestQuantity={modalRequestQuantity}
-                    clerks={clerks}
-                    selectClerks={this.state.selectClerks}
-                    selectManagers={this.state.selectManagers}
-                    handleClerksChange={this.handleClerksChange}
-                    handleManagersChange={this.handleManagersChange}
-                    byClerks={byClerks}
-                    handleOk={this.handleModalOk}
-                    handleCancel={this.handleModalCancel}
-                />
-                <AlterOpenHourModal
-                    visible={this.state.alterOpenHour}
-                    handleStartTimePickerChange={this.handleStartTimePickerChange}
-                    handleEndTimePickerChange={this.handleEndTimePickerChange}
-                    handleRepeatChange={this.handleRepeatChange}
-                    handleAddOpenHour={this.handleAddOpenHour}
-                    handleRemoveOpenHour={this.handleRemoveOpenHour}
-                    openHours={this.state.shopInfo.openHours}
-                    byOpenHours={this.state.byOpenHours}
-                    handleOk={() => this.handleModalOk(1)}
-                    handleCancel={() => this.handleModalCancel(1)}
-                /> */}
                 <Prompt message="当前页面正在输入中，离开此页面您输入的数据不会被保存，是否离开?" when={alterInfo} />
             </Spin>
         );
     }
 
 }
-const mapStateToProps = (state, props) => {
+const mapStateToProps = (state) => {
     return {
         shops: getShops(state),
         byShops: getByShops(state),
         byOpenHours: getByOpenHours(state),
         byPhotos: getByPhotos(state),
-        // byShopClerks: getByShopClerks(state),
         shopBoxes: getShopBoxes(state),
         byShopBoxes: getByShopBoxes(state),
-        clerks:getClerks(state),
-        byClerks:getByClerks(state),
-        ////////////////////////////////////
-        // shop: getShop(state),
-        // clerks: getClerks(state),
-        // byClerks: getByClerks(state),
-        // requestQuantity: getRetrieveRequestQuantity(state),
-        // error: getError(state),
-        // shopId: getShopId_shopManagement(state),
-        // addButtonVisible: getAddButtonVisible_shopManagement(state),
-        // byBoxes: getBoxes(state),
-        // alterInfo: getAlterInfoState(state),
-        // byDisplay: getDisplay(state),
-        // modalVisible: getModalVisible(state),
-        // modalRequestQuantity: getModalRequestQuantity(state),
-        // clientWidth: getClientWidth(state),
-        // clientHeight: getClientHeight(state),
-        // byShopList: getShopList(state),
-        // byOpenHours: getOpenHours(state),
+        clerks: getClerks(state),
+        byClerks: getByClerks(state),
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
         ...bindActionCreators(shopActions, dispatch),
-        // ...bindActionCreators(uiActions, dispatch),
         ...bindActionCreators(clerkActions, dispatch),
-        ...bindActionCreators(appActions, dispatch),
     };
 };
 const WrapedShopDetail = Form.create({ name: 'shopDetail' })(ShopDetail);

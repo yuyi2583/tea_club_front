@@ -25,7 +25,6 @@ class ShopBoxDetail extends React.Component {
             this.setState({ fileList: this.props.byShopBoxes[shopBoxId].photos });
         });
         this.props.fetchShops();
-
     }
 
     handleSubmit = e => {

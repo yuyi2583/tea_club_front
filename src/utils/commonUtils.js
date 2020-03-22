@@ -61,25 +61,25 @@ export const convertToDay = (arry) => {
     let result = arry.map((item) => {
         let day = "错误";
         switch (item) {
-            case 1:
+            case "1":
                 day = "周一";
                 break;
-            case 2:
+            case "2":
                 day = "周二";
                 break;
-            case 3:
+            case "3":
                 day = "周三";
                 break;
-            case 4:
+            case "4":
                 day = "周四";
                 break;
-            case 5:
+            case "5":
                 day = "周五";
                 break;
-            case 6:
+            case "6":
                 day = "周六";
                 break;
-            case 7:
+            case "7":
                 day = "周日";
                 break;
         }
