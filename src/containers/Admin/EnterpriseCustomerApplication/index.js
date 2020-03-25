@@ -177,17 +177,17 @@ class EnterpriseCustomerApplication extends React.Component {
     render() {
         const data = this.getDataSource();
         const columns = this.getColmuns();
-        const { requestQuantity } = this.props;
+        const { retrieveRequestQuantity } = this.props;
         return (
             <PageHeader
                 title="企业用户申请"
                 onBack={this.props.handleBack}>
                 <span>当前为最近3个月的申请数据</span>
                 <Button type="link" onClick={() => this.props.fetchEnterpriseCustomerApplication(true)}>加载所有申请数据</Button>
-                <Spin spinning={requestQuantity > 0}>
+                <Spin spinning={retrieveRequestQuantity > 0}>
                     <Table
                         columns={columns}
-                        loading={requestQuantity > 0}
+                        loading={retrieveRequestQuantity > 0}
                         dataSource={data} />
                 </Spin>
             </PageHeader>

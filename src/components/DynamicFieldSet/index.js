@@ -74,13 +74,13 @@ class DynamicFieldSet extends React.Component {
       items = keys.map((k) => {
         return (
           <Row key={k}>
-            <Col span={20}>
+            <Col span={22}>
               <DynamicFieldSetContext.Provider value={k}>
                 {template}
               </DynamicFieldSetContext.Provider>
             </Col>
             {keys.length > 1 ? (
-              <Col span={4}>
+              <Col span={2}>
                 <Icon
                   className="dynamic-delete-button"
                   type="minus-circle-o"
@@ -95,13 +95,13 @@ class DynamicFieldSet extends React.Component {
         if (k < children.length || children.length == undefined) {
           return (
             <Row key={k}>
-              <Col span={20}>
+              <Col span={22}>
                 <DynamicFieldSetContext.Provider value={k}>
                   {children.length == undefined ? children : children[k]}
                 </DynamicFieldSetContext.Provider>
               </Col>
               {keys.length > 1 ? (
-                <Col span={4}>
+                <Col span={2}>
                   <Icon
                     className="dynamic-delete-button"
                     type="minus-circle-o"
@@ -113,13 +113,13 @@ class DynamicFieldSet extends React.Component {
         } else {
           return (
             <Row key={k}>
-              <Col span={20}>
+              <Col span={22}>
                 <DynamicFieldSetContext.Provider value={k}>
                   {template}
                 </DynamicFieldSetContext.Provider>
               </Col>
               {keys.length > 1 ? (
-                <Col span={4}>
+                <Col span={2}>
                   <Icon
                     className="dynamic-delete-button"
                     type="minus-circle-o"

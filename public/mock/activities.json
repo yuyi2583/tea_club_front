@@ -1,27 +1,114 @@
 {
     "data": [
-        {"uid":"1123asdf","name":"activity1",
-            "mutexRange": ["2"],"description":"this is activity1 asdfasdfasdfasdfasdfasfd","startTime":1583138590403,"endTime":1583148590403,"enforceTerminal":true,"activityRules":[{"uid":1,"activityType": "1","avtivityApplyForProduct": [3],
-            "avtivityApplyForCustomer":  ["1", "2"],
-            "activityInReduction1": 123,
-            "activityInReduction2": 1}],
-            "pictures":"https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"},
-        {"uid":"2","name":"activity2",
-            "mutexRange": ["2"],"description":"this is activity2","startTime":1583138590403,"endTime":1583148590403,"enforceTerminal":false,"activityRules":[{"uid":2,"activityType": "1","avtivityApplyForProduct": [3],
-            "avtivityApplyForCustomer":  ["1", "2"],
-            "activityInReduction1": 123,
-            "activityInReduction2": 1}],"pictures":"https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"},
-        {"uid":"3","name":"activity3",
-            "mutexRange": ["2"],"description":"this is activity3","startTime":1583138590403,"endTime":1583148590403,"enforceTerminal":false,"activityRules":[{"uid":3,"activityType": "1","avtivityApplyForProduct": [3],
-            "avtivityApplyForCustomer":  ["1", "2"],
-            "activityInReduction1": 123,
-            "activityInReduction2": 1}],"pictures":"https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"},
-        {"uid":"4","name":"activity4",
-            "mutexRange": ["2"],"description":"this is activity4","startTime":1583138590403,"endTime":1583148590403,"enforceTerminal":false,"activityRules":[{"uid":4,"activityType": "1","avtivityApplyForProduct": [3],
-            "avtivityApplyForCustomer":  ["1", "2"],
-            "activityInReduction1": 123,
-            "activityInReduction2": 1}],"pictures":"https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"}
+        {
+            "uid": "1123asdf",
+            "name": "activity1",
+            "mutexRange": [
+                "2"
+            ],
+            "description": "this is activity1 asdfasdfasdfasdfasdfasfd",
+            "startTime": 1583138590403,
+            "endTime": 1583148590403,
+            "enforceTerminal": true,
+            "activityRules": [
+                {
+                    "uid": 1,
+                    "activityType": "1",
+                    "avtivityApplyForProduct": [
+                        3
+                    ],
+                    "avtivityApplyForCustomer": [
+                        "1",
+                        "2"
+                    ],
+                    "activityInReduction1": 123,
+                    "activityInReduction2": 1
+                }
+            ],
+            "pictures": "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
+        },
+        {
+            "uid": "2",
+            "name": "activity2",
+            "mutexRange": [
+                "2"
+            ],
+            "description": "this is activity2",
+            "startTime": 1583138590403,
+            "endTime": 1583148590403,
+            "enforceTerminal": false,
+            "activityRules": [
+                {
+                    "uid": 2,
+                    "activityType": "1",
+                    "avtivityApplyForProduct": [
+                        3
+                    ],
+                    "avtivityApplyForCustomer": [
+                        "1",
+                        "2"
+                    ],
+                    "activityInReduction1": 123,
+                    "activityInReduction2": 1
+                }
+            ],
+            "pictures": "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
+        },
+        {
+            "uid": "3",
+            "name": "activity3",
+            "mutexRange": [
+                "2"
+            ],
+            "description": "this is activity3",
+            "startTime": 1583138590403,
+            "endTime": 1583148590403,
+            "enforceTerminal": false,
+            "activityRules": [
+                {
+                    "uid": 3,
+                    "activityType": "1",
+                    "avtivityApplyForProduct": [
+                        3
+                    ],
+                    "avtivityApplyForCustomer": [
+                        "1",
+                        "2"
+                    ],
+                    "activityInReduction1": 123,
+                    "activityInReduction2": 1
+                }
+            ],
+            "pictures": "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
+        },
+        {
+            "uid": "4",
+            "name": "activity4",
+            "mutexRange": [
+                "2"
+            ],
+            "description": "this is activity4",
+            "startTime": 1583138590403,
+            "endTime": 1583148590403,
+            "enforceTerminal": false,
+            "activityRules": [
+                {
+                    "uid": 4,
+                    "activityType": "1",
+                    "avtivityApplyForProduct": [
+                        3
+                    ],
+                    "avtivityApplyForCustomer": [
+                        "1",
+                        "2"
+                    ],
+                    "activityInReduction1": 123,
+                    "activityInReduction2": 1
+                }
+            ],
+            "pictures": "https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
+        }
     ],
     "retCode": "200",
-    "error":""
+    "error": ""
 }

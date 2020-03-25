@@ -4,8 +4,9 @@ import { get } from "../../utils/request";
 import { requestType } from "../../utils/common";
 
 const initialState = {
-    customerType: new Array(),
-    byCustomerType: new Object(),
+    customerTypes: new Array(),
+    byCustomerTypes: new Object(),
+    ///////////////////////////////////////
     enterpriseCustomerApplication: new Array(),
     byEnterpriseCustomerApplication: new Object(),
     customers: new Array(),
@@ -13,7 +14,8 @@ const initialState = {
 }
 
 export const types = {
-    FETCH_CUSTOMER_TYPE: "CUSTOMER/FETCH_CUSTOMER_TYPE", //get the type of the customer
+    FETCH_CUSTOMER_TYPES: "CUSTOMER/FETCH_CUSTOMER_TYPES", //get the type of the customer
+    ////////////////////////////////////
     FETCH_ENTERPRISE_CUSTOMER_APPLICATION: "CUSTOMER/FETCH_ENTERPRISE_CUSTOMER_APPLICATION",
     START_APPLICATION_CHECK: "CUSTOMER/START_APPLICATION_CHECK",
     ADMIT_APPLICATION: "CUSTOMER/ADMIT_APPLICATION",
@@ -24,22 +26,24 @@ export const types = {
 };
 
 export const actions = {
-    fetchCustomerType: (reqType = requestType.appRequest) => {
+    //获取用户类型
+    fetchCustomerTypes: (reqType = requestType.retrieveRequest) => {
         return (dispatch) => {
             dispatch(appActions.startRequest(reqType));
-            return get(url.fetchCustomerType()).then((data) => {
+            return get(url.fetchCustomerTypes()).then((result) => {
                 dispatch(appActions.finishRequest(reqType));
-                if (!data.error) {
-                    dispatch(fetchCustomerTypeSuccess(convetCustomerTypeToPlainStructure(data.customerType)));
+                if (!result.error) {
+                    dispatch(fetchCustomersTypeSuccess(convetCustomerTypesToPlainStructure(result.data)));
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(data.error));
-                    return Promise.reject();
+                    dispatch(appActions.setError(result.msg));
+                    return Promise.reject(result.error);
                 }
             });
         }
     },
-    fetchEnterpriseCustomerApplication: (isFetchAll = false, reqType = requestType.appRequest) => {
+    ///////////////////////
+    fetchEnterpriseCustomerApplication: (isFetchAll = false, reqType = requestType.retrieveRequest) => {
         return (dispatch) => {
             dispatch(appActions.startRequest(reqType));
             const params = { isFetchAll };
@@ -152,21 +156,27 @@ export const actions = {
     },
 }
 
-const convetCustomerTypeToPlainStructure = (data) => {
-    let customerType = new Array();
-    let byCustomerType = new Object();
+const convetCustomerTypesToPlainStructure = (data) => {
+    let customerTypes = new Array();
+    let byCustomerTypes = new Object();
     data.forEach((item) => {
-        customerType.push(item.uid);
-        if (!byCustomerType[item.uid]) {
-            byCustomerType[item.uid] = item;
+        customerTypes.push(item.uid);
+        if (!byCustomerTypes[item.uid]) {
+            byCustomerTypes[item.uid] = item;
         }
     });
     return {
-        customerType,
-        byCustomerType,
+        customerTypes,
+        byCustomerTypes,
     }
 }
 
+const fetchCustomersTypeSuccess = ({ customerTypes, byCustomerTypes }) => ({
+    type: types.FETCH_CUSTOMER_TYPES,
+    customerTypes,
+    byCustomerTypes,
+});
+//////////////////////////////////////////////////
 const convetCustomersToPlainStructure = (data) => {
     let customers = new Array();
     let byCustomers = new Object();
@@ -208,11 +218,7 @@ const fetchEnterpriseCustomerApplicationSuccess = (type, { enterpriseCustomerApp
     byEnterpriseCustomerApplication
 })
 
-const fetchCustomerTypeSuccess = ({ customerType, byCustomerType }) => ({
-    type: types.FETCH_CUSTOMER_TYPE,
-    customerType,
-    byCustomerType,
-});
+
 
 const fetchCustomersSuccess = (type, { customers, byCustomers }) => ({
     type,
@@ -223,8 +229,9 @@ const fetchCustomersSuccess = (type, { customers, byCustomers }) => ({
 const reducer = (state = initialState, action) => {
     let customers, byCustomers;
     switch (action.type) {
-        case types.FETCH_CUSTOMER_TYPE:
-            return { ...state, customerType: action.customerType, byCustomerType: action.byCustomerType };
+        case types.FETCH_CUSTOMER_TYPES:
+            return { ...state, customerTypes: action.customerTypes, byCustomerTypes: action.byCustomerTypes };
+        //////////////////////////////////////
         case types.START_APPLICATION_CHECK:
         case types.ADMIT_APPLICATION:
         case types.REJECT_APPLICATION:
@@ -246,8 +253,9 @@ const reducer = (state = initialState, action) => {
 
 export default reducer;
 
-export const getCustomerType = (state) => state.customer.customerType;
-export const getByCustomerType = (state) => state.customer.byCustomerType;
+export const getCustomerTypes = (state) => state.customer.customerTypes;
+export const getByCustomerTypes = (state) => state.customer.byCustomerTypes;
+///////////////////////////////////////////
 export const getEnterpriseCustomerApplication = (state) => state.customer.enterpriseCustomerApplication;
 export const getByEnterpriseCustomerApplication = (state) => state.customer.byEnterpriseCustomerApplication;
 export const getCustomers = (state) => state.customer.customers;

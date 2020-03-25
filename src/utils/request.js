@@ -60,7 +60,7 @@ function post(url, params) {
 }
 
 function handleResponse(url, response) {
-  console.log("handle response", response);
+  // console.log("handle response", response);
   if(response.status==404){
     // callNotification("error", "请求失败，找不到该资源.");
     return { msg: "请求失败，找不到该资源.", code: 404 ,error:"请求失败，连接不到服务器." };

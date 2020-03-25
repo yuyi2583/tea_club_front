@@ -9,22 +9,12 @@ const format = "HH:mm"
 
 class ShopOpenHour extends React.Component {
 
-    componentDidMount() {
-        // if (this.props.openHour != null) {
-        //     const { getFieldDecorator, getFieldsValue } = this.props.form;
-        //     getFieldDecorator('date_' + this.context, { initialValue: this.props.openHour.date });
-        //     getFieldDecorator('startTime_' + this.context, { initialValue: moment(this.props.openHour.startTime) });
-        //     getFieldDecorator('endTime_' + this.context, { initialValue: moment(this.props.openHour.endTime) });
-        //     console.log("field value", getFieldsValue());
-        // }
-    }
-
     render() {
         const { getFieldDecorator } = this.props.form;
         const index = this.context;
         let isUpdate=false;
         if (this.props.openHour != null){
-            isUpdate=true
+            isUpdate=true;
         }
         return (
             <Row type="flex" justify="center">

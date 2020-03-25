@@ -2,7 +2,7 @@ import React from "react";
 import { Button, Icon, Divider, DatePicker, Input, Select, Spin, TreeSelect, Modal, Tooltip, Table, InputNumber } from "antd";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { actions as customerActions, getCustomers, getByCustomers, getByCustomerType, getCustomerType } from "../../../../../redux/modules/customer";
+import { actions as customerActions, getCustomers, getByCustomers, getByCustomerTypes, getCustomerTypes } from "../../../../../redux/modules/customer";
 import Highlighter from 'react-highlight-words';
 import { Link } from "react-router-dom";
 import { sex } from "../../../../../utils/common";
@@ -87,14 +87,14 @@ class CustomerList extends React.Component {
     };
 
     getDataSource = () => {
-        const { customers, byCustomers, byCustomerType } = this.props;
+        const { customers, byCustomers, byCustomerTypes } = this.props;
         let dataSource = new Array();
         customers.length > 0 && customers.forEach((uid) => {
             try {
                 const dataItem = {
                     key: uid,
                     ...byCustomers[uid],
-                    customerType: byCustomerType[byCustomers[uid].customerType].name,
+                    customerType: byCustomerTypes[byCustomers[uid].customerType].name,
                     sex: sex[byCustomers[uid].sex],
                 };
                 dataSource.push(dataItem);
@@ -201,8 +201,8 @@ const mapStateToProps = (state, props) => {
     return {
         customers: getCustomers(state),
         byCustomers: getByCustomers(state),
-        customerType: getCustomerType(state),
-        byCustomerType: getByCustomerType(state),
+        customerTypes: getCustomerTypes(state),
+        byCustomerTypes: getByCustomerTypes(state),
     };
 };
 
