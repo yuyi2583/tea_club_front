@@ -14,8 +14,8 @@ const initialState = {
 export const types = {
     FETCH_ACTIVITIES_NAME_DESC: "ACTIVITY/FETCH_ACTIVITIES_NAME_DESC",
     FETCH_ACTIVITY_RULE_TYPES: "ACTIVITY/FETCH_ACTIVITY_RULE_TYPES",
-    ////////////////////////////////////////
     FETCH_ACTIVITIES: "ACTIVITY/FETCH_ACTIVITIES", //
+    ////////////////////////////////////////
     TERMINAL_ACTIVITY: "ACTIVITY/TERMINAL_ACTIVITY",
     ADD_ACTIVITY: "ACTIVITY/ADD_ACTIVITY",
     ALTER_ACTIVITY: "ACTIVITY/ALTER_ACTIVITY",
@@ -57,50 +57,51 @@ export const actions = {
         return (dispatch) => {
             dispatch(appActions.startRequest());
             const params = { ...activity };
-            return post(url.addActivity(), params).then((data) => {
+            return post(url.addActivity(), params).then((result) => {
                 dispatch(appActions.finishRequest());
-                if (!data.error) {//TODO
+                if (!result.error) {//TODO
                     dispatch(addActivitySuccess(activity));
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(data.error));
-                    return Promise.reject(data.error);
+                    dispatch(appActions.setError(result.msg));
+                    return Promise.reject(result.error);
                 }
             })
         }
     },
-    ///////////////////////////////////////////////////////////
-    //获取所有活动信息
-    fetchActivities: (reqType = requestType.retrieveRequest) => {
+    //获取所有活动信息列表
+    fetchActivities: () => {
         return (dispatch) => {
-            dispatch(appActions.startRequest(reqType));
-            return get(url.fetchActivities()).then((data) => {
-                dispatch(appActions.finishRequest(reqType));
-                if (!data.error) {
-                    dispatch(fetchActivitiesSuccess(convetActivitiesToPlainStructure(data.activities)));
+            dispatch(appActions.startRequest());
+            return get(url.fetchActivities()).then((result) => {
+                dispatch(appActions.finishRequest());
+                if (!result.error) {
+                    dispatch(fetchActivitiesSuccess(convertActivitiesToPlainStructure(result.data)));
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(data.error));
-                    return Promise.reject();
+                    dispatch(appActions.setError(result.msg));
+                    return Promise.reject(result.error);
                 }
             });
         }
     },
-    terminalActivity: (uid, reqType = requestType.appRequest) => {
+    //终止活动
+    terminalActivity: (uid, ) => {
         return (dispatch) => {
-            dispatch(appActions.startRequest(reqType));
-            return get(url.terminalActivity()).then((data) => {
-                dispatch(appActions.finishRequest(reqType));
-                if (!data.error) {
+            dispatch(appActions.startRequest());
+            return _delete(url.terminalActivity(uid)).then((result) => {
+                dispatch(appActions.finishRequest());
+                if (!result.error) {
                     dispatch(terminalActivitySuccess(uid));
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(data.error));
-                    return Promise.reject();
+                    dispatch(appActions.setError(result.msg));
+                    return Promise.reject(result.error);
                 }
             });
         }
     },
+    ///////////////////////////////////////////////////////////
     alterActivityInfo: (activity) => {
         return (dispatch) => {
             dispatch(appActions.startRequest());
@@ -108,7 +109,7 @@ export const actions = {
             return get(url.addActivity(), params).then((data) => {
                 dispatch(appActions.finishRequest());
                 if (!data.error) {
-                    dispatch(addActivitySuccess(convetActivitiesToPlainStructure(data.activities)));
+                    dispatch(addActivitySuccess(convertActivitiesToPlainStructure(data.activities)));
                     return Promise.resolve();
                 } else {
                     dispatch(actions.setError(data.error));
@@ -150,7 +151,8 @@ const convertActivitiesToPlainStructure = (data) => {
 const fetchActivitiesNameDescSuccess = ({ activities, byActivities, byActivityRules }) => ({
     type: types.FETCH_ACTIVITIES_NAME_DESC,
     activities,
-    byActivities, byActivityRules
+    byActivities,
+    byActivityRules
 })
 
 const convertActivityRuleTypeToPlainStructure = (data) => {
@@ -179,35 +181,20 @@ const addActivitySuccess = (activity) => ({
     activity
 });
 
-/////////////////////////////////////////////////////////////
-const convetActivitiesToPlainStructure = (data) => {
-    let activities = new Array();
-    let byActivities = new Object();
-    let byActivityRules = new Object();
-    data.forEach((item) => {
-        let activityRules = new Array();
-        item.activityRules.forEach((rule) => {
-            activityRules.push(rule.uid);
-            if (!byActivityRules[rule.uid]) {
-                byActivityRules[rule.uid] = rule;
-            }
-        })
-        activities.push(item.uid);
-        if (!byActivities[item.uid]) {
-            byActivities[item.uid] = { ...item, activityRules };
-        }
-    });
-    return {
-        activities,
-        byActivities,
-        byActivityRules,
-    }
-}
+
+const fetchActivitiesSuccess = ({ activities, byActivities, byActivityRules }) => ({
+    type: types.FETCH_ACTIVITIES,
+    activities,
+    byActivities,
+    byActivityRules,
+});
 
 const terminalActivitySuccess = (uid) => ({
     type: types.TERMINAL_ACTIVITY,
     uid,
 });
+/////////////////////////////////////////////////////////////
+
 
 
 
@@ -218,26 +205,13 @@ const alterActivitySuccess = ({ activities, byActivities, byActivityRules }) => 
     byActivityRules,
 });
 
-const fetchActivitiesSuccess = ({ activities, byActivities, byActivityRules }) => ({
-    type: types.FETCH_ACTIVITIES,
-    activities,
-    byActivities,
-    byActivityRules,
-});
 
 const reducer = (state = initialState, action) => {
     let byActivities;
     switch (action.type) {
         case types.FETCH_ACTIVITY_RULE_TYPES:
             return { ...state, activityRuleTypes: action.activityRuleTypes, byActivityRuleTypes: action.byActivityRuleTypes };
-        case types.FETCH_ACTIVITIES_NAME_DESC:
-        ////////////////////////////////////////////////////////////
-        case types.FETCH_ACTIVITIES:
-        // case types.ADD_ACTIVITY:
-        case types.ALTER_ACTIVITY:
-            return { ...state, activities: action.activities, byActivities: action.byActivities, byActivityRules: action.byActivityRules };
         case types.TERMINAL_ACTIVITY:
-            // debugger
             byActivities = new Object();
             state.activities.forEach((uid) => {
                 if (uid == action.uid) {
@@ -247,6 +221,13 @@ const reducer = (state = initialState, action) => {
                 }
             })
             return { ...state, byActivities }
+        case types.FETCH_ACTIVITIES_NAME_DESC:
+        case types.FETCH_ACTIVITIES:
+        ////////////////////////////////////////////////////////////
+        // case types.ADD_ACTIVITY:
+        case types.ALTER_ACTIVITY:
+            return { ...state, activities: action.activities, byActivities: action.byActivities, byActivityRules: action.byActivityRules };
+
         default:
             return state;
     }

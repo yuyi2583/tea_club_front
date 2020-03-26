@@ -44,6 +44,8 @@ class AddActivity extends React.Component {
                     onCancel() {
                     },
                     onOk() {
+                        console.log("values", values);
+
                         const index = values.keys;
                         let activityRules = new Array();
                         let activity = new Object();
@@ -58,19 +60,23 @@ class AddActivity extends React.Component {
                                 if (splitKey[1].indexOf(item) != -1) {
                                     if (splitKey[0] == "activityApplyForProduct") {
                                         let activityApplyForProduct = new Array();
-                                        values[key].forEach(item => {
-                                            if (item.indexOf("type") != -1) {//表示某一类型产品全选，将其转化为该类型下所有产品id
-                                                let productsUid = new Array();
-                                                try {
-                                                    productsUid = products.filter(uid => byProducts[uid].type.uid == parseInt(item.split("_")[1]));
-                                                } catch{
-                                                    productsUid = new Array();
+                                        try {
+                                            values[key].forEach(item => {
+                                                if (item.indexOf("type") != -1) {//表示某一类型产品全选，将其转化为该类型下所有产品id
+                                                    let productsUid = new Array();
+                                                    try {
+                                                        productsUid = products.filter(uid => byProducts[uid].type.uid == parseInt(item.split("_")[1]));
+                                                    } catch{
+                                                        productsUid = new Array();
+                                                    }
+                                                    activityApplyForProduct = activityApplyForProduct.concat(productsUid);
+                                                } else {
+                                                    activityApplyForProduct.push(parseInt(item.split("_")[1]));
                                                 }
-                                                activityApplyForProduct = activityApplyForProduct.concat(productsUid);
-                                            } else {
-                                                activityApplyForProduct.push(parseInt(item.split("_")[1]));
-                                            }
-                                        })
+                                            })
+                                        } catch{
+                                            activityApplyForProduct = new Array();
+                                        }
                                         rule[splitKey[0]] = activityApplyForProduct;
                                     } else {
                                         rule[splitKey[0]] = values[key];
@@ -84,7 +90,6 @@ class AddActivity extends React.Component {
                         activity["endTime"] = timeStringConvertToTimeStamp(values["duration"][1].format("YYYY-MM-DD HH:mm:ss"));
                         activity["photos"] = fileList;
                         activity["mutexActivities"] = values["mutexActivities"] == undefined ? new Array() : values["mutexActivities"];
-                        console.log("values", values);
                         console.log("submit values", activity);
                         thiz.props.addActivity(activity)
                             .then(() => {
