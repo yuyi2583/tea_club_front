@@ -1,7 +1,5 @@
 import React from "react";
 import { Form, Select, TreeSelect, InputNumber, Row, Col } from "antd";
-import { activityType, requestType } from "../../utils/common";
-import PropTypes from "prop-types";
 import { DynamicFieldSetContext } from "../../components/DynamicFieldSet";
 import { actions as customerActions, getByCustomerTypes, getCustomerTypes } from "../../redux/modules/customer";
 import { actions as productActions, getByProductTypes, getProductTypes, getProducts, getByProducts } from "../../redux/modules/product";
@@ -14,10 +12,6 @@ import Price from "../Price";
 const { Option } = Select;
 
 class ActivityRuleInput extends React.Component {
-    // constructor(props) {
-    //     super(props);
-    //     this.state = {}
-    // }
 
     getActivityRuleInput = () => {
         const index = this.context;
@@ -95,7 +89,7 @@ class ActivityRuleInput extends React.Component {
                 return (
                     <span>
                         <Form.Item className="inline-input">
-                            {getFieldDecorator("activityRule1_" + index, {
+                            {getFieldDecorator("activityRule2_" + index, {
                             rules: [{ required: true, message: "请输入优惠规则!" }],
                             initialValue:{number:0,currency:"ingot",operation:"plus"}
                         })(<Price showOperation={false} />)
@@ -207,7 +201,6 @@ class ActivityRuleInput extends React.Component {
                                     placeholder="请选择优惠产品范围"
                                     treeCheckable={true}
                                     disabled={activityRuleType == 5}
-                                    // loadData={(treeNode) => activityApplyForProduct.onLoadData(treeNode, this.props)}
                                     treeData={treeData}
                                 />
                             )}
@@ -274,14 +267,6 @@ const mapStateToProps = (state, props) => {
         byActivityRuleTypes: getByActivityRuleTypes(state),
         products: getProducts(state),
         byProducts: getByProducts(state),
-        // shop: getShop(state),
-        // byShopList: getShopList(state),
-        // byAuthority: getByAuthority(state),
-        // byBelong: getByBelong(state),
-        // // requestQuantity: getRetrieveRequestQuantity(state),
-        // // modalRequestQuantity: getModalRequestQuantity(state),
-        // productDetail: getProductDetail(state),
-        // byProductDetail: getByProductDetail(state),
     };
 };
 

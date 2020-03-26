@@ -1,31 +1,21 @@
 import React from "react";
-import { PageHeader, Button, InputNumber, Form, DatePicker, Input, Select, Spin, TreeSelect, Modal } from "antd";
+import { PageHeader, Button, Form, DatePicker, Input, Select, Spin, Modal } from "antd";
 import PictureCard from "../../../components/PictureCard";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { actions as shopActions, getShop, getShopList } from "../../../redux/modules/shop";
-import { actions as clerkActions, getPositions, getByPositions, getByAuthority, getByBelong } from "../../../redux/modules/clerk";
-import { actions as productActions, getProductTypes, getByProductTypes, getByProductDetail, getProductDetail } from "../../../redux/modules/product";
-// import { getRetrieveRequestQuantity, getModalRequestQuantity } from "../../../redux/modules/app";
-import { actions as customerActions, getByCustomerTypes, getCustomerTypes } from "../../../redux/modules/customer";
 import { actions as activityActions, getActivities, getByActivities } from "../../../redux/modules/activity";
 import { Redirect } from "react-router-dom";
 import { map } from "../../../router";
 import "./style.css";
-import method from "./utils/method";
-import { requestType } from "../../../utils/common";
-import common from "./utils/common";
 import ActivityRuleInput from "../../../components/ActivityRuleInput";
 import DynamicFieldSet from "../../../components/DynamicFieldSet";
 import { timeStringConvertToTimeStamp } from "../../../utils/timeUtil";
 import { formItemLayout, tailFormItemLayout } from "../../../utils/common";
 
-// const { activityApplyForProduct } = method;
 
 const { Option } = Select;
 const { confirm } = Modal;
-const { MonthPicker, RangePicker } = DatePicker;
-const { SHOW_PARENT } = TreeSelect;
+const { RangePicker } = DatePicker;
 
 class AddActivity extends React.Component {
     constructor(props) {
@@ -44,7 +34,6 @@ class AddActivity extends React.Component {
     handleSubmit = e => {
         e.preventDefault();
         const { fileList } = this.state;;
-        // const { byAuthority } = this.props;
         const thiz = this;
         const { byProducts, products } = this.props;
         this.props.form.validateFieldsAndScroll((err, values) => {
@@ -88,14 +77,14 @@ class AddActivity extends React.Component {
                                     }
                                 }
                             }
-                            // if (rule["activityApplyForProduct"].inde)
-                            //     rule["activityApplyForProduct"] =
                             activityRules.push(rule);
                         })
                         activity["activityRules"] = activityRules;
                         activity["startTime"] = timeStringConvertToTimeStamp(values["duration"][0].format("YYYY-MM-DD HH:mm:ss"));
                         activity["endTime"] = timeStringConvertToTimeStamp(values["duration"][1].format("YYYY-MM-DD HH:mm:ss"));
                         activity["photos"] = fileList;
+                        activity["mutexActivities"] = values["mutexActivities"] == undefined ? new Array() : values["mutexActivities"];
+                        console.log("values", values);
                         console.log("submit values", activity);
                         thiz.props.addActivity(activity)
                             .then(() => {
@@ -171,15 +160,7 @@ class AddActivity extends React.Component {
                             <Form.Item label="优惠规则" required>
                                 <DynamicFieldSet form={this.props.form} content={"添加优惠规则"}
                                     template={<ActivityRuleInput
-                                        form={this.props.form}
-                                    // fetchProductType={this.props.fetchProductType}
-                                    // activityApplyForProduct={activityApplyForProduct}
-                                    // fetchCustomerType={this.props.fetchCustomerType}
-                                    // modalRequestQuantity={modalRequestQuantity}
-                                    // treeData={treeData}
-                                    // customerType={customerType}
-                                    // byCustomerType={byCustomerType} 
-                                    />}
+                                        form={this.props.form} />}
                                 />
                             </Form.Item>
                             <Form.Item label="活动持续时间">
@@ -193,10 +174,7 @@ class AddActivity extends React.Component {
                                 {getFieldDecorator('mutexActivities')
                                     (<Select
                                         placeholder="请选择与此活动互斥的互动"
-                                        mode="multiple"
-                                    // loading={modalRequestQuantity > 0}
-                                    // onFocus={() => this.props.fetchActivities(requestType.modalRequest)}
-                                    >
+                                        mode="multiple">
                                         {
                                             activities.map((uid) => <Option value={uid} key={uid} >{byActivities[uid].name}</Option>)
                                         }
@@ -229,34 +207,15 @@ class AddActivity extends React.Component {
         )
     }
 }
-const mapStateToProps = (state, props) => {
+const mapStateToProps = (state) => {
     return {
-        // positions: getPositions(state),
-        // byPositions: getByPositions(state),
         activities: getActivities(state),
         byActivities: getByActivities(state),
-        // customerTypes: getCustomerTypes(state),
-        // byCustomerTypes: getByCustomerTypes(state),
-        // productTypes: getProductTypes(state),
-        // byProductTypes: getByProductTypes(state),
-        // activityRuleTypes: getActivityRuleTypes(state),
-        // byActivityRuleTypes: getByActivityRuleTypes(state),
-        // shop: getShop(state),
-        // byShopList: getShopList(state),
-        // byAuthority: getByAuthority(state),
-        // byBelong: getByBelong(state),
-        // // requestQuantity: getRetrieveRequestQuantity(state),
-        // // modalRequestQuantity: getModalRequestQuantity(state),
-        // productDetail: getProductDetail(state),
-        // byProductDetail: getByProductDetail(state),
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        ...bindActionCreators(shopActions, dispatch),
-        ...bindActionCreators(productActions, dispatch),
-        ...bindActionCreators(customerActions, dispatch),
         ...bindActionCreators(activityActions, dispatch),
     };
 };
