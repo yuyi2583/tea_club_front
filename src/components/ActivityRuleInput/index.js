@@ -1,21 +1,19 @@
 import React from "react";
 import { Form, Select, TreeSelect, InputNumber, Row, Col } from "antd";
 import { DynamicFieldSetContext } from "../../components/DynamicFieldSet";
-import { actions as customerActions, getByCustomerTypes, getCustomerTypes } from "../../redux/modules/customer";
-import { actions as productActions, getByProductTypes, getProductTypes, getProducts, getByProducts } from "../../redux/modules/product";
-import { actions as activityActions, getActivityRuleTypes, getByActivityRuleTypes } from "../../redux/modules/activity";
-import { bindActionCreators } from "redux";
-import { connect } from "react-redux";
 import { activityApplyForProduct } from "./method";
 import Price from "../Price";
 
 const { Option } = Select;
 
+let isOriginalRuleType = false;
+
 class ActivityRuleInput extends React.Component {
 
-    getActivityRuleInput = () => {
+    getActivityRuleInput = (isUpdate = false) => {
         const index = this.context;
         const { getFieldDecorator, getFieldValue } = this.props.form;
+        const { activityRule } = this.props;
         let activityRuleType = undefined;
         try {
             activityRuleType = getFieldValue("activityRuleType_" + index);
@@ -23,6 +21,7 @@ class ActivityRuleInput extends React.Component {
             console.log(err);
             activityRuleType = undefined;
         }
+        isOriginalRuleType = isUpdate && activityRule.activityRuleType.uid == activityRuleType;
         switch (activityRuleType) {
             case 5:
                 return (
@@ -31,6 +30,7 @@ class ActivityRuleInput extends React.Component {
                             <Form.Item className="inline-input">
                                 充值满&nbsp;{getFieldDecorator('activityRule1_' + index, {
                                 rules: [{ required: true, message: '请输入优惠规则!' }],
+                                initialValue: isUpdate ? isOriginalRuleType ? activityRule.activityRule1 : null : null
                             })(<InputNumber
                                 min={0}
                                 style={{ width: "100px", marginRight: "10px" }} />)}&nbsp;元宝
@@ -40,7 +40,7 @@ class ActivityRuleInput extends React.Component {
                             <Form.Item className="inline-input">
                                 {getFieldDecorator('activityRule2_' + index, {
                                     rules: [{ required: true, message: '请输入优惠规则!' }],
-                                    initialValue:{number:0,currency:"ingot",operation:"plus"}
+                                    initialValue: isUpdate ? isOriginalRuleType ? activityRule.activityRule2 : { number: 0, currency: "ingot", operation: "plus" } : { number: 0, currency: "ingot", operation: "plus" }
                                 })(<Price showOperation={false} />)}
                             </Form.Item>
                         </Col>
@@ -53,6 +53,7 @@ class ActivityRuleInput extends React.Component {
                             <Form.Item className="inline-input">
                                 消费满&nbsp;{getFieldDecorator('activityRule1_' + index, {
                                 rules: [{ required: true, message: '请输入优惠规则!' }],
+                                initialValue: isUpdate ? isOriginalRuleType ? activityRule.activityRule1 : null : null
                             })(<InputNumber
                                 min={0}
                                 style={{ width: "100px", marginRight: "10px" }} />)}元宝
@@ -62,7 +63,7 @@ class ActivityRuleInput extends React.Component {
                             <Form.Item className="inline-input">
                                 {getFieldDecorator('activityRule2_' + index, {
                                     rules: [{ required: true, message: '请输入优惠规则!' }],
-                                    initialValue:{number:0,currency:"ingot",operation:"plus"}
+                                    initialValue: isUpdate ? isOriginalRuleType ? activityRule.activityRule2 : { number: 0, currency: "ingot", operation: "plus" } : { number: 0, currency: "ingot", operation: "plus" }
                                 })(<Price />)}
                             </Form.Item>
                         </Col>
@@ -74,7 +75,7 @@ class ActivityRuleInput extends React.Component {
                         <Form.Item className="inline-input">
                             {getFieldDecorator("activityRule1_" + index, {
                                 rules: [{ required: true, message: "请输入优惠规则!" }],
-                                initialValue: 30,
+                                initialValue: isUpdate ? isOriginalRuleType ? activityRule.activityRule1 : 30 : 30,
                             })(<InputNumber
                                 min={0}
                                 allowClear
@@ -90,9 +91,9 @@ class ActivityRuleInput extends React.Component {
                     <span>
                         <Form.Item className="inline-input">
                             {getFieldDecorator("activityRule2_" + index, {
-                            rules: [{ required: true, message: "请输入优惠规则!" }],
-                            initialValue:{number:0,currency:"ingot",operation:"plus"}
-                        })(<Price showOperation={false} />)
+                                rules: [{ required: true, message: "请输入优惠规则!" }],
+                                initialValue: isUpdate ? isOriginalRuleType ? activityRule.activityRule2 : { number: 0, currency: "ingot", operation: "plus" } : { number: 0, currency: "ingot", operation: "plus" }
+                            })(<Price showOperation={false} />)
                             }
                         </Form.Item>
                     </span>
@@ -104,6 +105,7 @@ class ActivityRuleInput extends React.Component {
                             <Form.Item className="inline-input">
                                 阅读时长满&nbsp;{getFieldDecorator('activityRule1_' + index, {
                                 rules: [{ required: true, message: '请输入优惠规则!' }],
+                                initialValue: isUpdate ? isOriginalRuleType ? activityRule.activityRule1 : null : null
                             })(<InputNumber
                                 min={0}
                                 style={{ width: "100px", marginRight: "10px" }} />)}分钟
@@ -112,9 +114,9 @@ class ActivityRuleInput extends React.Component {
                         <Col span={13}>
                             <Form.Item className="inline-input">
                                 {getFieldDecorator('activityRule2_' + index, {
-                                rules: [{ required: true, message: '请输入优惠规则!' }],
-                                initialValue:{number:0,currency:"ingot",operation:"plus"}
-                            })(<Price showOperation={false} />)}
+                                    rules: [{ required: true, message: '请输入优惠规则!' }],
+                                    initialValue: isUpdate ? isOriginalRuleType ? activityRule.activityRule2 : { number: 0, currency: "ingot", operation: "plus" } : { number: 0, currency: "ingot", operation: "plus" }
+                                })(<Price showOperation={false} />)}
                             </Form.Item>
                         </Col>
                     </Row>
@@ -130,12 +132,6 @@ class ActivityRuleInput extends React.Component {
         }
     }
 
-    componentDidMount() {
-        this.props.fetchActivityRuleTypes();
-        this.props.fetchProductTypes();
-        this.props.fetchCustomerTypes();
-        this.props.fetchProductsName();
-    }
 
     getTreeData = () => {
         const index = this.context
@@ -160,17 +156,26 @@ class ActivityRuleInput extends React.Component {
         return activityApplyForProduct.convertToStandardTreeData(filterProductTypes, byProductTypes, filterProducts, byProducts);
     }
 
-    render() {
+    getTreeSelectDisable = () => {
         const index = this.context
-        const activityRuleInput = this.getActivityRuleInput();
-        const { getFieldDecorator, getFieldValue } = this.props.form;
+        const { getFieldValue } = this.props.form;
         let activityRuleType = undefined;
         try {
             activityRuleType = getFieldValue("activityRuleType_" + index);
         } catch (err) {
             activityRuleType = undefined;
         }
-        const { activityRuleTypes, byActivityRuleTypes,  customerTypes, byCustomerTypes } = this.props;
+        return activityRuleType == 5;
+    }
+
+    render() {
+        const index = this.context
+        const { getFieldDecorator } = this.props.form;
+        let isUpdate = false;
+        if (this.props.activityRule != null) {
+            isUpdate = true;
+        }
+        const { activityRuleTypes, byActivityRuleTypes, customerTypes, byCustomerTypes, activityRule } = this.props;
         const treeData = this.getTreeData();
         return (
             <div style={{ width: "100%" }}>
@@ -178,6 +183,7 @@ class ActivityRuleInput extends React.Component {
                     <Form.Item className="inline-input">
                         {getFieldDecorator('activityRuleType_' + index, {
                             rules: [{ required: true, message: '请选择优惠类型!' }],
+                            initialValue: isUpdate ? activityRule.activityRuleType.uid : null
                         })(
                             <Select
                                 placeholder="请选择优惠类型"
@@ -188,19 +194,21 @@ class ActivityRuleInput extends React.Component {
                     </Form.Item>
                 </Row>
                 <Row>
-                    {activityRuleInput}
+                    {this.getActivityRuleInput(isUpdate)}
                 </Row>
                 <Row>
                     <Col span={12}>
                         <Form.Item className="inline-input">
-                            {getFieldDecorator('activityApplyForProduct_' + index)(
+                            {getFieldDecorator('activityApplyForProduct_' + index, {
+                                initialValue: isUpdate ? isOriginalRuleType ? activityRule.activityApplyForProduct.map(uid => `product_${uid}`) : null : null
+                            })(
                                 <TreeSelect
                                     treeDataSimpleMode
                                     style={{ width: '200px' }}
                                     dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
                                     placeholder="请选择优惠产品范围"
                                     treeCheckable={true}
-                                    disabled={activityRuleType == 5}
+                                    disabled={this.getTreeSelectDisable()}
                                     treeData={treeData}
                                 />
                             )}
@@ -210,6 +218,7 @@ class ActivityRuleInput extends React.Component {
                         <Form.Item className="inline-input">
                             {getFieldDecorator('activityApplyForCustomerTypes_' + index, {
                                 rules: [{ required: true, message: '请选择享受优惠客户范围!' }],
+                                initialValue: isUpdate ? isOriginalRuleType ? activityRule.activityApplyForCustomerTypes : undefined : undefined
                             })(
                                 <Select
                                     mode="multiple"
@@ -231,52 +240,4 @@ class ActivityRuleInput extends React.Component {
 
 ActivityRuleInput.contextType = DynamicFieldSetContext;
 
-// ActivityRuleInput.propTypes = {
-//     content: PropTypes.shape({
-//         activityType: PropTypes.string,
-//         activityInReduction1: PropTypes.number,
-//         activityInReduction2: PropTypes.number,
-//         activityApplyForProduct: PropTypes.array,
-//         activityApplyForCustomer: PropTypes.array,
-//         activityRuleInDiscount: PropTypes.number
-//     }),
-//     form: PropTypes.object.isRequired,
-//     activityApplyForProduct: PropTypes.object.isRequired,
-//     fetchProductType: PropTypes.func.isRequired,
-//     fetchCustomerType: PropTypes.func.isRequired,
-//     modalRequestQuantity: PropTypes.number.isRequired,
-//     treeData: PropTypes.array.isRequired,
-//     customerType: PropTypes.array.isRequired,
-//     byCustomerType: PropTypes.object.isRequired,
-//     index: PropTypes.number,
-// }
-
-// ActivityRuleInput.defaultProps = {
-//     index: -1,
-//     content: null,
-// }
-
-
-const mapStateToProps = (state, props) => {
-    return {
-        customerTypes: getCustomerTypes(state),
-        byCustomerTypes: getByCustomerTypes(state),
-        productTypes: getProductTypes(state),
-        byProductTypes: getByProductTypes(state),
-        activityRuleTypes: getActivityRuleTypes(state),
-        byActivityRuleTypes: getByActivityRuleTypes(state),
-        products: getProducts(state),
-        byProducts: getByProducts(state),
-    };
-};
-
-const mapDispatchToProps = (dispatch) => {
-    return {
-        ...bindActionCreators(productActions, dispatch),
-        ...bindActionCreators(customerActions, dispatch),
-        ...bindActionCreators(activityActions, dispatch),
-    };
-};
-
-
-export default connect(mapStateToProps, mapDispatchToProps)(ActivityRuleInput);
+export default ActivityRuleInput;

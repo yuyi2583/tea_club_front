@@ -1,26 +1,16 @@
 import React from "react";
-import { PageHeader, Button, Icon, Divider, DatePicker, Input, Select, Spin, TreeSelect, Modal, Tooltip, Table } from "antd";
-import PictureCard from "../../../../components/PictureCard";
+import {  Button, Icon, Divider, Input, Spin, Modal, Tooltip, Table } from "antd";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-// import { actions as shopActions, getShop, getShopList } from "../../../../redux/modules/shop";
-// import { actions as clerkActions, getAllPosition, getByAllPosition, getByAuthority, getByBelong } from "../../../../redux/modules/clerk";
-import { actions as activityActions, getActivities, getByActivities } from "../../../../redux/modules/activity";
-// import { getRetrieveRequestQuantity } from "../../../../redux/modules/app";
-// import { Redirect } from "react-router-dom";
-// import { map } from "../../../../router";
-import { sex, activityStatus } from "../../../../utils/common";
+import { actions as activityActions, getActivities, getByActivities } from "../../../../../redux/modules/activity";
+import {  activityStatus } from "../../../../../utils/common";
 import { judgeStatus } from "./method";
 import { Link } from "react-router-dom";
 import Highlighter from 'react-highlight-words';
-import { activityType } from "../../../../utils/common";
-import { timeStampConvertToFormatTime } from "../../../../utils/timeUtil";
-import { stringWithEllipsis } from "../../../../utils/stringUtil";
+import { timeStampConvertToFormatTime } from "../../../../../utils/timeUtil";
+import { stringWithEllipsis } from "../../../../../utils/stringUtil";
 
-const { Option } = Select;
 const { confirm } = Modal;
-const { MonthPicker, RangePicker } = DatePicker;
-const { SHOW_PARENT } = TreeSelect;
 
 class ActivityList extends React.Component {
     state = {
@@ -202,7 +192,6 @@ class ActivityList extends React.Component {
                 <Spin spinning={retrieveRequestQuantity > 0}>
                     <Table
                         columns={columns}
-                        // loading={requestQuantity > 0}
                         dataSource={data} />
                 </Spin>
             </div>
@@ -211,15 +200,8 @@ class ActivityList extends React.Component {
 }
 
 
-const mapStateToProps = (state, props) => {
+const mapStateToProps = (state) => {
     return {
-        // shop: getShop(state),
-        // byShopList: getShopList(state),
-        // requestQuantity: getRetrieveRequestQuantity(state),
-        // allPositions: getAllPosition(state),
-        // byAllPositions: getByAllPosition(state),
-        // byAuthority: geshoptByAuthority(state),
-        // byBelong: getByBelong(state),
         activities: getActivities(state),
         byActivities: getByActivities(state),
     };
@@ -227,8 +209,6 @@ const mapStateToProps = (state, props) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        // ...bindActionCreators(clerkActions, dispatch),
-        // ...bindActionCreators(shopActions, dispatch),
         ...bindActionCreators(activityActions, dispatch)
     };
 };

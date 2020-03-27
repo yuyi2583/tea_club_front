@@ -1,4 +1,4 @@
-import { activityStatus } from "../../../../utils/common";
+import { activityStatus } from "../../../../../utils/common";
 
 export const judgeStatus = (activity) => {
     if (!activity) {

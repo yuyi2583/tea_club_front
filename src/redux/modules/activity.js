@@ -9,16 +9,20 @@ const initialState = {
     byActivityRules: new Object(),
     activityRuleTypes: new Array(),
     byActivityRuleTypes: new Object(),
+    byPhotos: new Object(),
+    byMutexActivities: new Object(),
+    byActivityApplyForProduct: new Object(),
+    byActivityApplyForCustomerTypes: new Object()
 }
 
 export const types = {
     FETCH_ACTIVITIES_NAME_DESC: "ACTIVITY/FETCH_ACTIVITIES_NAME_DESC",
     FETCH_ACTIVITY_RULE_TYPES: "ACTIVITY/FETCH_ACTIVITY_RULE_TYPES",
-    FETCH_ACTIVITIES: "ACTIVITY/FETCH_ACTIVITIES", //
-    ////////////////////////////////////////
     TERMINAL_ACTIVITY: "ACTIVITY/TERMINAL_ACTIVITY",
+    FETCH_ACTIVITIES: "ACTIVITY/FETCH_ACTIVITIES", //
     ADD_ACTIVITY: "ACTIVITY/ADD_ACTIVITY",
-    ALTER_ACTIVITY: "ACTIVITY/ALTER_ACTIVITY",
+    FETCH_ACTIVITY: "ACTIVITY/FETCH_ACTIVITY",
+    UPDATE_ACTIVITY: "ACTIVITY/UPDATE_ACTIVITY"
 };
 
 export const actions = {
@@ -86,7 +90,7 @@ export const actions = {
         }
     },
     //终止活动
-    terminalActivity: (uid, ) => {
+    terminalActivity: (uid) => {
         return (dispatch) => {
             dispatch(appActions.startRequest());
             return _delete(url.terminalActivity(uid)).then((result) => {
@@ -101,23 +105,40 @@ export const actions = {
             });
         }
     },
-    ///////////////////////////////////////////////////////////
-    alterActivityInfo: (activity) => {
+    //根据uid获取活动详细数据
+    fetchActivity: (uid) => {
         return (dispatch) => {
             dispatch(appActions.startRequest());
-            const params = { activity };
-            return get(url.addActivity(), params).then((data) => {
+            return get(url.fetchActivity(uid)).then((result) => {
                 dispatch(appActions.finishRequest());
-                if (!data.error) {
-                    dispatch(addActivitySuccess(convertActivitiesToPlainStructure(data.activities)));
+                if (!result.error) {
+                    dispatch(fetchActivitySuccess(convertActivityToPlainStructure(result.data)));
                     return Promise.resolve();
                 } else {
-                    dispatch(actions.setError(data.error));
-                    return Promise.reject(data.error);
+                    dispatch(appActions.setError(result.msg));
+                    return Promise.reject(result.error);
                 }
-            })
+            });
         }
-    }
+    },
+    //修改活动信息
+    updateActivity: (activity) => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest(requestType.updateRequest));
+            const params = { ...activity };
+            return put(url.updateActivity(), params).then((result) => {
+                dispatch(appActions.finishRequest(requestType.updateRequest));
+                if (!result.error) {
+                    dispatch(updateActivitySuccess(convertActivityToPlainStructure(result.data)));
+                    return Promise.resolve();
+                } else {
+                    dispatch(appActions.setError(result.msg));
+                    // console.error(result.error);
+                    return Promise.reject(result.error);
+                }
+            });
+        }
+    },
 }
 
 const convertActivitiesToPlainStructure = (data) => {
@@ -193,22 +214,95 @@ const terminalActivitySuccess = (uid) => ({
     type: types.TERMINAL_ACTIVITY,
     uid,
 });
-/////////////////////////////////////////////////////////////
 
+const convertActivityToPlainStructure = (data) => {
+    let photos = new Array();
+    let byPhotos = new Object();
+    let mutexActivities = new Array();
+    let byMutexActivities = new Object();
+    let activityRules = new Array();
+    let byActivityRules = new Object();
+    let byTotalActivityApplyForProduct = new Object();
+    let byTotalActivityApplyForCustomerTypes = new Object();
+    data.photos.forEach(photo => {
+        photos.push(photo.uid);
+        if (!byPhotos[photo.uid]) {
+            byPhotos[photo.uid] = photo;
+        }
+    });
+    data.mutexActivities.forEach(mutex => {
+        mutexActivities.push(mutex.uid);
+        if (!byMutexActivities[mutex.uid]) {
+            byMutexActivities[mutex.uid] = mutex;
+        }
+    });
+    data.activityRules.forEach(rule => {
+        activityRules.push(rule.uid);
+        if (!byActivityRules[rule.uid]) {
+            byActivityRules[rule.uid] = rule;
+        }
+        const { activityApplyForProduct, byActivityApplyForProduct,
+            activityApplyForCustomerTypes, byActivityApplyForCustomerTypes } = convertActivityRuleToPlainStructure(rule);
+        byActivityRules[rule.uid] = { ...rule, activityApplyForProduct, activityApplyForCustomerTypes };
+        byTotalActivityApplyForProduct = { ...byTotalActivityApplyForProduct, ...byActivityApplyForProduct };
+        byTotalActivityApplyForCustomerTypes = { ...byTotalActivityApplyForCustomerTypes, ...byActivityApplyForCustomerTypes };
+    });
+    return {
+        activity: { ...data, photos, mutexActivities, activityRules },
+        byPhotos,
+        byMutexActivities,
+        byActivityRules,
+        byActivityApplyForProduct: byTotalActivityApplyForProduct,
+        byActivityApplyForCustomerTypes: byTotalActivityApplyForCustomerTypes
+    }
+}
 
+const fetchActivitySuccess = (data) => ({
+    type: types.FETCH_ACTIVITY,
+    ...data
+})
 
+const convertActivityRuleToPlainStructure = (activityRule) => {
+    let activityApplyForProduct = new Array();
+    let byActivityApplyForProduct = new Object();
+    let activityApplyForCustomerTypes = new Array();
+    let byActivityApplyForCustomerTypes = new Object();
+    activityRule.activityApplyForProduct.forEach(product => {
+        activityApplyForProduct.push(product.uid);
+        if (!byActivityApplyForProduct[product.uid]) {
+            byActivityApplyForProduct[product.uid] = product;
+        }
+    });
+    activityRule.activityApplyForCustomerTypes.forEach(type => {
+        activityApplyForCustomerTypes.push(type.uid);
+        if (!byActivityApplyForCustomerTypes[type.uid]) {
+            byActivityApplyForCustomerTypes[type.uid] = type;
+        }
+    });
+    return {
+        activityApplyForProduct,
+        byActivityApplyForProduct,
+        activityApplyForCustomerTypes,
+        byActivityApplyForCustomerTypes
+    }
+}
 
-const alterActivitySuccess = ({ activities, byActivities, byActivityRules }) => ({
-    type: types.ALTER_ACTIVITY,
-    activities,
-    byActivities,
-    byActivityRules,
-});
+const updateActivitySuccess = (data) => ({
+    type: types.UPDATE_ACTIVITY,
+    ...data
+})
 
 
 const reducer = (state = initialState, action) => {
     let byActivities;
     switch (action.type) {
+        case types.UPDATE_ACTIVITY:
+        case types.FETCH_ACTIVITY:
+            byActivities = { ...state.byActivities, [action.activity.uid]: action.activity };
+            return {
+                ...state, byActivities, byPhotos: action.byPhotos, byMutexActivities: action.byMutexActivities,
+                byActivityRules: action.byActivityRules, byActivityApplyForProduct: action.byActivityApplyForProduct, byActivityApplyForCustomerTypes: action.byActivityApplyForCustomerTypes
+            };
         case types.FETCH_ACTIVITY_RULE_TYPES:
             return { ...state, activityRuleTypes: action.activityRuleTypes, byActivityRuleTypes: action.byActivityRuleTypes };
         case types.TERMINAL_ACTIVITY:
@@ -223,11 +317,8 @@ const reducer = (state = initialState, action) => {
             return { ...state, byActivities }
         case types.FETCH_ACTIVITIES_NAME_DESC:
         case types.FETCH_ACTIVITIES:
-        ////////////////////////////////////////////////////////////
-        // case types.ADD_ACTIVITY:
         case types.ALTER_ACTIVITY:
             return { ...state, activities: action.activities, byActivities: action.byActivities, byActivityRules: action.byActivityRules };
-
         default:
             return state;
     }
@@ -240,3 +331,7 @@ export const getByActivities = (state) => state.activity.byActivities;
 export const getByActivityRules = (state) => state.activity.byActivityRules;
 export const getActivityRuleTypes = (state) => state.activity.activityRuleTypes;
 export const getByActivityRuleTypes = (state) => state.activity.byActivityRuleTypes;
+export const getByActivityPhotos = (state) => state.activity.byPhotos;
+export const getByMutexActivities = (state) => state.activity.byMutexActivities;
+export const getByActivityApplyForProduct = (state) => state.activity.byActivityApplyForProduct;
+export const getByActivityApplyForCustomerTypes = (state) => state.activity.byActivityApplyForCustomerTypes;

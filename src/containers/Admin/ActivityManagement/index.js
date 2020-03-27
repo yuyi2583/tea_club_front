@@ -5,8 +5,8 @@ import { PageHeader, message, Button } from "antd";
 // import { actions as productActions, getProductType, getByProductType } from "../../../redux/modules/product";
 // import { actions as customerActions, getCustomerType, getByCustomerType } from "../../../redux/modules/customer";
 import { Route } from "react-router-dom";
-// import ActivityDetail from "./ActivityDetail";
-import ActivityList from "./ActivityList";
+import ActivityDetail from "./components/ActivityDetail";
+import ActivityList from "./components/ActivityList";
 
 
 function ActivityManagement(props) {
@@ -43,20 +43,16 @@ function ActivityManagement(props) {
                         />
                     }
                 />
-                {/* <Route
-                        path={`${match.url}/activity/:activityId`}
-                        exact
-                        render={props =>
-                            <ActivityDetail
-                                {...props}
-                                {...this.props}
-                                productType={productType}
-                                byProductType={byProductType}
-                                customerType={customerType}
-                                byCustomerType={byCustomerType}
-                            />
-                        }
-                    /> */}
+                <Route
+                    path={`${match.url}/activity/:activityId`}
+                    exact
+                    render={props =>
+                        <ActivityDetail
+                            {...prop}
+                            {...props}
+                        />
+                    }
+                />
             </PageHeader>
         </div>
     )

@@ -3,7 +3,9 @@ import { PageHeader, Button, Form, DatePicker, Input, Select, Spin, Modal } from
 import PictureCard from "../../../components/PictureCard";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { actions as activityActions, getActivities, getByActivities } from "../../../redux/modules/activity";
+import { actions as activityActions, getActivities, getByActivities, getActivityRuleTypes, getByActivityRuleTypes } from "../../../redux/modules/activity";
+import { actions as customerActions, getByCustomerTypes, getCustomerTypes } from "../../../redux/modules/customer";
+import { actions as productActions, getByProductTypes, getProductTypes, getProducts, getByProducts } from "../../../redux/modules/product";
 import { Redirect } from "react-router-dom";
 import { map } from "../../../router";
 import "./style.css";
@@ -29,6 +31,10 @@ class AddActivity extends React.Component {
 
     componentDidMount() {
         this.props.fetchActivitiesNameDesc();
+        this.props.fetchActivityRuleTypes();
+        this.props.fetchProductTypes();
+        this.props.fetchCustomerTypes();
+        this.props.fetchProductsName();
     }
 
     handleSubmit = e => {
@@ -45,7 +51,6 @@ class AddActivity extends React.Component {
                     },
                     onOk() {
                         console.log("values", values);
-
                         const index = values.keys;
                         let activityRules = new Array();
                         let activity = new Object();
@@ -132,7 +137,8 @@ class AddActivity extends React.Component {
             return <Redirect to={from} />;
         }
         const { getFieldDecorator } = this.props.form;
-        const { retrieveRequestQuantity, activities, byActivities } = this.props;
+        const { retrieveRequestQuantity, activities, byActivities, customerTypes,
+            byCustomerTypes, productTypes, byProductTypes, activityRuleTypes, byActivityRuleTypes, products, byProducts } = this.props;
         return (
             <div>
                 <PageHeader
@@ -165,6 +171,14 @@ class AddActivity extends React.Component {
                             <Form.Item label="优惠规则" required>
                                 <DynamicFieldSet form={this.props.form} content={"添加优惠规则"}
                                     template={<ActivityRuleInput
+                                        customerTypes={customerTypes}
+                                        byCustomerTypes={byCustomerTypes}
+                                        productTypes={productTypes}
+                                        byProductTypes={byProductTypes}
+                                        activityRuleTypes={activityRuleTypes}
+                                        byActivityRuleTypes={byActivityRuleTypes}
+                                        products={products}
+                                        byProducts={byProducts}
                                         form={this.props.form} />}
                                 />
                             </Form.Item>
@@ -216,11 +230,21 @@ const mapStateToProps = (state) => {
     return {
         activities: getActivities(state),
         byActivities: getByActivities(state),
+        customerTypes: getCustomerTypes(state),
+        byCustomerTypes: getByCustomerTypes(state),
+        productTypes: getProductTypes(state),
+        byProductTypes: getByProductTypes(state),
+        activityRuleTypes: getActivityRuleTypes(state),
+        byActivityRuleTypes: getByActivityRuleTypes(state),
+        products: getProducts(state),
+        byProducts: getByProducts(state),
     };
 };
 
 const mapDispatchToProps = (dispatch) => {
     return {
+        ...bindActionCreators(productActions, dispatch),
+        ...bindActionCreators(customerActions, dispatch),
         ...bindActionCreators(activityActions, dispatch),
     };
 };

@@ -72,4 +72,6 @@ export default {
     fetchActivitiesNameDesc:()=>HOME+"/activitiesNameDesc",
     fetchActivityRuleTypes:()=>HOME+"/activityRuleTypes",
     fetchProductsName:()=>HOME+`/productsName`,
+    fetchActivity:(uid)=>HOME+`/activity/${uid}`,
+    updateActivity:()=>HOME+"/activity",
 }
