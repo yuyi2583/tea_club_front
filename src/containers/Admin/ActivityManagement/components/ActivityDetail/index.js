@@ -14,6 +14,8 @@ import moment from 'moment';
 import PictureCard from "../../../../../components/PictureCard";
 import ActivityRuleInput from "../../../../../components/ActivityRuleInput";
 import DynamicFieldSet from "../../../../../components/DynamicFieldSet";
+import { activityStatus } from "../../../../../utils/common";
+import { judgeActivityStatus } from "../../../../../utils/commonUtils";
 
 const { RangePicker } = DatePicker;
 const { Paragraph } = Typography;
@@ -238,6 +240,16 @@ class ActivityDetail extends React.Component {
         }
     }
 
+    getActivityStatus = () => {
+        const { activityId } = this.props.match.params;
+        const { byActivities } = this.props;
+        let status = judgeActivityStatus(byActivities[activityId]);
+        if (status == null) {
+            return;
+        }
+        return status;
+    }
+
     render() {
 
         let { activityId } = this.props.match.params;
@@ -249,6 +261,7 @@ class ActivityDetail extends React.Component {
         const ruleDisplay = this.getActvityRuleDisplay();
         const mutexActivitiesDisplay = this.getMutexActivityDisplay();
         const photoDisplay = this.getPhotosDisplay();
+        const activityStatus = this.getActivityStatus();
         return (
             <div style={{ marginBottom: "20px" }}>
                 <Spin spinning={updateRequestQuantity > 0}>
@@ -282,6 +295,27 @@ class ActivityDetail extends React.Component {
                                                 )}
                                             </Form.Item>
                                     }
+                                </Descriptions.Item>
+                                <Descriptions.Item label="互斥活动">
+                                    {
+                                        !alterInfo ?
+                                            mutexActivitiesDisplay
+                                            : <Form.Item>
+                                                {getFieldDecorator('mutexActivities', {
+                                                    initialValue: isDataNull ? undefined : byActivities[activityId].mutexActivities
+                                                })(<Select
+                                                    placeholder="请选择与此活动互斥的互动"
+                                                    mode="multiple"
+                                                >
+                                                    {
+                                                        activities.filter(uid => uid != activityId).map((uid) => <Option value={uid} key={uid} >{byActivities[uid].name}</Option>)
+                                                    }
+                                                </Select>)}
+                                            </Form.Item>
+                                    }
+                                </Descriptions.Item>
+                                <Descriptions.Item label="活动状态">
+                                    {activityStatus}
                                 </Descriptions.Item>
                                 <Descriptions.Item label="活动描述" span={2}>
                                     {
@@ -332,24 +366,6 @@ class ActivityDetail extends React.Component {
                                                         )
                                                     }
                                                 </DynamicFieldSet>
-                                            </Form.Item>
-                                    }
-                                </Descriptions.Item>
-                                <Descriptions.Item label="互斥活动" span={2}>
-                                    {
-                                        !alterInfo ?
-                                            mutexActivitiesDisplay
-                                            : <Form.Item>
-                                                {getFieldDecorator('mutexActivities', {
-                                                    initialValue: isDataNull ? undefined : byActivities[activityId].mutexActivities
-                                                })(<Select
-                                                    placeholder="请选择与此活动互斥的互动"
-                                                    mode="multiple"
-                                                >
-                                                    {
-                                                        activities.filter(uid => uid != activityId).map((uid) => <Option value={uid} key={uid} >{byActivities[uid].name}</Option>)
-                                                    }
-                                                </Select>)}
                                             </Form.Item>
                                     }
                                 </Descriptions.Item>

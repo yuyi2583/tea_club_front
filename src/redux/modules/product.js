@@ -8,9 +8,8 @@ const initialState = {
     byProductTypes: new Object(),
     products: new Array(),
     byProducts: new Object(),
-    ///////////////////////////////
-    productDetail: new Array(),
-    byProductDetail: new Object(),
+    byPhotos: new Object(),
+    byActivities: new Object(),//产品适用活动
 };
 
 export const types = {
@@ -20,11 +19,8 @@ export const types = {
     ADD_PRODUCT: "PRODUCT/ADD_PRODUCT",
     FETCH_PRODUCTS: "PRODUCT/FETCH_PRODUCTS",
     TERMINAL_PRODUCT: "PRODUCT/TERMINAL_PRODUCT",//下架产品
-    /////////////////////////////////
-    FETCH_PRODUCT_DETAIL: "PRODUCT/FETCH_PRODUCT_DETAIL",//获取产品详细信息
-    // CREATE_NEW_PRODUCT_TYPE: "PRODUCT/CREATE_NEW_PRODUCT_TYPE",//创建新的产品种类
-    // CREATE_NEW_PRODUCT: "PRODUCT/CREATE_NEW_PRODUCT",//新增产品
-    ALTER_PRODUCT_INFO: "PRODUCT/ALTER_PRODUCT_INFO"
+    FETCH_PRODUCT: "PRODUCT/FETCH_PRODUCT",//获取产品详细信息
+    UPDATE_PRODUCT: "PRODUCT/UPDATE_PRODUCT",
 };
 
 export const actions = {
@@ -126,55 +122,39 @@ export const actions = {
             })
         }
     },
-    ///////////////////////////////////////
-    //type=-1默认获取所有产品信息
-    fetchProductDetail: (reqType = requestType.modalRequest) => {
+    //获取产品信息
+    fetchProduct: (uid) => {
         return (dispatch) => {
-            dispatch(appActions.startRequest(reqType));
-            return get(url.fetchProductDetailByType()).then((data) => {
-                dispatch(appActions.finishRequest(reqType));
-                if (!data.error) {
-                    dispatch(fetchProductDetailSuccess(types.FETCH_PRODUCT_DETAIL, convertProductDetailToPlainStructure(data.productDetail)));
+            dispatch(appActions.startRequest());
+            return get(url.fetchProduct(uid)).then((result) => {
+                dispatch(appActions.finishRequest());
+                if (!result.error) {
+                    dispatch(fetchProductSuccess(convertProductToPlainStructure(result.data)));
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(data.error));
-                    return Promise.reject(data.error);
+                    dispatch(appActions.setError(result.msg));
+                    return Promise.reject(result.error);
                 }
             })
         }
     },
-    terminalProductSale: (uid, reqType = requestType.appRequest) => {
+    //修改产品信息
+    updateProduct: (product) => {
         return (dispatch) => {
-            dispatch(appActions.startRequest(reqType));
-            const params = { uid }
-            return get(url.terminalProductSale(), params).then((data) => {
-                dispatch(appActions.finishRequest(reqType));
-                if (!data.error) {
-                    dispatch(fetchProductDetailSuccess(types.TERMINAL_PRODUCT_SALE, convertProductDetailToPlainStructure(data.productDetail)));
+            dispatch(appActions.startRequest(requestType.updateRequest));
+            const params = { ...product };
+            return put(url.updateProduct(), params).then((result) => {
+                dispatch(appActions.finishRequest(requestType.updateRequest));
+                if (!result.error) {
+                    dispatch(updateProductSuccess(convertUpdateProductToPlainStructure(result.data)));
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(data.error));
-                    return Promise.reject(data.error);
+                    dispatch(appActions.setError(result.msg));
+                    return Promise.reject(result.error);
                 }
             })
         }
     },
-    alterProductInfo: (product, reqType = requestType.appRequest) => {
-        return (dispatch) => {
-            dispatch(appActions.startRequest(reqType));
-            const params = { product }
-            return get(url.alterProductInfo(), params).then((data) => {
-                dispatch(appActions.finishRequest(reqType));
-                if (!data.error) {
-                    dispatch(fetchProductDetailSuccess(types.ALTER_PRODUCT_INFO, convertProductDetailToPlainStructure(data.productDetail)));
-                    return Promise.resolve();
-                } else {
-                    dispatch(appActions.setError(data.error));
-                    return Promise.reject(data.error);
-                }
-            })
-        }
-    }
 }
 
 //converter
@@ -255,50 +235,59 @@ const fetchProductsSuccess = ({ products, byProducts }) => ({
 const termianlProductSuccess = (uid) => ({
     type: types.TERMINAL_PRODUCT,
     uid
-})
-/////////////////////////////////discard below
-const convertProductDetailToPlainStructure = (data) => {
-    console.log("product detail", data);
-    let productDetail = new Array();
-    let byProductDetail = new Object();
-    data.forEach((item) => {
-        productDetail.push(item.uid);
-        if (!byProductDetail[item.uid]) {
-            byProductDetail[item.uid] = item;
-        }
-    });
-    return {
-        productDetail,
-        byProductDetail,
-    };
-};
-
-const convertProductTypeToPlainStructure = (data) => {
-    console.log("product type", data);
-    let productType = new Array();
-    let byProductType = new Object();
-    data.forEach((item) => {
-        productType.push(item.uid);
-        if (!byProductType[item.uid]) {
-            byProductType[item.uid] = item;
-        }
-    });
-    return {
-        productType,
-        byProductType,
-    }
-};
-
-const fetchProductDetailSuccess = (type, { productDetail, byProductDetail }) => ({
-    type,
-    productDetail,
-    byProductDetail
 });
 
-const fetchProductTypeSuccess = (type, { productType, byProductType }) => ({
-    type,
-    productType,
-    byProductType,
+const convertProductToPlainStructure = (data) => {
+    let photos = new Array();
+    let byPhotos = new Object();
+    let activities = new Array();
+    let byActivities = new Object();
+    data.photos.forEach(photo => {
+        photos.push(photo.uid);
+        if (!byPhotos[photo.uid]) {
+            byPhotos[photo.uid] = photo;
+        }
+    });
+    data.activities.forEach((activity => {
+        activities.push(activity.uid);
+        if (!byActivities[activity.uid]) {
+            byActivities[activity.uid] = activity;
+        }
+    }));
+    return {
+        product: { ...data, photos, activities },
+        byPhotos,
+        byActivities
+    }
+}
+
+const fetchProductSuccess = ({ product, byPhotos, byActivities }) => ({
+    type: types.FETCH_PRODUCT,
+    product,
+    byPhotos,
+    byActivities
+});
+
+const convertUpdateProductToPlainStructure = (data) => {
+    let photos = new Array();
+    let byPhotos = new Object();
+    data.photos.forEach(photo => {
+        photos.push(photo.uid);
+        if (!byPhotos[photo.uid]) {
+            byPhotos[photo.uid] = photo;
+        }
+    });
+    return {
+        product: { ...data, photos },
+        byPhotos,
+    }
+}
+
+const updateProductSuccess = ({ product, byPhotos, byActivities }) => ({
+    type: types.UPDATE_PRODUCT,
+    product,
+    byPhotos,
+    byActivities
 });
 
 const reducer = (state = initialState, action) => {
@@ -320,10 +309,12 @@ const reducer = (state = initialState, action) => {
         case types.TERMINAL_PRODUCT:
             byProducts = { ...state.byProducts, [action.uid]: { ...state.byProducts[action.uid], enforceTerminal: true } };
             return { ...state, byProducts };
-        ////////////////////////////// 
-        case types.CREATE_NEW_PRODUCT:
-        case types.FETCH_PRODUCT_DETAIL:
-            return { ...state, productDetail: action.productDetail, byProductDetail: action.byProductDetail };
+        case types.UPDATE_PRODUCT:
+            byProducts = { ...state.byProducts, [action.product.uid]: { ...action.product, activities: state.byProducts[action.product.uid].activities } }
+            return { ...state, byProducts, byPhotos: action.byPhotos };
+        case types.FETCH_PRODUCT:
+            byProducts = { ...state.byProducts, [action.product.uid]: action.product };
+            return { ...state, byProducts, byPhotos: action.byPhotos, byActivities: action.byActivities };
         default:
             return state;
     }
@@ -335,6 +326,5 @@ export const getProductTypes = (state) => state.product.productTypes;
 export const getByProductTypes = (state) => state.product.byProductTypes;
 export const getByProducts = (state) => state.product.byProducts;
 export const getProducts = (state) => state.product.products;
-///////////////////////////////
-export const getProductDetail = (state) => state.product.productDetail;
-export const getByProductDetail = (state) => state.product.byProductDetail;
+export const getByProductPhotos = (state) => state.product.byPhotos;
+export const getByProductActivities = (state) => state.product.byActivities;

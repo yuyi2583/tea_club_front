@@ -31,7 +31,7 @@ function ProductManagement(props) {
                         <ProductList {...prop} {...props} />
                     }
                 />
-                {/* <Route
+                <Route
                     path={`${match.url}/product/:productId`}
                     exact
                     render={props =>
@@ -40,7 +40,7 @@ function ProductManagement(props) {
                             {...props}
                         />
                     }
-                /> */}
+                />
             </PageHeader>
         </div>
     )

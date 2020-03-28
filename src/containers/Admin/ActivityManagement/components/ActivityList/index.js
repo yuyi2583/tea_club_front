@@ -1,10 +1,10 @@
 import React from "react";
-import {  Button, Icon, Divider, Input, Spin, Modal, Tooltip, Table } from "antd";
+import { Button, Icon, Divider, Input, Spin, Modal, Tooltip, Table } from "antd";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actions as activityActions, getActivities, getByActivities } from "../../../../../redux/modules/activity";
-import {  activityStatus } from "../../../../../utils/common";
-import { judgeStatus } from "./method";
+import { activityStatus } from "../../../../../utils/common";
+import { judgeActivityStatus } from "../../../../../utils/commonUtils";
 import { Link } from "react-router-dom";
 import Highlighter from 'react-highlight-words';
 import { timeStampConvertToFormatTime } from "../../../../../utils/timeUtil";
@@ -89,7 +89,7 @@ class ActivityList extends React.Component {
         let dataSource = new Array();
         try {
             activities.forEach((item) => {
-                let status = judgeStatus(byActivities[item]);
+                let status = judgeActivityStatus(byActivities[item]);
                 if (status == null) {
                     return;
                 }
@@ -146,7 +146,7 @@ class ActivityList extends React.Component {
                         </Tooltip>
                         <Divider type="vertical" />
                         <Tooltip title={`终止活动`}>
-                            {record.enforceTerminal || judgeStatus(record) == activityStatus["expired"] ? null :
+                            {record.enforceTerminal || judgeActivityStatus(record) == activityStatus["expired"] ? null :
                                 <a onClick={() => this.terminalActivity(record.uid)}>终止</a>
                             }
                         </Tooltip>
@@ -165,12 +165,12 @@ class ActivityList extends React.Component {
             content: `确定要终止${byActivities[uid].name}吗?`,
             onOk() {
                 thiz.props.terminalActivity(uid)
-                .then(()=>{
-                    thiz.props.callMessage("success","活动终止成功");
-                })
-                .catch((err)=>{
-                    thiz.props.callMessage("error","活动终止失败"+err);
-                });
+                    .then(() => {
+                        thiz.props.callMessage("success", "活动终止成功");
+                    })
+                    .catch((err) => {
+                        thiz.props.callMessage("error", "活动终止失败" + err);
+                    });
             },
             onCancel() {
                 console.log('Cancel');

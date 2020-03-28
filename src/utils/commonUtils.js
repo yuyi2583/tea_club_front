@@ -1,4 +1,5 @@
 import { message, notification } from "antd";
+import {activityStatus} from "./common";
 
 export const handleBack = () => {
     window.history.back();
@@ -98,4 +99,22 @@ export const convertToDay = (arry) => {
         result = ["周末"];
     }
     return result;
+}
+
+
+export const judgeActivityStatus = (activity) => {
+    if (!activity) {
+        return null;
+    }
+    let time = new Date().getTime();
+    let status = activityStatus["upcoming"];
+    if (time > activity.startTime && time < activity.endTime) {
+        status = activityStatus["ongoing"];
+    } else if (time > activity.endTime) {
+        status = activityStatus["expired"];
+    }
+    if (activity.enforceTerminal) {
+        status = activityStatus["expired"];
+    }
+    return status;
 }

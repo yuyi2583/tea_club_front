@@ -1,10 +1,9 @@
 import React from "react";
-import { PageHeader, Button, Form, DatePicker, Input, Select, Spin, Row, Col, Modal, InputNumber } from "antd";
+import { PageHeader, Button, Form,  Input, Select, Spin, Row, Col, Modal, InputNumber } from "antd";
 import PictureCard from "../../../components/PictureCard";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { actions as productActions, getProductTypes, getByProductTypes, getByProductDetail, getProductDetail } from "../../../redux/modules/product";
-// import { getRetrieveRequestQuantity, getModalRequestQuantity } from "../../../redux/modules/app";
+import { actions as productActions, getProductTypes, getByProductTypes } from "../../../redux/modules/product";
 import { Redirect } from "react-router-dom";
 import { map } from "../../../router";
 import { formItemLayout, tailFormItemLayout } from "../../../utils/common";
@@ -206,10 +205,6 @@ const mapStateToProps = (state, props) => {
     return {
         productTypes: getProductTypes(state),
         byProductTypes: getByProductTypes(state),
-        // requestQuantity: getRetrieveRequestQuantity(state),
-        // modalRequestQuantity: getModalRequestQuantity(state),
-        productDetail: getProductDetail(state),
-        byProductDetail: getByProductDetail(state),
     };
 };
 
