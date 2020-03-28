@@ -1,5 +1,5 @@
 import React from "react";
-import { PageHeader, Button, Form, DatePicker, Input, Select, Spin, TreeSelect, Modal, InputNumber } from "antd";
+import { PageHeader, Button, Form, DatePicker, Input, Select, Spin, Row, Col, Modal, InputNumber } from "antd";
 import PictureCard from "../../../components/PictureCard";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
@@ -38,16 +38,17 @@ class AddProduct extends React.Component {
                     onCancel() {
                     },
                     onOk() {
-                        console.log("submit values", values);
-                        thiz.props.createProduct(values)
+                        const product = { ...values, photos: fileList, price: { ingot: values.ingot, credit: values.credit } };
+                        console.log("submit values", product);
+                        thiz.props.addProduct(product)
                             .then(() => {
-                                this.props.callMessage("success", "新增产品成功！")
+                                thiz.props.callMessage("success", "新增产品成功！")
                                 thiz.setState({
                                     from: map.admin.AdminHome() + `/product_management/products`
                                 });
                             })
                             .catch((err) => {
-                                this.props.callMessage("error", "新增产品失败！" + err)
+                                thiz.props.callMessage("error", "新增产品失败！" + err)
                             })
                     },
                 });
@@ -58,7 +59,7 @@ class AddProduct extends React.Component {
 
     handleCreateNewCategory = () => {
         const { newCategory } = this.state;
-        this.props.createNewProductType(newCategory)
+        this.props.addProductType(newCategory)
             .then(() => {
                 this.props.closeModal();
                 this.props.callMessage("success", "创建产品种类成功！");
@@ -77,8 +78,21 @@ class AddProduct extends React.Component {
     }
 
 
-    handleDisplayChange = (fileList) => {
-        this.setState({ fileList });
+    handleDisplayChange = (type, data) => {
+        const { fileList } = this.state;
+        switch (type) {
+            case "done":
+                console.log("add shop photo ", data);
+                if (fileList.indexOf(data.uid) == -1) {
+                    this.setState({ fileList: fileList.concat([data.uid]) });
+                }
+                break;
+            case "removed":
+                console.log("remove shop photo ", data);
+                let newFileList = fileList.filter(uid => uid != data.uid);
+                this.setState({ fileList: newFileList });
+                break;
+        }
     }
 
     render() {
@@ -110,23 +124,38 @@ class AddProduct extends React.Component {
                                 {getFieldDecorator('type', {
                                     rules: [{ required: true, message: '请选择产品种类!' }],
                                 })(
-                                    <Select
-                                        placeholder="请选择产品种类"
-                                        onChange={this.handleSelectActivityTypeChange}>
+                                    <Select placeholder="请选择产品种类">
                                         {
-                                            productTypes.map(uid => <Option key={uid} value={uid}>{byProductTypes[uid].type}</Option>)
+                                            productTypes.map(uid => <Option key={uid} value={uid}>{byProductTypes[uid].name}</Option>)
                                         }
                                     </Select>)
                                 }
                                 <Button type="primary" onClick={() => this.props.openModal()}>创建新种类</Button>
                             </Form.Item>
                             <Form.Item label="产品价格">
-                                {getFieldDecorator('price', {
-                                    rules: [{ required: true, message: '请输入产品价格!' }],
-                                })(<InputNumber
-                                    min={0}
-                                    style={{ width: "100px", marginRight: "10px" }} />)
-                                }元
+                                <Row>
+                                    <Col span={11}>
+                                        <Form.Item>
+                                            {getFieldDecorator('ingot', {
+                                                rules: [{ required: true, message: '请输入产品价格!' }],
+                                                initialValue: 0
+                                            })(<InputNumber
+                                                min={0}
+                                                style={{ width: "100px", marginRight: "10px" }} />)
+                                            }元宝
+                                        </Form.Item>
+                                    </Col><Col span={11}>
+                                        <Form.Item>
+                                            {getFieldDecorator('credit', {
+                                                rules: [{ required: true, message: '请输入产品价格!' }],
+                                                initialValue: 0
+                                            })(<InputNumber
+                                                min={0}
+                                                style={{ width: "100px", marginRight: "10px" }} />)
+                                            }积分
+                                        </Form.Item>
+                                    </Col>
+                                </Row>
                             </Form.Item>
                             <Form.Item label="产品存量">
                                 {getFieldDecorator('storage', {
@@ -150,10 +179,7 @@ class AddProduct extends React.Component {
                                 )}
                             </Form.Item>
                             <Form.Item label="活动展示照片">
-                                <PictureCard
-                                    fileList={fileList}
-                                    max={4}
-                                    onChange={this.handleDisplayChange} />
+                                <PictureCard onChange={this.handleDisplayChange} />
                             </Form.Item>
                             <Form.Item {...tailFormItemLayout}>
                                 <Button type="primary" htmlType="submit" block loading={retrieveRequestQuantity > 0}>

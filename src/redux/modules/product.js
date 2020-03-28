@@ -1,6 +1,6 @@
 import { actions as appActions } from "./app";
 import url from "../../utils/url";
-import { get } from "../../utils/request";
+import { get, post, put, _delete } from "../../utils/request";
 import { requestType } from "../../utils/common";
 
 const initialState = {
@@ -16,10 +16,12 @@ const initialState = {
 export const types = {
     FETCH_PRODUCT_TYPES: "PRODUCT/FETCH_PRODUCT_TYPES",
     FETCH_PRODUCTS_NAME_BY_TYPE: "PRODUCT/FETCH_PRODUCTS_NAME_BY_TYPE",
+    ADD_PRODUCT_TYPE: "PRODUCT/ADD_PRODUCT_TYPE",
+    ADD_PRODUCT:"PRODUCT/ADD_PRODUCT",
     /////////////////////////////////
     FETCH_PRODUCT_DETAIL: "PRODUCT/FETCH_PRODUCT_DETAIL",//获取产品详细信息
-    CREATE_NEW_PRODUCT_TYPE: "PRODUCT/CREATE_NEW_PRODUCT_TYPE",//创建新的产品种类
-    CREATE_NEW_PRODUCT: "PRODUCT/CREATE_NEW_PRODUCT",//新增产品
+    // CREATE_NEW_PRODUCT_TYPE: "PRODUCT/CREATE_NEW_PRODUCT_TYPE",//创建新的产品种类
+    // CREATE_NEW_PRODUCT: "PRODUCT/CREATE_NEW_PRODUCT",//新增产品
     TERMINAL_PRODUCT_SALE: "PRODUCT/TERMINAL_PRODUCT_SALE",//下架产品
     ALTER_PRODUCT_INFO: "PRODUCT/ALTER_PRODUCT_INFO"
 };
@@ -57,6 +59,40 @@ export const actions = {
             })
         }
     },
+    //创建新的产品种类
+    addProductType: (productType) => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest(requestType.modalRequest));
+            const params = { name:productType };
+            return post(url.addProductType(), params).then((result) => {
+                dispatch(appActions.finishRequest(requestType.modalRequest));
+                if (!result.error) {
+                    dispatch(addProductTypeSuccess(result.data));
+                    return Promise.resolve();
+                } else {
+                    dispatch(appActions.setError(result.msg));
+                    return Promise.reject(result.error);
+                }
+            })
+        }
+    },
+    //新增产品
+    addProduct: (product) => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest());
+            const params = { ...product }
+            return post(url.addProduct(), params).then((result) => {
+                dispatch(appActions.finishRequest());
+                if (!result.error) {
+                    dispatch(addProductSuccess());
+                    return Promise.resolve();
+                } else {
+                    dispatch(appActions.setError(result.msg));
+                    return Promise.reject(result.error);
+                }
+            })
+        }
+    },
     ///////////////////////////////////////
     //type=-1默认获取所有产品信息
     fetchProductDetail: (reqType = requestType.modalRequest) => {
@@ -66,38 +102,6 @@ export const actions = {
                 dispatch(appActions.finishRequest(reqType));
                 if (!data.error) {
                     dispatch(fetchProductDetailSuccess(types.FETCH_PRODUCT_DETAIL, convertProductDetailToPlainStructure(data.productDetail)));
-                    return Promise.resolve();
-                } else {
-                    dispatch(appActions.setError(data.error));
-                    return Promise.reject(data.error);
-                }
-            })
-        }
-    },
-    createNewProductType: (newProductType, reqType = requestType.modalRequest) => {
-        return (dispatch) => {
-            dispatch(appActions.startRequest(reqType));
-            const params = { productType: newProductType };
-            return get(url.createNewProductType(), params).then((data) => {
-                dispatch(appActions.finishRequest(reqType));
-                if (!data.error) {
-                    dispatch(fetchProductTypeSuccess(types.CREATE_NEW_PRODUCT_TYPE, convertProductTypeToPlainStructure(data.productType)));
-                    return Promise.resolve();
-                } else {
-                    dispatch(appActions.setError(data.error));
-                    return Promise.reject(data.error);
-                }
-            })
-        }
-    },
-    createNewProduct: (newProduct, reqType = requestType.appRequest) => {
-        return (dispatch) => {
-            dispatch(appActions.startRequest(reqType));
-            const params = { product: newProduct }
-            return get(url.createNewProduct(), params).then((data) => {
-                dispatch(appActions.finishRequest(reqType));
-                if (!data.error) {
-                    dispatch(fetchProductDetailSuccess(types.CREATE_NEW_PRODUCT, convertProductDetailToPlainStructure(data.productDetail)));
                     return Promise.resolve();
                 } else {
                     dispatch(appActions.setError(data.error));
@@ -185,7 +189,15 @@ const fetchProductsNameByTypeSuccess = ({ products, byProducts }) => ({
     byProducts
 })
 
-/////////////////////////////////
+const addProductTypeSuccess = (productType) => ({
+    type: types.ADD_PRODUCT_TYPE,
+    productType
+});
+
+const addProductSuccess=()=>({
+    type:types.ADD_PRODUCT
+})
+/////////////////////////////////discard below
 const convertProductDetailToPlainStructure = (data) => {
     console.log("product detail", data);
     let productDetail = new Array();
@@ -231,11 +243,17 @@ const fetchProductTypeSuccess = (type, { productType, byProductType }) => ({
 });
 
 const reducer = (state = initialState, action) => {
+    let productTypes;
+    let byProductTypes;
     switch (action.type) {
         case types.FETCH_PRODUCT_TYPES:
             return { ...state, productTypes: action.productTypes, byProductTypes: action.byProductTypes };
         case types.FETCH_PRODUCTS_NAME_BY_TYPE:
             return { ...state, products: action.products, byProducts: action.byProducts };
+        case types.ADD_PRODUCT_TYPE:
+            productTypes = state.productTypes.concat([action.productType.uid]);
+            byProductTypes = { ...state.byProductTypes, [action.productType.uid]: action.productType };
+            return { ...state, productTypes, byProductTypes };
         ////////////////////////////// 
         case types.CREATE_NEW_PRODUCT:
         case types.FETCH_PRODUCT_DETAIL:
