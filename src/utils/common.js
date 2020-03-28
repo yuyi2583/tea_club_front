@@ -47,8 +47,9 @@ export const tailFormItemLayout = {
 };
 
 export const productStatus = {
-    0: "已下架",
-    1: "销售中"
+    "off_shelves": "已下架",
+    "on_sale": "销售中",
+    "sold_out":"售罄"
 };
 
 export const enterpriseCustomerApplicationStatus = {

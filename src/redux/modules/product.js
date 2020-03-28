@@ -17,12 +17,13 @@ export const types = {
     FETCH_PRODUCT_TYPES: "PRODUCT/FETCH_PRODUCT_TYPES",
     FETCH_PRODUCTS_NAME_BY_TYPE: "PRODUCT/FETCH_PRODUCTS_NAME_BY_TYPE",
     ADD_PRODUCT_TYPE: "PRODUCT/ADD_PRODUCT_TYPE",
-    ADD_PRODUCT:"PRODUCT/ADD_PRODUCT",
+    ADD_PRODUCT: "PRODUCT/ADD_PRODUCT",
+    FETCH_PRODUCTS: "PRODUCT/FETCH_PRODUCTS",
+    TERMINAL_PRODUCT: "PRODUCT/TERMINAL_PRODUCT",//下架产品
     /////////////////////////////////
     FETCH_PRODUCT_DETAIL: "PRODUCT/FETCH_PRODUCT_DETAIL",//获取产品详细信息
     // CREATE_NEW_PRODUCT_TYPE: "PRODUCT/CREATE_NEW_PRODUCT_TYPE",//创建新的产品种类
     // CREATE_NEW_PRODUCT: "PRODUCT/CREATE_NEW_PRODUCT",//新增产品
-    TERMINAL_PRODUCT_SALE: "PRODUCT/TERMINAL_PRODUCT_SALE",//下架产品
     ALTER_PRODUCT_INFO: "PRODUCT/ALTER_PRODUCT_INFO"
 };
 
@@ -63,7 +64,7 @@ export const actions = {
     addProductType: (productType) => {
         return (dispatch) => {
             dispatch(appActions.startRequest(requestType.modalRequest));
-            const params = { name:productType };
+            const params = { name: productType };
             return post(url.addProductType(), params).then((result) => {
                 dispatch(appActions.finishRequest(requestType.modalRequest));
                 if (!result.error) {
@@ -85,6 +86,38 @@ export const actions = {
                 dispatch(appActions.finishRequest());
                 if (!result.error) {
                     dispatch(addProductSuccess());
+                    return Promise.resolve();
+                } else {
+                    dispatch(appActions.setError(result.msg));
+                    return Promise.reject(result.error);
+                }
+            })
+        }
+    },
+    //获取产品列表
+    fetchProducts: () => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest());
+            return get(url.fetchProducts()).then((result) => {
+                dispatch(appActions.finishRequest());
+                if (!result.error) {
+                    dispatch(fetchProductsSuccess(convertProductsToPlainStructure(result.data)));
+                    return Promise.resolve();
+                } else {
+                    dispatch(appActions.setError(result.msg));
+                    return Promise.reject(result.error);
+                }
+            })
+        }
+    },
+    //下架商品
+    terminalProduct: (uid) => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest());
+            return _delete(url.terminalProduct(uid)).then((result) => {
+                dispatch(appActions.finishRequest());
+                if (!result.error) {
+                    dispatch(termianlProductSuccess(uid));
                     return Promise.resolve();
                 } else {
                     dispatch(appActions.setError(result.msg));
@@ -194,8 +227,34 @@ const addProductTypeSuccess = (productType) => ({
     productType
 });
 
-const addProductSuccess=()=>({
-    type:types.ADD_PRODUCT
+const addProductSuccess = () => ({
+    type: types.ADD_PRODUCT
+});
+
+const convertProductsToPlainStructure = (data) => {
+    let products = new Array();
+    let byProducts = new Object();
+    data.forEach(product => {
+        products.push(product.uid);
+        if (!byProducts[product.uid]) {
+            byProducts[product.uid] = product;
+        }
+    });
+    return {
+        products,
+        byProducts
+    }
+}
+
+const fetchProductsSuccess = ({ products, byProducts }) => ({
+    type: types.FETCH_PRODUCTS,
+    products,
+    byProducts
+})
+
+const termianlProductSuccess = (uid) => ({
+    type: types.TERMINAL_PRODUCT,
+    uid
 })
 /////////////////////////////////discard below
 const convertProductDetailToPlainStructure = (data) => {
@@ -245,6 +304,8 @@ const fetchProductTypeSuccess = (type, { productType, byProductType }) => ({
 const reducer = (state = initialState, action) => {
     let productTypes;
     let byProductTypes;
+    let products;
+    let byProducts;
     switch (action.type) {
         case types.FETCH_PRODUCT_TYPES:
             return { ...state, productTypes: action.productTypes, byProductTypes: action.byProductTypes };
@@ -254,6 +315,11 @@ const reducer = (state = initialState, action) => {
             productTypes = state.productTypes.concat([action.productType.uid]);
             byProductTypes = { ...state.byProductTypes, [action.productType.uid]: action.productType };
             return { ...state, productTypes, byProductTypes };
+        case types.FETCH_PRODUCTS:
+            return { ...state, products: action.products, byProducts: action.byProducts };
+        case types.TERMINAL_PRODUCT:
+            byProducts = { ...state.byProducts, [action.uid]: { ...state.byProducts[action.uid], enforceTerminal: true } };
+            return { ...state, byProducts };
         ////////////////////////////// 
         case types.CREATE_NEW_PRODUCT:
         case types.FETCH_PRODUCT_DETAIL:

@@ -1,50 +1,51 @@
-// import React from "react";
-// import { PageHeader } from "antd";
-// import { bindActionCreators } from "redux";
-// import { connect } from "react-redux";
-// import { actions as productActions, getProductType, getByProductType } from "../../../redux/modules/product";
-// import { actions as customerActions, getCustomerType, getByCustomerType } from "../../../redux/modules/customer";
-// import { Route } from "react-router-dom";
-// // import ActivityDetail from "./ActivityDetail";
-// import ProductList from "./components/ProductList";
-// import ProductDetail from "./components/ProductDetail";
+import React from "react";
+import { PageHeader } from "antd";
+import { bindActionCreators } from "redux";
+import { connect } from "react-redux";
+import { actions as productActions, getProductType, getByProductType } from "../../../redux/modules/product";
+import { actions as customerActions, getCustomerType, getByCustomerType } from "../../../redux/modules/customer";
+import { Route } from "react-router-dom";
+// import ActivityDetail from "./ActivityDetail";
+import ProductList from "./components/ProductList";
+import ProductDetail from "./components/ProductDetail";
 
 
-// class ProductManagement extends React.Component {
+function ProductManagement(props) {
 
-//     render() {
-//         const subTitle = this.props.getSubTitle();
-//         const extra = this.props.getExtra();
-//         const { match,productType,byCustomerType,customerType,byProductType } = this.props;
-//         return (
-//             <div>
-//                 <PageHeader
-//                     title="产品管理"
-//                     subTitle={subTitle}
-//                     onBack={this.props.handleBack}
-//                     extra={extra}>
-//                     <Route
-//                         path={match.url}
-//                         exact
-//                         render={props =>
-//                             <ProductList {...this.props} {...props} />
-//                         }
-//                     />
-//                     <Route
-//                         path={`${match.url}/product/:productId`}
-//                         exact
-//                         render={props =>
-//                             <ProductDetail
-//                             {...this.props}
-//                                 {...props}
-//                             />
-//                         }
-//                     />
-//                 </PageHeader>
-//             </div>
-//         )
-//     }
-// }
+
+    const subTitle = props.getSubTitle();
+    const extra = props.getExtra();
+    const { match, productType, byCustomerType, customerType, byProductType } = props;
+    const prop = props;
+    return (
+        <div>
+            <PageHeader
+                title="产品管理"
+                subTitle={subTitle}
+                onBack={props.handleBack}
+                extra={extra}>
+                <Route
+                    path={match.url}
+                    exact
+                    render={props =>
+                        <ProductList {...prop} {...props} />
+                    }
+                />
+                {/* <Route
+                    path={`${match.url}/product/:productId`}
+                    exact
+                    render={props =>
+                        <ProductDetail
+                            {...prop}
+                            {...props}
+                        />
+                    }
+                /> */}
+            </PageHeader>
+        </div>
+    )
+
+}
 
 
 // const mapStateToProps = (state, props) => {
@@ -63,4 +64,4 @@
 //     };
 // };
 
-// export default connect(mapStateToProps, mapDispatchToProps)(ProductManagement);
+export default ProductManagement;//connect(mapStateToProps, mapDispatchToProps)(ProductManagement);

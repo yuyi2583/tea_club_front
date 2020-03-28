@@ -76,4 +76,6 @@ export default {
     fetchProductsName:()=>HOME+`/productsName`,
     fetchActivity:(uid)=>HOME+`/activity/${uid}`,
     updateActivity:()=>HOME+"/activity",
+    fetchProducts:()=>HOME+"/products",
+    terminalProduct:(uid)=>HOME+`/product/${uid}`,
 }
