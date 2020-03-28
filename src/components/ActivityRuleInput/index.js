@@ -98,6 +98,18 @@ class ActivityRuleInput extends React.Component {
                         </Form.Item>
                     </span>
                 );
+            case 6:
+                return (
+                    <span>
+                        <Form.Item className="inline-input">
+                            {getFieldDecorator("activityRule2_" + index, {
+                                rules: [{ required: true, message: "请输入优惠规则!" }],
+                                initialValue: isUpdate ? isOriginalRuleType ? activityRule.activityRule2 : { number: 0, currency: "ingot", operation: "plus" } : { number: 0, currency: "ingot", operation: "plus" }
+                            })(<Price showOperation={false} />)
+                            }
+                        </Form.Item>
+                    </span>
+                );
             case 1:
                 return (
                     <Row>
@@ -144,16 +156,16 @@ class ActivityRuleInput extends React.Component {
             activityRuleType = undefined;
         }
         const { productTypes, byProductTypes, products, byProducts } = this.props;
-        let filterProductTypes = productTypes;
-        let filterProducts = products;
-        if (activityRuleType == 1) {
-            filterProductTypes = productTypes.filter(uid => byProductTypes[uid].name == "文章");
-            filterProducts = products.filter(uid => byProducts[uid].type.name == "文章");
-        } else if (activityRuleType != 4) {
-            filterProductTypes = productTypes.filter(uid => byProductTypes[uid].name != "文章");
-            filterProducts = products.filter(uid => byProducts[uid].type.name != "文章");
-        }
-        return activityApplyForProduct.convertToStandardTreeData(filterProductTypes, byProductTypes, filterProducts, byProducts);
+        // let filterProductTypes = productTypes;
+        // let filterProducts = products;
+        // if (activityRuleType == 1) {
+        //     filterProductTypes = productTypes.filter(uid => byProductTypes[uid].name == "文章");
+        //     filterProducts = products.filter(uid => byProducts[uid].type.name == "文章");
+        // } else if (activityRuleType != 4) {
+        //     filterProductTypes = productTypes.filter(uid => byProductTypes[uid].name != "文章");
+        //     filterProducts = products.filter(uid => byProducts[uid].type.name != "文章");
+        // }
+        return activityApplyForProduct.convertToStandardTreeData(productTypes, byProductTypes, products, byProducts);
     }
 
     getTreeSelectDisable = () => {
@@ -165,7 +177,7 @@ class ActivityRuleInput extends React.Component {
         } catch (err) {
             activityRuleType = undefined;
         }
-        return activityRuleType == 5;
+        return activityRuleType == 5 || activityRuleType == 1 || activityRuleType == 6;
     }
 
     render() {

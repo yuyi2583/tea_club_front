@@ -89,7 +89,7 @@ class ActivityDetail extends React.Component {
                         activity["startTime"] = timeStringConvertToTimeStamp(values["duration"][0].format("YYYY-MM-DD HH:mm:ss"));
                         activity["endTime"] = timeStringConvertToTimeStamp(values["duration"][1].format("YYYY-MM-DD HH:mm:ss"));
                         activity["photos"] = fileList;
-                        activity["uid"]=activityId;
+                        activity["uid"] = activityId;
                         activity["mutexActivities"] = values["mutexActivities"] == undefined ? new Array() : values["mutexActivities"];
                         console.log("submit values", activity);
                         thiz.props.updateActivity(activity)
@@ -138,7 +138,7 @@ class ActivityDetail extends React.Component {
         let display = new Array();
         try {
             display = byActivities[activityId].activityRules.map(uid => {
-                const operation = byActivityRules[uid].activityRule2.opeartion == "plus" ? "赠" : "减";
+                const operation = byActivityRules[uid].activityRule2.operation == "plus" ? "赠" : "减";
                 const currency = byActivityRules[uid].activityRule2.currency == "ingot" ? "元宝" : "积分";
                 let rule;
                 switch (byActivityRules[uid].activityRuleType.name) {
@@ -153,12 +153,15 @@ class ActivityDetail extends React.Component {
                     case "折扣":
                         rule = `${byActivityRules[uid].activityRule1}%折扣`;
                         break;
-                    case "分享":
+                    case "分享产品":
                         rule = `分享${operation}${byActivityRules[uid].activityRule2.number}${currency}`;
                         break;
                     case "充值":
                         rule = `充值满${byActivityRules[uid].activityRule1}元宝
                         ${operation}${byActivityRules[uid].activityRule2.number}${currency}`;
+                        break;
+                    case "分享文章":
+                        rule = `分享${operation}${byActivityRules[uid].activityRule2.number}${currency}`;
                         break;
                     default:
                         rule = "未设置活动规则";
@@ -171,7 +174,7 @@ class ActivityDetail extends React.Component {
                     &nbsp;&nbsp;
                         <strong>规则</strong>：{rule}
                     &nbsp;&nbsp;
-                        <strong>适用产品范围</strong>：{byActivityRules[uid].activityRuleType.name=="充值"?"所有":product}
+                        <strong>适用产品范围</strong>：{byActivityRules[uid].activityRuleType.name == "充值" ? "所有" : product}
                     &nbsp;&nbsp;
                         <strong>适用顾客类型</strong>：{customerType}
                     </Paragraph>
@@ -236,9 +239,9 @@ class ActivityDetail extends React.Component {
     }
 
     render() {
-       
+
         let { activityId } = this.props.match.params;
-        let { activities, byActivities, alterInfo, retrieveRequestQuantity, form, updateRequestQuantity,byActivityRules, customerTypes,
+        let { activities, byActivities, alterInfo, retrieveRequestQuantity, form, updateRequestQuantity, byActivityRules, customerTypes,
             byCustomerTypes, productTypes, byProductTypes, activityRuleTypes, byActivityRuleTypes, products, byProducts } = this.props;
         const { getFieldDecorator } = form;
         const isDataNull = byActivities[activityId] == undefined || byActivities[activityId] == null;
@@ -247,7 +250,7 @@ class ActivityDetail extends React.Component {
         const mutexActivitiesDisplay = this.getMutexActivityDisplay();
         const photoDisplay = this.getPhotosDisplay();
         return (
-            <div style={{marginBottom:"20px"}}>
+            <div style={{ marginBottom: "20px" }}>
                 <Spin spinning={updateRequestQuantity > 0}>
                     {retrieveRequestQuantity > 0 ?
                         <Skeleton active />
