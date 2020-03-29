@@ -1,9 +1,5 @@
 import React from "react";
-import { PageHeader, message, Button } from "antd";
-// import { bindActionCreators } from "redux";
-// import { connect } from "react-redux";
-// import { actions as productActions, getProductType, getByProductType } from "../../../redux/modules/product";
-// import { actions as customerActions, getCustomerType, getByCustomerType } from "../../../redux/modules/customer";
+import { PageHeader } from "antd";
 import { Route } from "react-router-dom";
 import ActivityDetail from "./components/ActivityDetail";
 import ActivityList from "./components/ActivityList";
@@ -11,20 +7,9 @@ import ActivityList from "./components/ActivityList";
 
 function ActivityManagement(props) {
 
-    // startAlterActivityDetail = () => {
-    //     this.props.startAlterInfo();
-    // }
-
-    // componentDidMount() {
-    //     this.props.fetchProductType();
-    //     this.props.fetchCustomerType();
-    //     const { history } = this.props;
-    //     console.log("history in activity management", history);
-    // }
-    // render() {
     const subTitle = props.getSubTitle();
     const extra = props.getExtra();
-    const { match, productType, byCustomerType, customerType, byProductType } = props;
+    const { match } = props;
     const prop = props;
     return (
         <div>
@@ -56,24 +41,6 @@ function ActivityManagement(props) {
             </PageHeader>
         </div>
     )
-    // }
 }
 
-
-// const mapStateToProps = (state, props) => {
-//     return {
-//         productType: getProductType(state),
-//         byProductType: getByProductType(state),
-//         customerType: getCustomerType(state),
-//         byCustomerType: getByCustomerType(state),
-//     };
-// };
-
-// const mapDispatchToProps = (dispatch) => {
-//     return {
-//         ...bindActionCreators(productActions, dispatch),
-//         ...bindActionCreators(customerActions, dispatch),
-//     };
-// };
-
-export default ActivityManagement;// connect(mapStateToProps, mapDispatchToProps)(ActivityManagement);
+export default ActivityManagement;

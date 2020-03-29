@@ -53,10 +53,10 @@ export const productStatus = {
 };
 
 export const enterpriseCustomerApplicationStatus = {
-    0: "未审核",
-    1: "审核中",
-    2: "审核通过",
-    3: "审核未通过"
+    "submit": "未审核",
+    "pending": "审核中",
+    "approve": "审核通过",
+    "reject": "审核未通过"
 }
 
 export const fetchOrdersTimeRange = {
