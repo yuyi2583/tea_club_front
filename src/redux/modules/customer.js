@@ -1,6 +1,6 @@
 import { actions as appActions } from "./app";
 import url from "../../utils/url";
-import { get } from "../../utils/request";
+import { get, put, post, _delete } from "../../utils/request";
 import { requestType } from "../../utils/common";
 
 const initialState = {
@@ -10,7 +10,6 @@ const initialState = {
     byEnterpriseCustomerApplications: new Object(),
     byEnterpriseBusinessLicense: new Object(),
     byCustomerAvatar: new Object(),
-    ///////////////////////////////////////
     customers: new Array(),
     byCustomers: new Object(),
 }
@@ -22,9 +21,9 @@ export const types = {
     FETCH_ENTERPRISE_CUSTOMER_APPLICATION: "CUSTOMER/FETCH_ENTERPRISE_CUSTOMER_APPLICATION",
     APPROVE_APPLICATION: "CUSTOMER/APPROVE_APPLICATION",
     REJECT_APPLICATION: "CUSTOMER/REJECT_APPLICATION",
-    ////////////////////////////////////
-    FETCH_ALL_CUSTOMERS: "CUSTOMER/FETCH_ALL_CUSTOMERS",
+    FETCH_CUSTOMERS: "CUSTOMER/FETCH_CUSTOMERS",
     SET_SUPER_VIP: "CUSTOMER/SET_SUPER_VIP",
+    ////////////////////////////////////
     FETCH_CUSTOMER_BY_ID: "CUSTOMER/FETCH_CUSTOMER_BY_ID",
 };
 
@@ -127,38 +126,39 @@ export const actions = {
             });
         }
     },
+    //获取所有客户列表
+    fetchCustomers: () => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest());
+            return get(url.fetchCustomers()).then((result) => {
+                dispatch(appActions.finishRequest());
+                if (!result.error) {
+                    dispatch(fetchCustomersSuccess(convetCustomersToPlainStructure(result.data)));
+                    return Promise.resolve();
+                } else {
+                    dispatch(appActions.setError(result.msg));
+                    return Promise.reject(result.error);
+                }
+            });
+        }
+    },
+    //将客户升级为超级vip
+    setSuperVIP: (uid) => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest());
+            return get(url.setSuperVIP(uid)).then((result) => {
+                dispatch(appActions.finishRequest());
+                if (!result.error) {
+                    dispatch(setSuperVIPSuccess(result.data));
+                    return Promise.resolve();
+                } else {
+                    dispatch(appActions.setError(result.msg));
+                    return Promise.reject(result.error);
+                }
+            });
+        }
+    },
     ////////////////////////////////////
-    fetchAllCustomers: (reqType = requestType.appRequest) => {
-        return (dispatch) => {
-            dispatch(appActions.startRequest(reqType));
-            return get(url.fetchAllCustomers()).then((data) => {
-                dispatch(appActions.finishRequest(reqType));
-                if (!data.error) {
-                    dispatch(fetchCustomersSuccess(types.FETCH_ALL_CUSTOMERS, convetCustomersToPlainStructure(data.customers)));
-                    return Promise.resolve();
-                } else {
-                    dispatch(appActions.setError(data.error));
-                    return Promise.reject();
-                }
-            });
-        }
-    },
-    setSuperVIP: (uid, reqType = requestType.appRequest) => {
-        return (dispatch) => {
-            dispatch(appActions.startRequest(reqType));
-            const params = { uid };
-            return get(url.setSuperVIP(), params).then((data) => {
-                dispatch(appActions.finishRequest(reqType));
-                if (!data.error) {
-                    dispatch(fetchCustomersSuccess(types.SET_SUPER_VIP, convetCustomersToPlainStructure(data.customers)));
-                    return Promise.resolve();
-                } else {
-                    dispatch(appActions.setError(data.error));
-                    return Promise.reject();
-                }
-            });
-        }
-    },
     fetchCustomerById: (uid, reqType = requestType.appRequest) => {
         return (dispatch) => {
             dispatch(appActions.startRequest(reqType));
@@ -256,7 +256,8 @@ const rejectApplicationSuccess = (uid) => ({
     type: types.REJECT_APPLICATION,
     uid
 })
-//////////////////////////////////////////////////
+
+
 const convetCustomersToPlainStructure = (data) => {
     let customers = new Array();
     let byCustomers = new Object();
@@ -273,6 +274,19 @@ const convetCustomersToPlainStructure = (data) => {
 }
 
 
+const fetchCustomersSuccess = ({ customers, byCustomers }) => ({
+    type: types.FETCH_CUSTOMERS,
+    customers,
+    byCustomers,
+})
+
+const setSuperVIPSuccess = (customer) => ({
+    type: types.SET_SUPER_VIP,
+    customer
+})
+//////////////////////////////////////////////////
+
+
 const fetchCustomerByIdSuccess = (customer) => ({
     type: types.FETCH_CUSTOMER_BY_ID,
     customer
@@ -281,11 +295,6 @@ const fetchCustomerByIdSuccess = (customer) => ({
 
 
 
-const fetchCustomersSuccess = (type, { customers, byCustomers }) => ({
-    type,
-    customers,
-    byCustomers,
-})
 
 const reducer = (state = initialState, action) => {
     let customers;
@@ -308,9 +317,12 @@ const reducer = (state = initialState, action) => {
         case types.REJECT_APPLICATION:
             byEnterpriseCustomerApplications = { ...state.byEnterpriseCustomerApplications, [action.uid]: { ...state.byEnterpriseCustomerApplications[action.uid], status: "reject" } };
             return { ...state, byEnterpriseCustomerApplications, byEnterpriseCustomerApplications };
-        //////////////////////////////////////
-        case types.FETCH_ALL_CUSTOMERS:
+        case types.FETCH_CUSTOMERS:
             return { ...state, customers: action.customers, byCustomers: action.byCustomers };
+        case types.SET_SUPER_VIP:
+            byCustomers = { ...state.byCustomers, [action.customer.uid]: action.customer };
+            return { ...state, byCustomers };
+        //////////////////////////////////////
         case types.FETCH_CUSTOMER_BY_ID:
             customers = state.customers;
             byCustomers = { ...state.byCustomers, [action.customer.uid]: action.customer };

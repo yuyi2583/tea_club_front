@@ -2,7 +2,7 @@ import React from "react";
 import { Button, Icon, Divider, DatePicker, Input, Select, Spin, TreeSelect, Modal, Tooltip, Table, InputNumber } from "antd";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { actions as customerActions, getCustomers, getByCustomers, getByCustomerTypes, getCustomerTypes } from "../../../../../redux/modules/customer";
+import { actions as customerActions, getCustomers, getByCustomers } from "../../../../../redux/modules/customer";
 import Highlighter from 'react-highlight-words';
 import { Link } from "react-router-dom";
 import { sex } from "../../../../../utils/common";
@@ -16,8 +16,8 @@ class CustomerList extends React.Component {
     };
 
     componentDidMount() {
-        this.props.fetchAllCustomers();
-        this.props.fetchCustomerType();
+        this.props.fetchCustomers();
+        // this.props.fetchCustomerType();
     }
 
     getColumnSearchProps = dataIndex => ({
@@ -87,15 +87,15 @@ class CustomerList extends React.Component {
     };
 
     getDataSource = () => {
-        const { customers, byCustomers, byCustomerTypes } = this.props;
+        const { customers, byCustomers } = this.props;
         let dataSource = new Array();
-        customers.length > 0 && customers.forEach((uid) => {
+        customers.forEach((uid) => {
             try {
                 const dataItem = {
                     key: uid,
                     ...byCustomers[uid],
-                    customerType: byCustomerTypes[byCustomers[uid].customerType].name,
-                    sex: sex[byCustomers[uid].sex],
+                    customerType: byCustomers[uid].customerType.name,
+                    sex: sex[byCustomers[uid].gender],
                 };
                 dataSource.push(dataItem);
             } catch (err) {
@@ -134,7 +134,7 @@ class CustomerList extends React.Component {
                 ...this.getColumnSearchProps('contact'),
             },
             {
-                title: 'vip等级',
+                title: '客户类型',
                 dataIndex: 'customerType',
                 key: 'customerType',
                 ...this.getColumnSearchProps('customerType'),
@@ -148,10 +148,14 @@ class CustomerList extends React.Component {
                         <Tooltip title={`查看${record.name}信息及订单记录`}>
                             <Link to={`${match.url}/customer/${record.uid}`}>查看</Link>
                         </Tooltip>
-                        <Divider type="vertical" />
-                        <Tooltip title={`将${record.name}升级为超级VIP用户`}>
-                            <Button type="link" onClick={() => this.setSuperVIP(record.uid)}>设置超级VIP</Button>
-                        </Tooltip>
+                        {record.customerType == "超级vip用户" ? null :
+                            <span>
+                                <Divider type="vertical" />
+                                <Tooltip title={`将${record.name}升级为超级VIP用户`}>
+                                    <Button type="link" onClick={() => this.setSuperVIP(record.uid)}>设置超级VIP</Button>
+                                </Tooltip>
+                            </span>
+                        }
                     </span>
                 ),
             }
@@ -160,7 +164,7 @@ class CustomerList extends React.Component {
 
     setSuperVIP = (uid) => {
         const { byCustomers } = this.props;
-        const thiz=this;
+        const thiz = this;
         confirm({
             title: '确认升级?',
             content: `确认将${byCustomers[uid].name}升级为超级VIP？`,
@@ -169,10 +173,10 @@ class CustomerList extends React.Component {
             onOk() {
                 thiz.props.setSuperVIP(uid)
                     .then(() => {
-                        thiz.props.callMessage("success",`${byCustomers[uid].name}升级超级VIP成功！`);
+                        thiz.props.callMessage("success", `${byCustomers[uid].name}升级超级VIP成功！`);
                     })
-                    .catch(err=>{
-                        thiz.props.callMessage("error",`${byCustomers[uid].name}升级超级VIP失败`+err);
+                    .catch(err => {
+                        thiz.props.callMessage("error", `${byCustomers[uid].name}升级超级VIP失败` + err);
                     })
             },
         });
@@ -182,13 +186,12 @@ class CustomerList extends React.Component {
     render() {
         const data = this.getDataSource();
         const columns = this.getColmuns();
-        const { requestQuantity, modalVisible, modalRequestQuantity } = this.props;
+        const { retrieveRequestQuantity } = this.props;
         return (
             <div>
-                <Spin spinning={requestQuantity > 0}>
+                <Spin spinning={retrieveRequestQuantity > 0}>
                     <Table
                         columns={columns}
-                        loading={requestQuantity > 0}
                         dataSource={data} />
                 </Spin>
             </div>
@@ -201,8 +204,6 @@ const mapStateToProps = (state, props) => {
     return {
         customers: getCustomers(state),
         byCustomers: getByCustomers(state),
-        customerTypes: getCustomerTypes(state),
-        byCustomerTypes: getByCustomerTypes(state),
     };
 };
 
