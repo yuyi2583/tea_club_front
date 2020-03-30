@@ -1,7 +1,7 @@
 import { actions as appActions } from "./app";
 import url from "../../utils/url";
 import { get } from "../../utils/request";
-import { requestType, fetchOrdersTimeRange } from "../../utils/common";
+import { requestType, fetchOrdersTimeRange,fetchOrderStatus } from "../../utils/common";
 
 const initialState = {
     orders: new Array(),
@@ -17,8 +17,9 @@ const initialState = {
 
 export const types = {
     FETCH_ORDERS_BY_CUSTOMER: "ORDER/FETCH_ORDERS_BY_CUSTOMER",
+    FETCH_UNCOMPLETE_ORDERS: "ORDER/FETCH_UNCOMPLETE_ORDERS",
+    FETCH_ORDERS: "ORDER/FETCH_ORDERS",
     //////////////////////////////////////////////
-    FETCH_ALL_ORDERS: "ORDER/FETCH_ALL_ORDERS",
     FETCH_LAST_THREE_MONTH_ORDERS: "ORDER/FETCH_LAST_THREE_MONTH_ORDERS",
     FETCH_TIME_RANGE_ORDERS: "ORDER/FETCH_TIME_RANGE_ORDERS",
     FETCH_ALL_ORDERS_BY_CUSTOMER: "ORDER/FETCH_ALL_ORDER_BY_CUSTOMER",
@@ -34,12 +35,42 @@ export const actions = {
     fetchOrdersByCustomer: (customerId, timeRange = fetchOrdersTimeRange["last3Months"]()) => {
         return (dispatch) => {
             dispatch(appActions.startRequest());
-            console.log("time range",timeRange);
-            
             return get(url.fetchOrdersByCustomer(customerId, timeRange)).then((result) => {
                 dispatch(appActions.finishRequest());
                 if (!result.error) {
                     dispatch(fetchOrdersByCustomerSuccess(convertOrdersToPlainStructure(result.data)));
+                    return Promise.resolve();
+                } else {
+                    dispatch(appActions.setError(result.msg));
+                    return Promise.reject(result.error);
+                }
+            });
+        }
+    },
+    //获取未完成的订单列表
+    fetchUncompleteOrders: () => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest());
+            return get(url.fetchUncompleteOrders()).then((result) => {
+                dispatch(appActions.finishRequest());
+                if (!result.error) {
+                    dispatch(fetchUncompleteOrdersSuccess(convertOrdersToPlainStructure(result.data)));
+                    return Promise.resolve();
+                } else {
+                    dispatch(appActions.setError(result.msg));
+                    return Promise.reject(result.error);
+                }
+            });
+        }
+    },
+    //根据条件获取订单列表
+    fetchOrders:(status=fetchOrderStatus.all,timeRange=fetchOrdersTimeRange.all) => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest());
+            return get(url.fetchOrders(status,timeRange)).then((result) => {
+                dispatch(appActions.finishRequest());
+                if (!result.error) {
+                    dispatch(fetchOrdersSuccess(convertOrdersToPlainStructure(result.data)));
                     return Promise.resolve();
                 } else {
                     dispatch(appActions.setError(result.msg));
@@ -162,6 +193,24 @@ const fetchOrdersByCustomerSuccess = ({ orders, byOrders, byOrderClerks, byOrder
     byOrderCustomers,
     byProducts
 });
+
+const fetchUncompleteOrdersSuccess = ({ orders, byOrders, byOrderClerks, byOrderCustomers, byProducts }) => ({
+    type: types.FETCH_UNCOMPLETE_ORDERS,
+    orders,
+    byOrders,
+    byOrderClerks,
+    byOrderCustomers,
+    byProducts
+});
+
+const fetchOrdersSuccess = ({ orders, byOrders, byOrderClerks, byOrderCustomers, byProducts }) => ({
+    type: types.FETCH_ORDERS,
+    orders,
+    byOrders,
+    byOrderClerks,
+    byOrderCustomers,
+    byProducts
+});
 /////////////////////////////////////////
 
 const fetchOrderSuccess = (order) => ({
@@ -180,12 +229,14 @@ const deleteOrderSuccess = (type, { orders, byOrders }) => ({
 const reducer = (state = initialState, action) => {
     let orders, byOrders;
     switch (action.type) {
+        case types.FETCH_ORDERS:
         case types.FETCH_ORDERS_BY_CUSTOMER:
+        case types.FETCH_UNCOMPLETE_ORDERS:
             return {
                 ...state, orders: action.orders, byOrders: action.byOrders,
                 byOrderClerks: action.byOrderClerks, byOrderCustomers: action.byOrderCustomers, byProducts: action.byProducts
             };
-            /////////////////////////////////////////
+        /////////////////////////////////////////
         case types.FETCH_ALL_ORDERS_BY_CUSTOMER:
         case types.FETCH_LAST_THREE_MONTH_ORDERS_BY_CUSTOMER:
         case types.FETCH_TIME_RANGE_ORDERS_BY_CUSTOMER:
@@ -211,7 +262,7 @@ export default reducer;
 
 export const getOrders = (state) => state.order.orders;
 export const getByOrders = (state) => state.order.byOrders;
-export const getByProducts=(state)=>state.order.byProducts;
-export const getByOrderCustomers=(state)=>state.order.byOrderCustomers;
-export const getByOrderClerks=(state)=>state.order.byOrderClerks;
-export const getByOrderActivityRules=(state)=>state.order.byOrderActivityRules;
+export const getByProducts = (state) => state.order.byProducts;
+export const getByOrderCustomers = (state) => state.order.byOrderCustomers;
+export const getByOrderClerks = (state) => state.order.byOrderClerks;
+export const getByOrderActivityRules = (state) => state.order.byOrderActivityRules;

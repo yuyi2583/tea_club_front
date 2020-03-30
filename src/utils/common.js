@@ -70,3 +70,11 @@ export const orderStatus = {
     "refund": "卖家已退款",
     "complete": "完成"
 }
+
+export const fetchOrderStatus={
+    "all":"all",
+    "payed":"payed",
+    "shipped":"shipped",
+    "refund":"refund",
+    "complete":"complete",
+}

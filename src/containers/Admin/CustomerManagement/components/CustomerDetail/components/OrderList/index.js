@@ -130,7 +130,7 @@ class OrderList extends React.Component {
         ...this.getColumnSearchProps('uid'),
       },
       {
-        title: '产品名称',
+        title: '产品',
         dataIndex: 'products',
         key: 'products',
         width: "20%",
