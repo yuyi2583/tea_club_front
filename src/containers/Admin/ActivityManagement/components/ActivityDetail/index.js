@@ -251,7 +251,7 @@ class ActivityDetail extends React.Component {
     }
 
     render() {
-
+//TODO 活动一旦确立其规则就不能更改
         let { activityId } = this.props.match.params;
         let { activities, byActivities, alterInfo, retrieveRequestQuantity, form, updateRequestQuantity, byActivityRules, customerTypes,
             byCustomerTypes, productTypes, byProductTypes, activityRuleTypes, byActivityRuleTypes, products, byProducts } = this.props;

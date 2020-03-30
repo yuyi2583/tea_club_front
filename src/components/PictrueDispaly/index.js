@@ -27,7 +27,7 @@ class PictureDisplay extends React.Component {
                     src={`data:image/png;base64,${photo}`} />
                 <Modal 
                 visible={previewVisible} 
-                footer={[<Button><a href={`data:image/png;base64,${this.props.photo}`} download={`${new Date().getTime()}.jpg`}>下载</a></Button>]} 
+                footer={[<Button key="1"><a href={`data:image/png;base64,${this.props.photo}`} download={`${new Date().getTime()}.jpg`}>下载</a></Button>]} 
                 onCancel={() => this.setState({ previewVisible: false })}>
                     <img alt="example" style={{ width: '100%' }} src={previewImage} />
                 </Modal>

@@ -1,14 +1,13 @@
 import React from 'react';
-import { Button, Icon, Divider, Input, Spin, Tooltip, Table, Modal, DatePicker } from "antd";
-import { map } from "../../router";
+import { Button, Icon, Input, Spin, Tooltip, Table, DatePicker, Row, Col } from "antd";
+import { map } from "../../../../../../../router";
 import { Link } from "react-router-dom";
 import Highlighter from 'react-highlight-words';
 import PropTypes from "prop-types";
-import { timeStampConvertToFormatTime, momentConvertToTimeStamp } from "../../utils/timeUtil";
-import { orderStatus } from "../../utils/common";
+import { timeStampConvertToFormatTime } from "../../../../../../../utils/timeUtil";
+import { orderStatus } from "../../../../../../../utils/common";
 import moment from 'moment';
 
-const { confirm } = Modal;
 const { RangePicker } = DatePicker;
 
 class OrderList extends React.Component {
@@ -85,22 +84,37 @@ class OrderList extends React.Component {
     this.setState({ searchText: '' });
   };
 
+  getAmountDispaly = (order) => {
+    let display = "";
+    if (order.amount.ingot != 0) {
+      display += order.amount.ingot + "元宝 ";
+    }
+    if (order.amount.credit != 0) {
+      display += order.amount.credit + "积分";
+    }
+    return display;
+  }
+
   getDataSource = () => {
-    const { orders, byOrders } = this.props;
+    const { orders, byOrders, byProducts } = this.props;
     let dataSource = new Array();
-    orders.length > 0 && orders.forEach((uid) => {
+    orders.forEach((uid) => {
       try {
         const dataItem = {
           key: uid,
           ...byOrders[uid],
-          productName: byOrders[uid].product.name,
+          products: byOrders[uid].products.map(uid => (
+            <Row key={uid}>
+              <Col span={8}>{byProducts[uid].product.name}</Col>
+              <Col span={8} offset={4}>x{byProducts[uid].number}</Col>
+            </Row>)),
           customerId: byOrders[uid].customer.uid,
           status: orderStatus[byOrders[uid].status],
+          amount: this.getAmountDispaly(byOrders[uid]),
           orderTime: timeStampConvertToFormatTime(byOrders[uid].orderTime)
         };
         dataSource.push(dataItem);
       } catch (err) {
-        // console.error(err);
       };
 
     })
@@ -108,7 +122,6 @@ class OrderList extends React.Component {
   }
 
   getColmuns = () => {
-    // const { match } = this.props;
     return [
       {
         title: '订单编号',
@@ -118,15 +131,10 @@ class OrderList extends React.Component {
       },
       {
         title: '产品名称',
-        dataIndex: 'productName',
-        key: 'productName',
+        dataIndex: 'products',
+        key: 'products',
+        width: "20%",
         ...this.getColumnSearchProps('productName'),
-      },
-      {
-        title: '数量',
-        dataIndex: 'number',
-        key: 'number',
-        ...this.getColumnSearchProps('number'),
       },
       {
         title: '提单时间',
@@ -135,10 +143,10 @@ class OrderList extends React.Component {
         ...this.getColumnSearchProps('orderTime'),
       },
       {
-        title: '提单人（账号ID）',
-        dataIndex: 'customerId',
-        key: 'customerId',
-        ...this.getColumnSearchProps('customerId'),
+        title: '总价',
+        dataIndex: 'amount',
+        key: 'amount',
+        ...this.getColumnSearchProps('amount'),
       },
       {
         title: '状态',
@@ -152,76 +160,13 @@ class OrderList extends React.Component {
         key: "action",
         render: (text, record) => (
           <span>
-            <Tooltip title={`查看订单详情`}>
-              <Link to={`${map.admin.AdminHome()}/order_management/orders/order/${record.uid}`}>详情</Link>
-            </Tooltip>
-            <Divider type="vertical" />
-            <Tooltip title={`删除此订单`}>
-              <Button type="link" onClick={() => this.deleteOrder(record.uid)}>删除</Button>
+            <Tooltip title={`编辑订单`}>
+              <Link to={`${map.admin.AdminHome()}/order_management/orders/order/${record.uid}`}>编辑</Link>
             </Tooltip>
           </span>
         ),
       }
     ];
-  }
-
-  deleteOrder = (uid) => {
-    const thiz = this;
-    confirm({
-      title: '确认删除?',
-      content: '确认删除此订单记录？',
-      onCancel() {
-      },
-      onOk() {
-        thiz.props.deleteOrder(uid)
-          .then(() => {
-            thiz.props.callMessage("success", "删除订单成功！");
-          })
-          .catch(err => {
-            thiz.props.callMessage("error", "删除订单失败！" + err);
-          });
-      },
-    });
-  }
-
-  // rowSelection object indicates the need for row selection
-  rowSelection = {
-    onChange: (selectedRowKeys, selectedRows) => {
-      console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-      this.setState({ selectedRows });
-    },
-    getCheckboxProps: record => ({
-      disabled: record.name === 'Disabled User', // Column configuration not to be checked
-      name: record.name,
-    }),
-  };
-
-  deleteOrdersByBatch = () => {
-    const { selectedRows } = this.state;
-    if (selectedRows.length == 0) {
-      Modal.error({
-        title: '错误',
-        content: '请选择至少一行订单记录！',
-      });
-      return;
-    }
-    const thiz = this;
-    confirm({
-      title: '确认删除?',
-      content: '确认删除这些订单记录？',
-      onCancel() {
-      },
-      onOk() {
-        thiz.props.deleteOrdersByBatch(selectedRows)
-          .then(() => {
-            thiz.props.callMessage("success", "删除订单成功！");
-          })
-          .catch(err => {
-            thiz.props.callMessage("error", "删除订单失败！" + err);
-          });
-      },
-    });
-
   }
 
   disabledDate = (current) => {
@@ -230,26 +175,25 @@ class OrderList extends React.Component {
   }
 
   selectRange = (dates) => {
-    const starDate = new Date(dates[0].format()).getTime();
+    const startDate = new Date(dates[0].format()).getTime();
     const endDate = new Date(dates[1].format()).getTime();
-    this.props.fetchOrdersTimeRange({ starDate, endDate });
+    console.log("time range select", { startDate, endDate });
+
+    this.props.fetchOrdersTimeRange({ startDate, endDate });
   }
 
   render() {
-    const { requestQuantity } = this.props;
+    const { retrieveRequestQuantity } = this.props;
     const data = this.getDataSource();
     const columns = this.getColmuns();
     return (
       <div>
-        <Spin spinning={requestQuantity > 0}>
+        <Spin spinning={retrieveRequestQuantity > 0}>
           <div>
-            <Button type="primary" onClick={this.deleteOrdersByBatch}>批量删除</Button>&nbsp;&nbsp;
             <RangePicker showTime format="YYYY-MM-DD" disabledDate={this.disabledDate} onOk={this.selectRange} />
           </div>
           <Table
             columns={columns}
-            rowSelection={this.rowSelection}
-            loading={requestQuantity > 0}
             dataSource={data} />
         </Spin>
       </div>
@@ -260,6 +204,9 @@ class OrderList extends React.Component {
 OrderList.propTypes = {
   orders: PropTypes.array.isRequired,
   byOrders: PropTypes.object.isRequired,
+  byOrderActivityRules: PropTypes.object.isRequired,
+  byOrderClerks: PropTypes.object.isRequired,
+  byProducts: PropTypes.object.isRequired,
 }
 
 export default OrderList;

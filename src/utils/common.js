@@ -12,7 +12,7 @@ export const activityType = {
 
 export const requestType = {
     "retrieveRequest": 0,
-    "updateRequest":1,
+    "updateRequest": 1,
     "modalRequest": 2,
 }
 
@@ -49,7 +49,7 @@ export const tailFormItemLayout = {
 export const productStatus = {
     "off_shelves": "已下架",
     "on_sale": "销售中",
-    "sold_out":"售罄"
+    "sold_out": "售罄"
 };
 
 export const enterpriseCustomerApplicationStatus = {
@@ -65,8 +65,8 @@ export const fetchOrdersTimeRange = {
 }
 
 export const orderStatus = {
-    0: "未付款",
-    1: "未配送",
-    2: "已发货",
-    3: "完成"
+    "payed": "买家已付款",
+    "shipped": "卖家已发货",
+    "refund": "卖家已退款",
+    "complete": "完成"
 }

@@ -177,7 +177,7 @@ class ActivityRuleInput extends React.Component {
         } catch (err) {
             activityRuleType = undefined;
         }
-        return activityRuleType == 5 || activityRuleType == 1 || activityRuleType == 6;
+        return activityRuleType == 5 || activityRuleType == 1 || activityRuleType == 6||activityRuleType == 2;
     }
 
     render() {
@@ -213,7 +213,7 @@ class ActivityRuleInput extends React.Component {
                         <Form.Item className="inline-input">
                             {getFieldDecorator('activityApplyForProduct_' + index, {
                                 initialValue: isUpdate ? isOriginalRuleType ? activityRule.activityApplyForProduct.map(uid => `product_${uid}`) : null : null
-                            })(
+                            })(//TODO 购物时只能选择产品类型
                                 <TreeSelect
                                     treeDataSimpleMode
                                     style={{ width: '200px' }}
