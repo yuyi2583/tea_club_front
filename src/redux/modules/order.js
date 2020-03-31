@@ -1,7 +1,7 @@
 import { actions as appActions } from "./app";
 import url from "../../utils/url";
-import { get } from "../../utils/request";
-import { requestType, fetchOrdersTimeRange,fetchOrderStatus } from "../../utils/common";
+import { get, put, post, _delete } from "../../utils/request";
+import { requestType, fetchOrdersTimeRange, fetchOrderStatus } from "../../utils/common";
 
 const initialState = {
     orders: new Array(),
@@ -19,6 +19,8 @@ export const types = {
     FETCH_ORDERS_BY_CUSTOMER: "ORDER/FETCH_ORDERS_BY_CUSTOMER",
     FETCH_UNCOMPLETE_ORDERS: "ORDER/FETCH_UNCOMPLETE_ORDERS",
     FETCH_ORDERS: "ORDER/FETCH_ORDERS",
+    FETCH_ORDER: "ORDER/FETCH_ORDER",
+    UPDATE_ORDER_STATUS: "ORDER/UPDATE_ORDER_STATUS",
     //////////////////////////////////////////////
     FETCH_LAST_THREE_MONTH_ORDERS: "ORDER/FETCH_LAST_THREE_MONTH_ORDERS",
     FETCH_TIME_RANGE_ORDERS: "ORDER/FETCH_TIME_RANGE_ORDERS",
@@ -64,10 +66,10 @@ export const actions = {
         }
     },
     //根据条件获取订单列表
-    fetchOrders:(status=fetchOrderStatus.all,timeRange=fetchOrdersTimeRange.all) => {
+    fetchOrders: (status = fetchOrderStatus.all, timeRange = fetchOrdersTimeRange.all) => {
         return (dispatch) => {
             dispatch(appActions.startRequest());
-            return get(url.fetchOrders(status,timeRange)).then((result) => {
+            return get(url.fetchOrders(status, timeRange)).then((result) => {
                 dispatch(appActions.finishRequest());
                 if (!result.error) {
                     dispatch(fetchOrdersSuccess(convertOrdersToPlainStructure(result.data)));
@@ -79,6 +81,39 @@ export const actions = {
             });
         }
     },
+    //根据uid获取订单详细信息
+    fetchOrder: (uid) => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest());
+            return get(url.fetchOrder(uid)).then((result) => {
+                dispatch(appActions.finishRequest());
+                if (!result.error) {
+                    dispatch(fetchOrderSuccess(convertOrderToPlainStructure(result.data)));
+                    return Promise.resolve();
+                } else {
+                    dispatch(appActions.setError(result.msg));
+                    return Promise.reject(result.error);
+                }
+            });
+        }
+    },
+    //更新订单状态
+    updateOrderStatus: (status, value) => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest(requestType.modalRequest));
+            const params = { ...value };
+            return put(url.updateOrderStatus(status), params).then((result) => {
+                dispatch(appActions.finishRequest(requestType.modalRequest));
+                if (!result.error) {
+                    dispatch(updateOrderStatusSuccess(convertOrderToPlainStructure(result.data)));
+                    return Promise.resolve();
+                } else {
+                    dispatch(appActions.setError(result.msg));
+                    return Promise.reject(result.error);
+                }
+            });
+        }
+    }
     /////////////////////////////////////////////
     // deleteOrder: (uid, reqType = requestType.appRequest) => {
     //     return (dispatch) => {
@@ -211,12 +246,62 @@ const fetchOrdersSuccess = ({ orders, byOrders, byOrderClerks, byOrderCustomers,
     byOrderCustomers,
     byProducts
 });
+
+const convertOrderToPlainStructure = (data) => {
+    // let orders = new Array();
+    // let byOrders = new Object();
+    // let orderActivityRules = new Array();
+    let byOrderActivityRules = new Object();
+    let byOrderClerks = new Object();
+    let byOrderCustomers = new Object();
+    let byProducts = new Object();
+    // data.forEach((order) => {
+
+    let products = new Array();
+    // orders.push(order.uid);
+    byOrderCustomers = { [data.customer.uid]: data.customer };
+    byOrderClerks = { [data.clerk.uid]: data.clerk };
+    data.products.forEach(product => {
+        products.push(product.uid);
+        if (!byOrderActivityRules[product.activityRule.uid]) {
+            byOrderActivityRules[product.activityRule.uid] = product.activityRule;
+        }
+        if (!byProducts[product.uid]) {
+            byProducts[product.uid] = { ...product, activityRule: product.activityRule.uid };
+        }
+    });
+    // if (!byOrders[order.uid]) {
+    const order = { ...data, customer: data.customer.uid, clerk: data.clerk.uid, products };
+    // }
+    // });
+    return {
+        order,
+        byOrderClerks,
+        byOrderCustomers,
+        byProducts,
+        byOrderActivityRules
+    }
+}
+
+const fetchOrderSuccess = ({ order, byOrderClerks, byOrderCustomers, byProducts, byOrderActivityRules }) => ({
+    type: types.FETCH_ORDER,
+    order,
+    byOrderClerks,
+    byOrderCustomers,
+    byProducts,
+    byOrderActivityRules
+})
+
+const updateOrderStatusSuccess = ({ order, byOrderClerks, byOrderCustomers, byProducts, byOrderActivityRules }) => ({
+    type: types.FETCH_ORDER,
+    order,
+    byOrderClerks,
+    byOrderCustomers,
+    byProducts,
+    byOrderActivityRules
+})
 /////////////////////////////////////////
 
-const fetchOrderSuccess = (order) => ({
-    type: types.FETCH_ORDER_BY_ID,
-    order
-});
 
 const deleteOrderSuccess = (type, { orders, byOrders }) => ({
     type,
@@ -227,7 +312,11 @@ const deleteOrderSuccess = (type, { orders, byOrders }) => ({
 
 
 const reducer = (state = initialState, action) => {
-    let orders, byOrders;
+    let orders;
+    let byOrders;
+    let byOrderClerks;
+    let byOrderCustomers;
+    let byProducts;
     switch (action.type) {
         case types.FETCH_ORDERS:
         case types.FETCH_ORDERS_BY_CUSTOMER:
@@ -236,6 +325,14 @@ const reducer = (state = initialState, action) => {
                 ...state, orders: action.orders, byOrders: action.byOrders,
                 byOrderClerks: action.byOrderClerks, byOrderCustomers: action.byOrderCustomers, byProducts: action.byProducts
             };
+        case types.UPDATE_ORDER_STATUS:
+        case types.FETCH_ORDER:
+            byOrders = { ...state.byOrders, [action.order.uid]: action.order };
+            byOrderClerks = { ...state.byOrderClerks, ...action.byOrderClerks };
+            byOrderCustomers = { ...state.byOrderCustomers, ...action.byOrderCustomers };
+            byProducts = { ...state.byProducts, ...action.byProducts };
+            return { ...state, byOrders, byOrderClerks, byOrderCustomers, byProducts, byOrderActivityRules: action.byOrderActivityRules };
+
         /////////////////////////////////////////
         case types.FETCH_ALL_ORDERS_BY_CUSTOMER:
         case types.FETCH_LAST_THREE_MONTH_ORDERS_BY_CUSTOMER:

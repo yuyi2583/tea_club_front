@@ -109,7 +109,7 @@ class OrderList extends React.Component {
               <Col span={8} offset={4}>x{byProducts[uid].number}</Col>
             </Row>)),
           customerId: byOrders[uid].customer.uid,
-          status: orderStatus[byOrders[uid].status],
+          status: orderStatus[byOrders[uid].status.status],
           amount: this.getAmountDispaly(byOrders[uid]),
           orderTime: timeStampConvertToFormatTime(byOrders[uid].orderTime)
         };

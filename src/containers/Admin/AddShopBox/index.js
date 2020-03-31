@@ -192,6 +192,6 @@ const mapDispatchToProps = (dispatch) => {
         ...bindActionCreators(shopActions, dispatch),
     };
 };
-const AddShopBoxForm = Form.create({ name: 'addBox' })(AddShopBox);
 
+const AddShopBoxForm = Form.create({ name: 'addBox' })(AddShopBox);
 export default connect(mapStateToProps, mapDispatchToProps)(AddShopBoxForm);

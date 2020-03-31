@@ -89,4 +89,6 @@ export default {
     fetchApplication:(uid)=>`${HOME}/enterpriseCustomerApplication/${uid}`,
     fetchUncompleteOrders:()=>`${HOME}/uncompleteOrders`,
     fetchOrders:(status,timeRange)=>`${HOME}/orders/${status}/${timeRange.startDate}/${timeRange.endDate}`,
+    fetchOrder:(uid)=>`${HOME}/order/${uid}`,
+    updateOrderStatus:(status)=>`${HOME}/order${status}`,
 }

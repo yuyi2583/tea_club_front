@@ -21,7 +21,7 @@ class PictureDisplay extends React.Component {
         return (
             <span>
                 <img
-                    style={{ width: "70px" }}
+                    style={{ width: "70px",border:"1px solid #808080" }}
                     className="img"
                     onClick={this.handlePreview}
                     src={`data:image/png;base64,${photo}`} />
@@ -37,7 +37,7 @@ class PictureDisplay extends React.Component {
 }
 
 PictureDisplay.propTypes = {
-    photo: PropTypes.string.isRequired,
+    photo: PropTypes.string,
 }
 
 export default PictureDisplay;

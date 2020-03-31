@@ -130,7 +130,7 @@ class AddActivity extends React.Component {
                 break;
         }
     }
-
+//TODO 购物优惠规则无rule1待更改
     render() {
         const { from } = this.state;
         if (from != null) {

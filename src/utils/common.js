@@ -67,7 +67,8 @@ export const fetchOrdersTimeRange = {
 export const orderStatus = {
     "payed": "买家已付款",
     "shipped": "卖家已发货",
-    "refund": "卖家已退款",
+    "requestRefund":"买家申请退款",
+    "refunded": "卖家已退款",
     "complete": "完成"
 }
 
@@ -75,6 +76,7 @@ export const fetchOrderStatus={
     "all":"all",
     "payed":"payed",
     "shipped":"shipped",
-    "refund":"refund",
+    "requestRefund":"requestRefund",
+    "refunded":"refunded",
     "complete":"complete",
 }

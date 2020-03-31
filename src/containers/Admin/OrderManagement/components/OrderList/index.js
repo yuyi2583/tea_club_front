@@ -121,7 +121,7 @@ class OrderList extends React.Component {
                             <Col span={8} offset={4}>x{byProducts[uid].number}</Col>
                         </Row>)),
                     customerId: byOrders[uid].customer,
-                    status: orderStatus[byOrders[uid].status],
+                    status: orderStatus[byOrders[uid].status.status],
                     amount: this.getAmountDispaly(byOrders[uid]),
                     orderTime: timeStampConvertToFormatTime(byOrders[uid].orderTime)
                 };
@@ -241,15 +241,16 @@ class OrderList extends React.Component {
         const { status, startDate, endDate } = this.state;
         return (
             <div>
-                <span>当前默认显示所有未完成订单</span>
-                <Button type="link" onClick={this.fetchAllOrders}>加载所有订单数据</Button>
                 <Spin spinning={retrieveRequestQuantity > 0}>
+                    <span>当前默认显示所有未完成订单</span>
+                    <Button type="link" onClick={this.fetchAllOrders}>加载所有订单数据</Button>
                     <div>
                         <Select placeholder="请选择订单类型" onChange={this.handleSelectChange} style={{ width: 200 }} value={status}>
                             <Option value="all">所有</Option>
                             <Option value="payed">买家已付款</Option>
                             <Option value="shipped">卖家已发货</Option>
-                            <Option value="refund">卖家已退款</Option>
+                            <Option value="refunded">卖家已退款</Option>
+                            <Option value="requestRefund">买家申请退款</Option>
                             <Option value="complete">完成</Option>
                         </Select>
                         &nbsp;&nbsp;

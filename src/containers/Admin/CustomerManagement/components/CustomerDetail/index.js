@@ -51,9 +51,9 @@ class CustomerDetail extends React.Component {
         // }
         const { customerId } = match.params;
         const { current } = this.state;
-        let isDataNull = false;
-        if (byOrderCustomers[customerId] == undefined) {
-            isDataNull = true;
+        let isDataNull = true;
+        if (byOrderCustomers[customerId] != undefined && byOrderCustomers[customerId].avatar != null) {
+            isDataNull = false;
         }
         return (
             <Spin spinning={retrieveRequestQuantity > 0}>
