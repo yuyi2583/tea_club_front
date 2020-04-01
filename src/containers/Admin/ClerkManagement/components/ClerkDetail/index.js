@@ -103,6 +103,10 @@ class ClerkDetail extends React.Component {
             updateRequestQuantity, shops, byShops, positions, byPositions } = this.props;
         const { getFieldDecorator } = form;
         const photoDisplay = this.getPhotosDisplay();
+        let isDataNull = false;
+        if (byClerks[clerkId] == undefined) {
+            isDataNull = true;
+        }
         return (
             <div>
                 <Spin spinning={updateRequestQuantity > 0}>
@@ -113,7 +117,7 @@ class ClerkDetail extends React.Component {
                                 <Descriptions.Item label="姓名">
                                     {
                                         !alterInfo ?
-                                            byClerks[clerkId].name
+                                            isDataNull ? null : byClerks[clerkId].name
                                             : <Form.Item>
                                                 {getFieldDecorator('name', {
                                                     rules: [{ required: true, message: '请输入姓名!' }],
@@ -125,7 +129,7 @@ class ClerkDetail extends React.Component {
                                 <Descriptions.Item label="性别" >
                                     {
                                         !alterInfo ?
-                                            sex[byClerks[clerkId].sex]
+                                            isDataNull ? null : sex[byClerks[clerkId].sex]
                                             : <Form.Item>
                                                 {getFieldDecorator('sex', {
                                                     rules: [{ required: true, message: '请选择性别!' }],
@@ -140,7 +144,7 @@ class ClerkDetail extends React.Component {
                                 <Descriptions.Item label="联系方式">
                                     {
                                         !alterInfo ?
-                                            byClerks[clerkId].contact
+                                            isDataNull ? null : byClerks[clerkId].contact
                                             : <Form.Item>
                                                 {getFieldDecorator('contact', {
                                                     rules: [
@@ -159,7 +163,7 @@ class ClerkDetail extends React.Component {
                                 <Descriptions.Item label="身份证号">
                                     {
                                         !alterInfo ?
-                                            byClerks[clerkId].identityId :
+                                            isDataNull ? null : byClerks[clerkId].identityId :
                                             <Form.Item>
                                                 {getFieldDecorator('identityId', {
                                                     rules: [{ required: true, message: '请输入身份证号!' }],
@@ -171,7 +175,7 @@ class ClerkDetail extends React.Component {
                                 <Descriptions.Item label="住址" span={2}>
                                     {
                                         !alterInfo ?
-                                            byClerks[clerkId].address :
+                                            isDataNull ? null : byClerks[clerkId].address :
                                             <Form.Item>
                                                 {getFieldDecorator('address', {
                                                     rules: [{ required: true, message: '请输入职员住址!' }],
@@ -183,10 +187,10 @@ class ClerkDetail extends React.Component {
                                 <Descriptions.Item label="所属门店">
                                     {
                                         !alterInfo ?
-                                            byClerks[clerkId].shop == null ? "暂未分配门店" : byClerks[clerkId].shop.name :
+                                            isDataNull ? null : byClerks[clerkId].shop == null ? "暂未分配门店" : byClerks[clerkId].shop.name :
                                             <Form.Item>
                                                 {getFieldDecorator('shop', {
-                                                    initialValue: byClerks[clerkId].shop==null?null:byClerks[clerkId].shop.uid
+                                                    initialValue: byClerks[clerkId].shop == null ? null : byClerks[clerkId].shop.uid
                                                 })(
                                                     <Select>
                                                         {shops.map(uid => <Option key={uid} value={uid}>{byShops[uid].name}</Option>)}
@@ -198,10 +202,10 @@ class ClerkDetail extends React.Component {
                                 <Descriptions.Item label="职位">
                                     {
                                         !alterInfo ?
-                                            byClerks[clerkId].position == null ? "暂未分配职位" : byClerks[clerkId].position.name
+                                            isDataNull ? null : byClerks[clerkId].position == null ? "暂未分配职位" : byClerks[clerkId].position.name
                                             : <Form.Item >
                                                 {getFieldDecorator('position', {
-                                                    initialValue:byClerks[clerkId].position==null?null: byClerks[clerkId].position.uid
+                                                    initialValue: byClerks[clerkId].position == null ? null : byClerks[clerkId].position.uid
                                                 })(
                                                     <Select placeholder="请选择职位">
                                                         {

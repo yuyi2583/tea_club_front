@@ -116,7 +116,7 @@ class OrderDetail extends React.Component {
 
     handleModalCancel = () => {
         this.setState({ modalVisible: false, currentModal: "express" });
-
+        this.setState({ orderStatus: "" });
     }
 
     handleModalOk = () => {
@@ -125,11 +125,13 @@ class OrderDetail extends React.Component {
         const { byOrders } = this.props;
         this.props.form.validateFieldsAndScroll((err, values) => {
             if (!err) {
-                let params=new Object();
-                if(orderStatus=="shipped"){
-                    params={uid:orderId,trackInfo:{...values}};
+                let params = new Object();
+                if (orderStatus == "shipped") {
+                    params = { uid: orderId, trackInfo: { ...values } };
+                } else if (orderStatus == "refunded") {
+                    params = { ...values, uid: orderId };
                 }
-                this.props.updateOrderStatus(orderStatus,params).then(() => {
+                this.props.updateOrderStatus(orderStatus, params).then(() => {
                     this.props.callMessage("success", "更新订单状态成功！");
                     this.setState({ modalVisible: false });
                 }).catch((err) => {
@@ -217,6 +219,26 @@ class OrderDetail extends React.Component {
                     </span>
                 );
                 break;
+            case "refunded":
+                title = "退款说明";
+                content = (
+                    <span>
+                        <strong>确认退款前请先与客户联系确认</strong>
+                        <Form>
+                            <Form.Item label="退款理由">
+                                {getFieldDecorator("sellerPs", {
+                                    rules: [
+                                        {
+                                            required: true,
+                                            message: '请输入退款理由!',
+                                        },
+                                    ],
+                                })(<Input.TextArea rows={4} allowClear />)}
+                            </Form.Item>
+                        </Form>
+                    </span>
+                );
+                break;
         }
         return {
             title,
@@ -225,24 +247,12 @@ class OrderDetail extends React.Component {
     }
 
     render() {
-        const { match, retrieveRequestQuantity, modalRequestQuantity, orders, byOrders, byOrderProducts, byOrderCustomers } = this.props;
+        const { match, retrieveRequestQuantity, modalRequestQuantity, orders, byOrders, byOrderProducts, byOrderCustomers, byOrderClerks } = this.props;
         const { orderId } = match.params;
         const { modalVisible } = this.state;
         const order = byOrders[orderId];
-        // const fileListInProps = this.getFileList(byOrders[orderId].picture);
-        // let loading = false;
         const titleBar = this.getTitleBar();
-        // try {
-        //     const { price } = byOrders[orderId].product;
-        //     const { ingot, credit } = price;
-        //     const { activityRule } = byOrders[orderId].activity;
-        // } catch{
-        //     loading = true;
-        // }
         let isDataNull = false;
-        // if(byOrderProducts["1"]==undefined){
-        //     isDataNull=true;
-        // }
         const productsDisplay = this.getProductsDisplay();
         const amountDisplay = this.getAmountDisplay();
         const { title, content } = this.getModalContent()
@@ -271,17 +281,50 @@ class OrderDetail extends React.Component {
                         {productsDisplay}
                     </Descriptions.Item>
                     <Descriptions.Item label="买家留言">
-                        {order.ps}
+                        {order.buyerPs}
                     </Descriptions.Item>
+                    {order.status.status != "payed" && order.status.status != "unpayed" ?
+                        <Descriptions.Item label={
+                            <span>
+                                订单处理人
+                            <Tooltip title="查看订单处理人详细信息">
+                                    <Link to={`${map.admin.AdminHome()}/clerk_management/clerks/clerk/${order.clerk}`}>
+                                        <Icon type="info-circle" />
+                                    </Link>
+                                </Tooltip>
+                            </span>
+                        }>
+                            {byOrderClerks[order.clerk].name}
+                        </Descriptions.Item>
+                        : null}
                     <Descriptions.Item label="总价">
                         {amountDisplay}
                     </Descriptions.Item>
-                    {/* <Descriptions.Item label="单价">
-                        {loading ? null :
-                            byOrders[orderId].product.price.ingot + "元宝" + byOrders[orderId].product.price.credit + "积分"}
-                    </Descriptions.Item>
-                    <Descriptions.Item label="总价">214元</Descriptions.Item> */}
                 </Descriptions>
+                {order.trackInfo == null || order.trackInfo == undefined ? null :
+                    order.trackInfo.trackingId != null ?
+                        <Descriptions bordered title="物流信息" style={{ marginBottom: "20px" }} column={2}>
+                            <Descriptions.Item label="物流单号">
+                                {order.trackInfo.trackingId}
+                            </Descriptions.Item>
+                            <Descriptions.Item label="物流公司">
+                                {order.trackInfo.companyName}
+                            </Descriptions.Item>
+                        </Descriptions> :
+                        <Descriptions bordered title="物流信息" style={{ marginBottom: "20px" }} column={2}>
+                            <Descriptions.Item label="配送人电话">
+                                {order.trackInfo.phone}
+                            </Descriptions.Item>
+                            <Descriptions.Item label="描述信息">
+                                {order.trackInfo.Descriptions}
+                            </Descriptions.Item>
+                        </Descriptions>
+                }
+                {order.sellerPs == null ? null :
+                    <Descriptions bordered title="退款说明" style={{ marginBottom: "20px" }}>
+                        <Descriptions.Item label="说明">{order.sellerPs}</Descriptions.Item>
+                    </Descriptions>
+                }
                 <Modal
                     visible={modalVisible}
                     title={title}
