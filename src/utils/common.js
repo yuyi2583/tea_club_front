@@ -69,7 +69,8 @@ export const orderStatus = {
     "shipped": "卖家已发货",
     "requestRefund":"买家申请退款",
     "refunded": "卖家已退款",
-    "complete": "完成"
+    "complete": "完成",
+    "rejectRefund":"卖家拒绝退款"
 }
 
 export const fetchOrderStatus={
@@ -79,4 +80,5 @@ export const fetchOrderStatus={
     "requestRefund":"requestRefund",
     "refunded":"refunded",
     "complete":"complete",
+    "rejectRefund":"rejectRefund",
 }

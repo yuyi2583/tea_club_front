@@ -1,5 +1,5 @@
 import React from "react";
-import { Descriptions, Input, Button, Row, Spin, Col, PageHeader, Form, Modal, Skeleton } from 'antd';
+import { Descriptions, Input, Button, Row, Spin, Col, PageHeader, Form, Modal, Skeleton, InputNumber } from 'antd';
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
@@ -116,6 +116,16 @@ class CompanyInfo extends React.Component {
                                                 initialValue: companyInfo.address
                                             })(<Input allowClear name="address" placeholder="请输入地址！" />)}
                                         </Form.Item>
+                                    }
+                                </Descriptions.Item>
+                                <Descriptions.Item label="元宝兑换比例">
+                                    {!alterInfo ? `1人民币=${companyInfo.rechargeRate}元宝` :
+                                        <Form.Item>
+                                            1人民币={getFieldDecorator('rechargeRate', {
+                                            rules: [{ required: true, message: '请输入充值元宝兑换比例!' }],
+                                            initialValue: companyInfo.rechargeRate
+                                        })(<InputNumber allowClear min={0} />)}元宝
+                                    </Form.Item>
                                     }
                                 </Descriptions.Item>
                             </Descriptions>

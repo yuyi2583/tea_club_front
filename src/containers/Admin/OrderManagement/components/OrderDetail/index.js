@@ -6,7 +6,7 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import { map } from "../../../../../router";
-import { sex, fetchOrdersTimeRange, orderStatus } from "../../../../../utils/common";
+import { sex, fetchOrdersTimeRange, orderStatus, fetchOrderStatus } from "../../../../../utils/common";
 import { timeStampConvertToFormatTime } from "../../../../../utils/timeUtil";
 import PictureDisplay from "../../../../../components/PictrueDispaly";
 
@@ -40,16 +40,23 @@ class OrderDetail extends React.Component {
         const { orderId } = match.params;
         let button = null;
         switch (byOrders[orderId].status.status) {
-            case "payed":
+            case fetchOrderStatus.payed:
                 button = (
                     <span>
-                        <Button type="primary" name="shipped" onClick={this.changeOrderStatus}>发货</Button>
+                        <Button type="primary" name={fetchOrderStatus.shipped} onClick={this.changeOrderStatus}>发货</Button>
                         &nbsp;&nbsp;
-                        <Button name="refunded" onClick={this.changeOrderStatus}>退款</Button>
+                        <Button name={fetchOrderStatus.refunded} onClick={this.changeOrderStatus}>退款</Button>
                     </span>
                 );
                 break;
-            // case ""
+            case fetchOrderStatus.requestRefund:
+                button = (
+                    <span>
+                        <Button type="primary" name={fetchOrderStatus.refunded} onClick={this.changeOrderStatus}>允许退款</Button>
+                        &nbsp;&nbsp;
+                        <Button name={fetchOrderStatus.rejectRefund} onClick={this.changeOrderStatus}>拒绝退款</Button>
+                    </span>
+                )
         }
         return (
             <Row>
@@ -126,9 +133,9 @@ class OrderDetail extends React.Component {
         this.props.form.validateFieldsAndScroll((err, values) => {
             if (!err) {
                 let params = new Object();
-                if (orderStatus == "shipped") {
+                if (orderStatus == fetchOrderStatus.shipped) {
                     params = { uid: orderId, trackInfo: { ...values } };
-                } else if (orderStatus == "refunded") {
+                } else if (orderStatus == fetchOrderStatus.refunded || orderStatus == fetchOrderStatus.rejectRefund) {
                     params = { ...values, uid: orderId };
                 }
                 this.props.updateOrderStatus(orderStatus, params).then(() => {
@@ -155,7 +162,7 @@ class OrderDetail extends React.Component {
         let content = "";
         const { getFieldDecorator } = this.props.form;
         switch (orderStatus) {
-            case "shipped":
+            case fetchOrderStatus.shipped:
                 title = "填写物流信息";
                 content = (
                     <span>
@@ -219,7 +226,7 @@ class OrderDetail extends React.Component {
                     </span>
                 );
                 break;
-            case "refunded":
+            case fetchOrderStatus.refunded:
                 title = "退款说明";
                 content = (
                     <span>
@@ -231,6 +238,26 @@ class OrderDetail extends React.Component {
                                         {
                                             required: true,
                                             message: '请输入退款理由!',
+                                        },
+                                    ],
+                                })(<Input.TextArea rows={4} allowClear />)}
+                            </Form.Item>
+                        </Form>
+                    </span>
+                );
+                break;
+            case fetchOrderStatus.rejectRefund:
+                title = "拒绝退款说明";
+                content = (
+                    <span>
+                        <strong>请先与客户联系确认</strong>
+                        <Form>
+                            <Form.Item label="拒绝退款说明">
+                                {getFieldDecorator("sellerPs", {
+                                    rules: [
+                                        {
+                                            required: true,
+                                            message: '请输入说明!',
                                         },
                                     ],
                                 })(<Input.TextArea rows={4} allowClear />)}
@@ -320,8 +347,12 @@ class OrderDetail extends React.Component {
                             </Descriptions.Item>
                         </Descriptions>
                 }
-                {order.sellerPs == null ? null :
-                    <Descriptions bordered title="退款说明" style={{ marginBottom: "20px" }}>
+                {order.buyerRefundReason != null || order.buyerRefundReason != "" ?
+                    <Descriptions bordered title="买家退款理由" style={{ marginBottom: "20px" }}>
+                        <Descriptions.Item label="理由">{order.buyerRefundReason}</Descriptions.Item>
+                    </Descriptions> : null}
+                {order.sellerPs == null || order.sellerPs == "" ? null :
+                    <Descriptions bordered title="卖家退款说明" style={{ marginBottom: "20px" }}>
                         <Descriptions.Item label="说明">{order.sellerPs}</Descriptions.Item>
                     </Descriptions>
                 }

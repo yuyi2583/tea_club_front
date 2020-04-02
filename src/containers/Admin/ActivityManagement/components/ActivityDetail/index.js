@@ -140,8 +140,12 @@ class ActivityDetail extends React.Component {
         let display = new Array();
         try {
             display = byActivities[activityId].activityRules.map(uid => {
-                const operation = byActivityRules[uid].activityRule2.operation == "plus" ? "赠" : "减";
-                const currency = byActivityRules[uid].activityRule2.currency == "ingot" ? "元宝" : "积分";
+                let operation = "";
+                let currency = "";
+                if (byActivityRules[uid].activityRule2 != null) {
+                    operation = byActivityRules[uid].activityRule2.operation == "plus" ? "赠" : "减";
+                    currency = byActivityRules[uid].activityRule2.currency == "ingot" ? "元宝" : "积分";
+                }
                 let rule;
                 switch (byActivityRules[uid].activityRuleType.name) {
                     case "阅读":
@@ -251,7 +255,7 @@ class ActivityDetail extends React.Component {
     }
 
     render() {
-//TODO 活动一旦确立其规则就不能更改
+        //TODO 活动一旦确立其规则就不能更改
         let { activityId } = this.props.match.params;
         let { activities, byActivities, alterInfo, retrieveRequestQuantity, form, updateRequestQuantity, byActivityRules, customerTypes,
             byCustomerTypes, productTypes, byProductTypes, activityRuleTypes, byActivityRuleTypes, products, byProducts } = this.props;
