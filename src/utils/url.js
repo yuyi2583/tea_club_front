@@ -91,4 +91,9 @@ export default {
     fetchOrders:(status,timeRange)=>`${HOME}/orders/${status}/${timeRange.startDate}/${timeRange.endDate}`,
     fetchOrder:(uid)=>`${HOME}/order/${uid}`,
     updateOrderStatus:(status)=>`${HOME}/order${status}`,
+    fetchTags:()=>`${HOME}/tags`,
+    addTag:()=>`${HOME}/tag`,
+    addArticle:()=>`${HOME}/article`,
+    fetchArticles:()=>`${HOME}/articles`,
+    terminalArticle:(uid)=>`${HOME}/article/${uid}`,
 }

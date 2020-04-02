@@ -17,7 +17,8 @@
         {"uid":"9","name":"enterprise_customer_applications","component":"Admin/EnterpriseCustomerApplication","title":"企业用户申请","description":"这是企业用户申请","belong":{"uid":"5","name":"customer_management","title":"客户管理","icon":"customer-service"}},
         {"uid":"10","name":"customers","component":"Admin/CustomerManagement","title":"客户信息","description":"这是客户信息","belong":{"uid":"5","name":"customer_management","title":"客户管理","icon":"customer-service"}},
         {"uid":"11","name":"orders","component":"Admin/OrderManagement","title":"订单信息","description":"这是订单信息","belong":{"uid":"6","name":"order_management","title":"订单管理","icon":"snippets"}},
-        {"uid":"12","name":"test","component":"test.js","title":"test","description":"这是test","belong":{"uid":"6","name":"t4","title":"财务管理","icon":"mail"}}
+        {"uid":"16","name":"add_article","component":"Admin/AddArticle","title":"新增文章","description":"这是新增文章","belong":{"uid":"8","name":"article_management","title":"文章管理","icon":"container"}},
+        {"uid":"17","name":"articles","component":"Admin/ArticleManagement","title":"文章管理","description":"这是文章管理","belong":{"uid":"8","name":"article_management","title":"文章管理","icon":"container"}}
       ]
     },
     "retCode": "200",
