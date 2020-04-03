@@ -1,4 +1,5 @@
-export const totalCountDown = 5;
+export const totalCountDown = 60;
+
 const initialState = {
     clientHeight: null,             //客户端高度
     clientWidth: null,              //客户端宽度

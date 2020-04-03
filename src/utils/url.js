@@ -96,4 +96,7 @@ export default {
     addArticle:()=>`${HOME}/article`,
     fetchArticles:(status,timeRange)=>`${HOME}/articles/${status}/${timeRange.startDate}/${timeRange.endDate}`,
     terminalArticle:(uid)=>`${HOME}/article/${uid}`,
+    idPswLogin:()=>`${HOME}/clerk/idLogin`,
+    sendClerkOtp:(contact)=>`${HOME}/clerk/sms?contact=${contact}`,
+    otpLogin:(contact,otp)=>`${HOME}/clerk/otpLogin?contact=${contact}&otp=${otp}`,
 }

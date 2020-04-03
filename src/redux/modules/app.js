@@ -53,7 +53,7 @@ export const actions = {
         }
     },
     setError: (error) => {
-        callNotification("error", error);
+        // callNotification("error", error);
         return ({
             type: types.SET_ERROR,
             error

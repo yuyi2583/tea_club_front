@@ -2,6 +2,7 @@ import { actions as appActions } from "./app";
 import { post, get } from "../../utils/request";
 import url from "../../utils/url";
 import { map, dynamicRoute } from "../../router";
+import { requestType } from "../../utils/common";
 
 const initialState = {
     user: new Object(),
@@ -14,6 +15,8 @@ const initialState = {
 //action types
 export const types = {
     LOGIN: "AUTH/LOGIN",                    //登录
+    SEND_OTP: "AUTH/SEND_OTP",//发送短信验证码
+    ////////////////////////////
     LOGOUT: "AUTH/LOGOUT",                  //注销
     CHECK_AUTHORITY: "AUTH/CHECK_AUTHORITY"  //检查权限
 };
@@ -21,11 +24,43 @@ export const types = {
 //action creators
 export const actions = {
     //职员身份证密码登陆
-    idPswLogin: (identityId, password) => {
+    idPswLogin: ({ identityId, password }) => {
         return (dispatch) => {
             dispatch(appActions.startRequest());
             const params = { identityId, password };
             return post(url.idPswLogin(), params).then((result) => {
+                dispatch(appActions.finishRequest());
+                if (!result.error) {
+                    dispatch(loginSuccess(convertAuthorityToPlainStructure(result.data)));
+                    return Promise.resolve();
+                } else {
+                    dispatch(appActions.setError(result.error));
+                    return Promise.reject(result.error);
+                }
+            });
+        }
+    },
+    //发送短信验证码
+    sendClerkOtp: (contact) => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest(requestType.modalRequest));
+            return post(url.sendClerkOtp(contact)).then((result) => {
+                dispatch(appActions.finishRequest(requestType.modalRequest));
+                if (!result.error) {
+                    dispatch(sendOtpSuccess());
+                    return Promise.resolve();
+                } else {
+                    dispatch(appActions.setError(result.error));
+                    return Promise.reject(result.error);
+                }
+            });
+        }
+    },
+    //短信验证码登陆
+    otpLogin: ({ contact, otp }) => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest());
+            return post(url.otpLogin(contact,otp)).then((result) => {
                 dispatch(appActions.finishRequest());
                 if (!result.error) {
                     dispatch(loginSuccess(convertAuthorityToPlainStructure(result.data)));
@@ -119,6 +154,10 @@ const loginSuccess = ({ user, byAuthorities, byAuthorityBelong }) => ({
     byAuthorityBelong
 })
 
+const sendOtpSuccess = () => ({
+    type: types.SEND_OTP
+})
+
 //reducers
 const reducer = (state = initialState, action) => {
     switch (action.type) {
@@ -138,7 +177,7 @@ export default reducer;
 export const getUser = (state) => state.adminAuth.user;
 export const getByAuthorities = (state) => state.adminAuth.byAuthorities;
 export const getByAuthorityBelong = (state) => state.adminAuth.byAuthorityBelong;
-export const getAuthorityBelong=(state)=>state.adminAuth.authorityBelong;
+export const getAuthorityBelong = (state) => state.adminAuth.authorityBelong;
 //////////////////////////////////////
 // export const getAuth = (state) => state.adminAuth;
 // //将权限类别转为数组
