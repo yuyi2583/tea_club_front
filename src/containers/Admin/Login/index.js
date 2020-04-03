@@ -1,7 +1,7 @@
 import React from "react";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import {actions as authActions,getAuth} from "../../../redux/modules/adminAuth";
+import {actions as authActions} from "../../../redux/modules/adminAuth";
 import { Form, Icon, Input, Button, Checkbox } from 'antd';
 import "./style.css";
 import {Redirect,Link} from "react-router-dom";
@@ -85,7 +85,7 @@ class NormalLoginForm extends React.Component {
 
 const mapStateToProps=(state,props)=>{
     return {
-        auth:getAuth(state)
+        // auth:getAuth(state)
     };
 };
 

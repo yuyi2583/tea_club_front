@@ -4,7 +4,7 @@ import { Descriptions, Button, Typography, Menu, Icon, Spin } from "antd";
 import { actions as orderActions, getByOrders, getOrders, getByOrderActivityRules, getByOrderClerks, getByOrderCustomers, getByProducts } from "../../../../../redux/modules/order";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { sex, fetchOrdersTimeRange } from "../../../../../utils/common";
+import { sex, fetchTimeRange } from "../../../../../utils/common";
 import OrderList from "./components/OrderList";
 import PictureDispaly from "../../../../../components/PictrueDispaly";
 
@@ -33,7 +33,7 @@ class CustomerDetail extends React.Component {
 
     fetchAllOrderByCustomer = () => {
         const { customerId } = this.props.match.params;
-        this.props.fetchOrdersByCustomer(customerId, fetchOrdersTimeRange["all"]());
+        this.props.fetchOrdersByCustomer(customerId, fetchTimeRange["all"]());
     }
 
     fetchOrdersByCustomerAndTimeRange = (timeRange) => {

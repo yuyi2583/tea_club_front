@@ -1,6 +1,6 @@
 import url from "../../utils/url";
 import { get, put, post, _delete } from "../../utils/request";
-import { requestType } from "../../utils/common";
+import { requestType,fetchTimeRange,fetchArticleStatus } from "../../utils/common";
 import { callNotification } from "../../utils/commonUtils";
 import { actions as appActions } from "./app";
 
@@ -72,11 +72,11 @@ export const actions = {
             });
         }
     },
-    //获取文章列表
-    fetchArticles: () => {
+    //根据条件获取文章列表
+    fetchArticles: (status = fetchArticleStatus.valid, timeRange = fetchTimeRange.last3Months()) => {
         return (dispatch) => {
             dispatch(appActions.startRequest());
-            return get(url.fetchArticles()).then((result) => {
+            return get(url.fetchArticles(status,timeRange)).then((result) => {
                 dispatch(appActions.finishRequest());
                 if (!result.error) {
                     dispatch(fetchArticlesSuccess(convertArticlesToPlainStructure(result.data)));
@@ -88,7 +88,7 @@ export const actions = {
             });
         }
     },
-    //将文昭失效不再展示
+    //将文章失效不再展示
     terminalArticle: (uid) => {
         return (dispatch) => {
             dispatch(appActions.startRequest());

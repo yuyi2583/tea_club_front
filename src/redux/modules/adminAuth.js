@@ -1,25 +1,43 @@
 import { actions as appActions } from "./app";
 import { post, get } from "../../utils/request";
 import url from "../../utils/url";
-import {map,dynamicRoute} from "../../router";
+import { map, dynamicRoute } from "../../router";
 
 const initialState = {
-    userId: null,
-    userName: null,
-    authority: {},
-    authorityBelong:[],
-    hasAuthority:false,
+    user: new Object(),
+    authorities: new Array(),
+    byAuthorities: new Object(),
+    authorityBelong: new Array(),
+    byAuthorityBelong: new Object(),
 };
 
 //action types
 export const types = {
     LOGIN: "AUTH/LOGIN",                    //登录
     LOGOUT: "AUTH/LOGOUT",                  //注销
-    CHECK_AUTHORITY:"AUTH/CHECK_AUTHORITY"  //检查权限
+    CHECK_AUTHORITY: "AUTH/CHECK_AUTHORITY"  //检查权限
 };
 
 //action creators
 export const actions = {
+    //职员身份证密码登陆
+    idPswLogin: (identityId, password) => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest());
+            const params = { identityId, password };
+            return post(url.idPswLogin(), params).then((result) => {
+                dispatch(appActions.finishRequest());
+                if (!result.error) {
+                    dispatch(loginSuccess(convertAuthorityToPlainStructure(result.data)));
+                    return Promise.resolve();
+                } else {
+                    dispatch(appActions.setError(result.error));
+                    return Promise.reject(result.error);
+                }
+            });
+        }
+    },
+    ////////////////////////////////////////
     forgetPsw: (phoneNumber, verifyNumber, idNumber, password) => {
         return (dispatch) => {
             dispatch(appActions.startRequest());
@@ -27,7 +45,7 @@ export const actions = {
             return get(url.adminForget(), params).then((data) => {
                 dispatch(appActions.finishRequest());
                 if (!data.error) {
-                    dispatch(actions.setLoginInfo({...data.user}));
+                    dispatch(actions.setLoginInfo({ ...data.user }));
                 } else {
                     dispatch(appActions.setError(data.error));
                 }
@@ -45,8 +63,8 @@ export const actions = {
                 dispatch(appActions.finishRequest());
                 // 请求返回成功，保存登录用户的信息，否则，设置全局错误信息
                 if (!result.error) {
-                    const {userId,userName,authority,authorityBelong}=convertToPlainStructure(result.data);
-                    dispatch(actions.setLoginInfo(userId, userName,authority,authorityBelong));
+                    const { userId, userName, authority, authorityBelong } = convertAuthorityToPlainStructure(result.data);
+                    dispatch(actions.setLoginInfo(userId, userName, authority, authorityBelong));
                 } else {
                     dispatch(appActions.setError(result.msg));
                 }
@@ -57,7 +75,7 @@ export const actions = {
     logout: () => ({
         type: types.LOGOUT
     }),
-    setLoginInfo: (userId, userName,authority,authorityBelong) => ({
+    setLoginInfo: (userId, userName, authority, authorityBelong) => ({
         type: types.LOGIN,
         userId,
         userName,
@@ -66,41 +84,49 @@ export const actions = {
     })
 };
 
-const convertToPlainStructure=( {userId,userName,authority})=>{
-    let byAuthority={};
-    let byAuthorityBelong={};
-    authority.forEach((item)=>{
-        byAuthority[item.uid]={
+const convertAuthorityToPlainStructure = (data) => {
+    let authorities = new Array();
+    let byAuthorities = new Object;
+    let authorityBelong = new Array()
+    let byAuthorityBelong = new Object();
+    data.authorities.forEach((item) => {
+        authorities.push(item.uid);
+        authorityBelong.push(item.uid);
+        byAuthorities[item.uid] = {
             ...item,
-            belong:item.belong.uid,
-            pathname:map.admin.AdminHome()+"/"+item.belong.name+"/"+item.name
+            belong: item.belong.uid,
+            pathname: map.admin.AdminHome() + "/" + item.belong.name + "/" + item.name
         };
-        if(!byAuthorityBelong[item.belong.uid]){
-            byAuthorityBelong[item.belong.uid]=item.belong;
+        if (!byAuthorityBelong[item.belong.uid]) {
+            byAuthorityBelong[item.belong.uid] = item.belong;
         }
     });
-    byAuthority=dynamicRoute(byAuthority);
+
+    //根据账户权限动态配置路由
+    byAuthorities = dynamicRoute(byAuthorities);
     return {
-        userId,
-        userName,
-        authority:byAuthority,
-        authorityBelong:byAuthorityBelong,
+        user: { ...data, authorities },
+        byAuthorities,
+        authorityBelong,
+        byAuthorityBelong
     };
 }
+
+const loginSuccess = ({ user, byAuthorities, byAuthorityBelong }) => ({
+    type: types.LOGIN,
+    user,
+    byAuthorities,
+    byAuthorityBelong
+})
 
 //reducers
 const reducer = (state = initialState, action) => {
     switch (action.type) {
         case types.LOGIN:
-            return { 
-                ...state, 
-                userId: action.userId, 
-                userName: action.userName,
-                authority:action.authority,
-                authorityBelong:action.authorityBelong 
-            };
+            return { ...state, user: action.user, byAuthorities: action.byAuthorities, byAuthorityBelong: action.byAuthorityBelong, authorityBelong: action.authorityBelong };
+        ///////////////////////////////
         case types.LOGOUT:
-            return { ...state, userId: null, userName: null,authority:[] };
+            return { ...state, userId: null, userName: null, authority: [] };
         default:
             return state;
     }
@@ -109,22 +135,27 @@ const reducer = (state = initialState, action) => {
 export default reducer;
 
 //selector
-export const getAuth = (state) => state.adminAuth;
-//将权限类别转为数组
-export const getAuthorityBelong=(state)=>{
-    const {authorityBelong}=state.adminAuth;
-    let byAuthorityBelong=[];
-    for (var key in authorityBelong){
-        byAuthorityBelong.push(authorityBelong[key]);
-    }
-    return byAuthorityBelong;
-}
-//将权限转为数组
-export const getAuthority=(state)=>{
-    const {authority}=state.adminAuth;
-    let byAuthority=[];
-    for(var key in authority){
-        byAuthority.push(authority[key]);
-    }
-    return byAuthority;
-}
+export const getUser = (state) => state.adminAuth.user;
+export const getByAuthorities = (state) => state.adminAuth.byAuthorities;
+export const getByAuthorityBelong = (state) => state.adminAuth.byAuthorityBelong;
+export const getAuthorityBelong=(state)=>state.adminAuth.authorityBelong;
+//////////////////////////////////////
+// export const getAuth = (state) => state.adminAuth;
+// //将权限类别转为数组
+// export const getAuthorityBelong = (state) => {
+//     const { authorityBelong } = state.adminAuth;
+//     let byAuthorityBelong = [];
+//     for (var key in authorityBelong) {
+//         byAuthorityBelong.push(authorityBelong[key]);
+//     }
+//     return byAuthorityBelong;
+// }
+// //将权限转为数组
+// export const getAuthority = (state) => {
+//     const { authority } = state.adminAuth;
+//     let byAuthority = [];
+//     for (var key in authority) {
+//         byAuthority.push(authority[key]);
+//     }
+//     return byAuthority;
+// }

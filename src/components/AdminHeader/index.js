@@ -6,7 +6,7 @@ import { connect } from "react-redux";
 import { actions as uiActions, getMessageDrawerState } from "../../redux/modules/ui";
 import { Link } from "react-router-dom";
 import { map } from "../../router";
-import { actions as authActions, getAuth } from "../../redux/modules/adminAuth";
+import { actions as authActions,getUser } from "../../redux/modules/adminAuth";
 import Brand from "../../assets/brand.svg";
 
 const { Header } = Layout;
@@ -18,6 +18,7 @@ class AdminHeader extends React.Component {
     }
 
     render() {
+        const {user}=this.props;
         const { from } = this.props.location.state || { from: { pathname: map.admin.AdminHome() } };
         const content = (
             <div style={{ width: "150px" }}>
@@ -25,7 +26,7 @@ class AdminHeader extends React.Component {
                     <Row gutter={8}>
                         <Col span={8}><Icon type="user" /></Col>
                         <Col span={16}>
-                            {this.props.auth.userName}
+                            {user.name}
                         </Col>
                     </Row>
                 </Button>
@@ -88,7 +89,7 @@ class AdminHeader extends React.Component {
 const mapStateToProps = (state, props) => {
     return {
         openDrawer: getMessageDrawerState(state),
-        auth: getAuth(state)
+        user:getUser(state)
     }
 };
 

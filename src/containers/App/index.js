@@ -8,7 +8,7 @@ import {
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actions as appActions, getError, getRetrieveRequestQuantity, getCompanyInfo } from "../../redux/modules/app";
-import { getAuth } from "../../redux/modules/adminAuth";
+import {  } from "../../redux/modules/adminAuth";
 import { actions as uiActions, getClientHeight, getClientWidth } from "../../redux/modules/ui";
 import { map } from "../../router";
 import asyncComponent from "../../utils/AsyncComponent";
@@ -45,7 +45,7 @@ const mapStateToProps = (state, props) => {
   return {
     error: getError(state),
     // requestQuantity: getRetrieveRequestQuantity(state),
-    auth: getAuth(state),
+    // auth: getAuth(state),
     clientWidth: getClientWidth(state),
     clientHeight: getClientHeight(state),
     // companyInfo: getCompanyInfo(state),

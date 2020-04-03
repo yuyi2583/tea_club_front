@@ -9,7 +9,7 @@ import Header from "../../../components/AdminHeader";
 import Drawer from "../../../components/MessageDrawer";
 import Routers, { map } from "../../../router";
 import { Route, Redirect, Switch } from "react-router-dom";
-import { actions as authActions, getAuth, getAuthority } from "../../../redux/modules/adminAuth";
+import { actions as authActions, getUser, getByAuthorities, getByAuthorityBelong } from "../../../redux/modules/adminAuth";
 import { getRetrieveRequestQuantity, getError } from "../../../redux/modules/app";
 
 const { Content, Sider } = Layout;
@@ -18,12 +18,12 @@ class App extends React.Component {
 
     componentDidMount() {
         //调试用，避免每次热更新都要重新登录，生产环境需要删除
-        this.props.login("123", "1");
+        // this.props.login("123", "1");
     }
 
     render() {
         const { from } = this.props.location.state || { from: { pathname: map.admin.AdminHome() } };
-        const { authority,requestQuantity,error } = this.props;
+        const { user, byAuthorities, byAuthorityBelong, retrieveRequestQuantity, error } = this.props;
         return (
             <Layout>
                 <Header location={this.props.location} />
@@ -56,8 +56,8 @@ class App extends React.Component {
                                     {Routers.admin.map((item, index) => {
                                         return <Route key={index} path={item.path} exact render={(props) => (
                                             !item.auth ? <item.component {...props} /> :
-                                                // this.props.auth.userId ? 
-                                                true ?
+                                                user.name != undefined ?
+                                                    // true ?
                                                     <item.component {...props} /> :
                                                     <Redirect to={{
                                                         pathname: map.admin.AdminLogin(),
@@ -65,12 +65,12 @@ class App extends React.Component {
                                                     }} />
                                         )} />
                                     })}
-                                    {authority.map((item) => {
+                                    {user.authorities != undefined && user.authorities.map((item) => {
                                         return <Route key={item.uid} path={item.pathname} render={(props) => (
-                                            !item.auth ? <item.component {...props} authority={authority}/> :
-                                                // this.props.auth.userId ? 
-                                                true ?
-                                                    <item.component {...props} authority={authority}/> :
+                                            !item.auth ? <item.component {...props} authority={byAuthorities} /> :
+                                                user.name != undefined ?
+                                                    // true ?
+                                                    <item.component {...props} authority={byAuthorities} /> :
                                                     <Redirect to={{
                                                         pathname: map.admin.AdminLogin(),
                                                         state: { from }
@@ -95,8 +95,9 @@ class App extends React.Component {
 const mapStateToProps = (state, props) => {
     return {
         clientHeight: getClientHeight(state),
-        auth: getAuth(state),
-        authority: getAuthority(state),
+        user: getUser(state),
+        byAuthorities: getByAuthorities(state),
+        byAuthorityBelong: getByAuthorityBelong(state),
     }
 }
 

@@ -59,7 +59,7 @@ export const enterpriseCustomerApplicationStatus = {
     "reject": "审核未通过"
 }
 
-export const fetchOrdersTimeRange = {
+export const fetchTimeRange = {
     all: () => ({ startDate: -1, endDate: getNDaysAgoTimeStamp(-1) }),
     last3Months: () => ({ startDate: getNDaysAgoTimeStamp(90), endDate: getNDaysAgoTimeStamp(-1) }),
 }
@@ -81,4 +81,10 @@ export const fetchOrderStatus={
     "refunded":"refunded",
     "complete":"complete",
     "rejectRefund":"rejectRefund",
+}
+
+export const fetchArticleStatus={
+    "all":"all",
+    "valid":"valid",
+    "invalid":"invalid",
 }

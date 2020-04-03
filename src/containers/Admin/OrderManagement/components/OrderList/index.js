@@ -2,7 +2,7 @@ import React from "react";
 import { actions as orderActions, getByOrders, getOrders, getByOrderActivityRules, getByOrderClerks, getByOrderCustomers, getByProducts } from "../../../../../redux/modules/order";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { fetchOrdersTimeRange } from "../../../../../utils/common";
+import { fetchTimeRange } from "../../../../../utils/common";
 import { Button, Icon, Input, Spin, Tooltip, Table, Modal, DatePicker, Typography, Row, Col, Select } from "antd";
 import { map } from "../../../../../router";
 import { Link } from "react-router-dom";
@@ -207,7 +207,7 @@ class OrderList extends React.Component {
 
     fetchAllOrders = () => {
         this.setState({ status: undefined, startDate: null, endDate: null });
-        this.props.fetchOrders(fetchOrderStatus.all, fetchOrdersTimeRange["all"]());
+        this.props.fetchOrders(fetchOrderStatus.all, fetchTimeRange["all"]());
     }
 
     handleSelectChange = (value) => {

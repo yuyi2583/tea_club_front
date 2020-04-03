@@ -3,10 +3,10 @@ import { Menu, Icon } from 'antd';
 import "./style.css";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { getAuthority, getAuthorityBelong } from "../../redux/modules/adminAuth";
-import {Link} from "react-router-dom";
-import {map} from "../../router";
-import {actions as uiActions} from "../../redux/modules/ui";
+import { getByAuthorities, getByAuthorityBelong, getUser,getAuthorityBelong } from "../../redux/modules/adminAuth";
+import { Link } from "react-router-dom";
+import { map } from "../../router";
+import { actions as uiActions } from "../../redux/modules/ui";
 
 const { SubMenu } = Menu;
 
@@ -32,7 +32,7 @@ class SiderContent extends React.Component {
 
   componentDidMount() {
     const { authorityBelong } = this.props;
-    authorityBelong.forEach((item)=>{
+    authorityBelong.forEach((item) => {
       this.rootSubmenuKeys.push(item.uid);
     })
     // this.setState({openKeys:authorityBelong[0].id});
@@ -42,13 +42,13 @@ class SiderContent extends React.Component {
     // this.props.fetchSiderContent(user)
   }
 
-  handleClick=()=>{
+  handleClick = () => {
     this.props.selectShop_shopManagement("请选择门店");
     this.props.finishAlterInfo();
   }
 
   render() {
-    const { authorityBelong, authority } = this.props;
+    const { user,byAauthorities,byAuthorityBelong ,authorityBelong} = this.props;
     return (
       <div id="siderContent-outer-container">
         <Menu
@@ -59,25 +59,25 @@ class SiderContent extends React.Component {
           style={{ borderRight: 0 }}
         >
           {
-            authorityBelong.map((belong,index) => {
+            authorityBelong.map((belong, index) => {
               return (
                 <SubMenu
                   key={index}
                   title={
                     <span>
-                      <Icon type={belong.icon} />
-                      <span>{belong.title}</span>
+                      <Icon type={byAuthorityBelong[belong].icon} />
+                      <span>{byAuthorityBelong[belong].title}</span>
                     </span>
                   }>
-                    {authority.filter((item)=>item.belong===belong.uid).map((item)=>{
-                      return (
-                        <Menu.Item key={item.uid} onClick={this.handleClick}>
-                          <Link to={{
-                            pathname:item.pathname,
-                          }}>{item.title}</Link>
-                        </Menu.Item>
-                      )
-                    })}
+                  {user.authorities.filter((uid) => byAauthorities[uid].belong === belong).map((uid) => {
+                    return (
+                      <Menu.Item key={uid} onClick={this.handleClick}>
+                        <Link to={{
+                          pathname: byAauthorities[uid].pathname,
+                        }}>{byAauthorities[uid].title}</Link>
+                      </Menu.Item>
+                    )
+                  })}
                 </SubMenu>
               )
             })
@@ -90,14 +90,16 @@ class SiderContent extends React.Component {
 
 const mapStateToProps = (state, props) => {
   return {
-    authorityBelong: getAuthorityBelong(state),
-    authority: getAuthority(state)
+    byAuthorityBelong: getByAuthorityBelong(state),
+    byAauthorities: getByAuthorities(state),
+    user: getUser(state),
+    authorityBelong:getAuthorityBelong(state),
   }
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    ...bindActionCreators(uiActions,dispatch)
+    ...bindActionCreators(uiActions, dispatch)
   }
 }
 

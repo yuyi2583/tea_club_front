@@ -1,21 +1,26 @@
 import React from "react";
-import { Button, Icon, Divider, Input, Spin, Modal, Tooltip, Table,Tag } from "antd";
+import { Button, Icon, Divider, Input, Spin, Modal, Tooltip, Table, Tag, Select, DatePicker } from "antd";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actions as articleActions, getArticles, getByArticles, getTags, getByTags } from "../../../../../redux/modules/article";
-import { activityStatus } from "../../../../../utils/common";
-import { judgeActivityStatus } from "../../../../../utils/commonUtils";
+import { fetchArticleStatus, fetchTimeRange } from "../../../../../utils/common";
 import { Link } from "react-router-dom";
 import Highlighter from 'react-highlight-words';
-import { timeStampConvertToFormatTime } from "../../../../../utils/timeUtil";
-import { stringWithEllipsis } from "../../../../../utils/stringUtil";
+import { timeStampConvertToFormatTime, getNDaysAgoTimeStamp } from "../../../../../utils/timeUtil";
+import moment from 'moment';
 
+const { RangePicker } = DatePicker;
 const { confirm } = Modal;
+const { Option } = Select;
+const format = "YYYY-MM-DD";
 
 class ArticleList extends React.Component {
     state = {
         searchText: '',
         searchedColumn: '',
+        status: undefined,
+        startDate: undefined,
+        endDate: undefined,
     };
 
     getColumnSearchProps = dataIndex => ({
@@ -95,7 +100,7 @@ class ArticleList extends React.Component {
                     ...byArticles[uid],
                     tags: byArticles[uid].tags.map(uid => <Tag key={uid}>{byTags[uid].name}</Tag>),
                     time: timeStampConvertToFormatTime(byArticles[uid].time),
-                    status:byArticles[uid].enforceTerminal?"已失效":"展示中"
+                    status: byArticles[uid].enforceTerminal ? "已失效" : "展示中"
                 };
                 dataSource.push(dataItem);
             })
@@ -136,15 +141,17 @@ class ArticleList extends React.Component {
                 key: "action",
                 render: (text, record) => (
                     <span>
-                        <Tooltip title={`查看详细信息`}>
-                            <Link to={`${match.url}/article/${record.uid}`}>查看</Link>
+                        <Tooltip title={`查看文章内容`}>
+                            <a href={record.url} target="blank">查看</a>
                         </Tooltip>
-                        <Divider type="vertical" />
-                        <Tooltip title={`不在网站展示此文章`}>
-                            {record.enforceTerminal ? null :
-                                <a onClick={() => this.terminalArticle(record.uid)}>失效</a>
-                            }
-                        </Tooltip>
+                        {record.enforceTerminal ? null :
+                            <span>
+                                <Divider type="vertical" />
+                                <Tooltip title={`不在网站展示此文章`}>
+                                    <a onClick={() => this.terminalArticle(record.uid)}>失效</a>
+                                </Tooltip>
+                            </span>
+                        }
                     </span>
                 ),
             }
@@ -178,13 +185,72 @@ class ArticleList extends React.Component {
         this.props.fetchArticles();
     }
 
+    disabledDate = (current) => {
+        return current > moment().endOf('day');
+    }
+
+    timeRangeChange = (value) => {
+        const startDate = new Date(value[0].format()).getTime();
+        const endDate = new Date(value[1].format()).getTime();
+        this.setState({ startDate, endDate });
+    }
+
+    selectRange = (dates) => {
+        const { startDate, endDate } = this.state;
+        let { status } = this.state;
+        if (status == undefined) {
+            status = "all";
+        }
+        this.props.fetchArticles(status, { startDate, endDate });
+    }
+
+    getDurationValue = () => {
+        const { startDate, endDate } = this.state;
+        let duration = new Array();
+        if (startDate == undefined && endDate == undefined) {
+            return duration;
+        }
+        duration.push(moment(timeStampConvertToFormatTime(startDate), format));
+        duration.push(moment(timeStampConvertToFormatTime(endDate), format));
+        return duration;
+    }
+    handleSelectChange = (value) => {
+        console.log("select", value);
+        this.setState({ status: value });
+        let { startDate, endDate } = this.state;
+        if (startDate == undefined) {
+            startDate = -1;
+        }
+        if (endDate == undefined) {
+            endDate = getNDaysAgoTimeStamp(-1);
+        }
+        this.props.fetchArticles(value, { startDate, endDate });
+    }
+
+    fetchAllArticles = () => {
+        this.setState({ status: undefined, startDate: null, endDate: null });
+        this.props.fetchArticles(fetchArticleStatus.all, fetchTimeRange["all"]());
+    }
+
     render() {
         const data = this.getDataSource();
         const columns = this.getColmuns();
         const { retrieveRequestQuantity } = this.props;
+        const { status } = this.state;
         return (
             <div>
                 <Spin spinning={retrieveRequestQuantity > 0}>
+                    <span>默认加载最近三个月未失效文章</span>
+                    <Button type="link" onClick={this.fetchAllArticles}>加载所有文章</Button>
+                    <div>
+                        <Select placeholder="请选择文章类型" onChange={this.handleSelectChange} style={{ width: 200 }} value={status}>
+                            <Option value="all">所有文章</Option>
+                            <Option value="valid">有效文章</Option>
+                            <Option value="invalid">失效文章</Option>
+                        </Select>
+                        &nbsp;&nbsp;
+                        <RangePicker showTime format={format} disabledDate={this.disabledDate} onChange={this.timeRangeChange} onOk={this.selectRange} value={this.getDurationValue()} />
+                    </div>
                     <Table
                         columns={columns}
                         dataSource={data} />

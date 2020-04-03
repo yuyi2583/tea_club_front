@@ -94,6 +94,6 @@ export default {
     fetchTags:()=>`${HOME}/tags`,
     addTag:()=>`${HOME}/tag`,
     addArticle:()=>`${HOME}/article`,
-    fetchArticles:()=>`${HOME}/articles`,
+    fetchArticles:(status,timeRange)=>`${HOME}/articles/${status}/${timeRange.startDate}/${timeRange.endDate}`,
     terminalArticle:(uid)=>`${HOME}/article/${uid}`,
 }
