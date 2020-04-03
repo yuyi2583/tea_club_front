@@ -72,6 +72,22 @@ export const actions = {
             });
         }
     },
+    //刷新页面后验证登陆
+    verifyLogin:()=>{
+        return (dispatch) => {
+            dispatch(appActions.startRequest());
+            return get(url.verifyLogin()).then((result) => {
+                dispatch(appActions.finishRequest());
+                if (!result.error) {
+                    // dispatch(loginSuccess(convertAuthorityToPlainStructure(result.data)));
+                    return Promise.resolve();
+                } else {
+                    dispatch(appActions.setError(result.error));
+                    return Promise.reject(result.error);
+                }
+            });
+        }
+    },
     ////////////////////////////////////////
     forgetPsw: (phoneNumber, verifyNumber, idNumber, password) => {
         return (dispatch) => {
@@ -126,7 +142,9 @@ const convertAuthorityToPlainStructure = (data) => {
     let byAuthorityBelong = new Object();
     data.authorities.forEach((item) => {
         authorities.push(item.uid);
-        authorityBelong.push(item.uid);
+        if(authorityBelong.indexOf(item.belong.uid)==-1){
+            authorityBelong.push(item.belong.uid)
+        }
         byAuthorities[item.uid] = {
             ...item,
             belong: item.belong.uid,
@@ -147,11 +165,12 @@ const convertAuthorityToPlainStructure = (data) => {
     };
 }
 
-const loginSuccess = ({ user, byAuthorities, byAuthorityBelong }) => ({
+const loginSuccess = ({ user, byAuthorities, byAuthorityBelong,authorityBelong }) => ({
     type: types.LOGIN,
     user,
     byAuthorities,
-    byAuthorityBelong
+    byAuthorityBelong,
+    authorityBelong
 })
 
 const sendOtpSuccess = () => ({

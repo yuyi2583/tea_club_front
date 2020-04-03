@@ -3,12 +3,14 @@ import { callNotification } from "./commonUtils";
 const headers = new Headers({
   "Accept": "application/json",
   "Content-Type": "application/json",
+
 });
 
 function get(url) {
   return fetch(url, {
     method: "GET",
     headers: headers,
+    credentials: "include"  //携带cookie的配置
   }).then(response => {
     return handleResponse(url, response);
   }).catch(err => {
@@ -22,6 +24,7 @@ function _delete(url) {
   return fetch(url, {
     method: "DELETE",
     headers: headers,
+    credentials: "include"  //携带cookie的配置
   }).then(response => {
     return handleResponse(url, response);
   }).catch(err => {
@@ -35,7 +38,8 @@ function put(url, params) {
   return fetch(url, {
     method: "PUT",
     headers: headers,
-    body: JSON.stringify(params)
+    body: JSON.stringify(params),
+    credentials: "include"  //携带cookie的配置
   }).then(response => {
     return handleResponse(url, response);
   }).catch(err => {
@@ -50,7 +54,8 @@ function post(url, params) {
   return fetch(url, {
     method: "POST",
     headers: headers,
-    body: JSON.stringify(params)
+    body: JSON.stringify(params),
+    credentials: "include"  //携带cookie的配置
   }).then(response => {
     return handleResponse(url, response);
   }).catch(err => {

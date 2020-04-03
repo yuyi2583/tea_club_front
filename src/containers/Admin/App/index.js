@@ -17,8 +17,9 @@ const { Content, Sider } = Layout;
 class App extends React.Component {
 
     componentDidMount() {
-        //调试用，避免每次热更新都要重新登录，生产环境需要删除
-        // this.props.login("123", "1");
+        console.log(" i am in");
+        //页面刷新后发送请求给后端验证是否已经登陆，未登录则跳转会登陆界面
+        this.props.verifyLogin();
     }
 
     render() {
@@ -65,17 +66,20 @@ class App extends React.Component {
                                                     }} />
                                         )} />
                                     })}
-                                    {user.authorities != undefined && user.authorities.map((item) => {
-                                        return <Route key={item.uid} path={item.pathname} render={(props) => (
-                                            !item.auth ? <item.component {...props} authority={byAuthorities} /> :
-                                                user.name != undefined ?
-                                                    // true ?
-                                                    <item.component {...props} authority={byAuthorities} /> :
-                                                    <Redirect to={{
-                                                        pathname: map.admin.AdminLogin(),
-                                                        state: { from }
-                                                    }} />
-                                        )} />
+                                    {user.authorities != undefined && user.authorities.map((uid) => {
+                                        return <Route key={uid} path={byAuthorities[uid].pathname} render={(props) => {
+                                            const item = byAuthorities[uid];
+                                            return (
+                                                !byAuthorities[uid].auth ? <item.component {...props} authority={byAuthorities} /> :
+                                                    user.name != undefined ?
+                                                        // true ?
+                                                        <item.component {...props} authority={byAuthorities} /> :
+                                                        <Redirect to={{
+                                                            pathname: map.admin.AdminLogin(),
+                                                            state: { from }
+                                                        }} />
+                                            )
+                                        }} />
                                     })}
                                     <Redirect to={{
                                         pathname: map.error(),

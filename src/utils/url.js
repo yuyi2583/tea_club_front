@@ -99,4 +99,5 @@ export default {
     idPswLogin:()=>`${HOME}/clerk/idLogin`,
     sendClerkOtp:(contact)=>`${HOME}/clerk/sms?contact=${contact}`,
     otpLogin:(contact,otp)=>`${HOME}/clerk/otpLogin?contact=${contact}&otp=${otp}`,
+    verifyLogin:()=>`${HOME}/verifyLogin`
 }
