@@ -16,7 +16,7 @@ const initialState = {
 export const types = {
     LOGIN: "AUTH/LOGIN",                    //登录
     SEND_OTP: "AUTH/SEND_OTP",//发送短信验证码
-    VERIFY_LOGIN:"AUTH/VERIFY_LOGIN",
+    VERIFY_TOKEN:"AUTH/VERIFY_TOKEN",
     ////////////////////////////
     LOGOUT: "AUTH/LOGOUT",                  //注销
     CHECK_AUTHORITY: "AUTH/CHECK_AUTHORITY"  //检查权限
@@ -42,7 +42,7 @@ export const actions = {
         }
     },
     //发送短信验证码
-    sendOtp: (contact) => {
+    sendClerkOtp: (contact) => {
         return (dispatch) => {
             dispatch(appActions.startRequest(requestType.modalRequest));
             return post(url.sendClerkOtp(contact)).then((result) => {
@@ -74,13 +74,13 @@ export const actions = {
         }
     },
     //刷新页面后验证登陆
-    verifyLogin:()=>{
+    verifyToken:()=>{
         return (dispatch) => {
             dispatch(appActions.startRequest());
-            return get(url.verifyLogin()).then((result) => {
+            return get(url.verifyToken()).then((result) => {
                 dispatch(appActions.finishRequest());
                 if (!result.error) {
-                    dispatch(verifyLoginSuccess(convertAuthorityToPlainStructure(result.data)));
+                    dispatch(verifyTokenSuccess(convertAuthorityToPlainStructure(result.data)));
                     return Promise.resolve();
                 } else {
                     dispatch(appActions.setError(result.error));
@@ -178,8 +178,8 @@ const sendOtpSuccess = () => ({
     type: types.SEND_OTP
 })
 
-const verifyLoginSuccess=({ user, byAuthorities, byAuthorityBelong,authorityBelong }) => ({
-    type: types.VERIFY_LOGIN,
+const verifyTokenSuccess=({ user, byAuthorities, byAuthorityBelong,authorityBelong }) => ({
+    type: types.VERIFY_TOKEN,
     user,
     byAuthorities,
     byAuthorityBelong,
@@ -189,7 +189,7 @@ const verifyLoginSuccess=({ user, byAuthorities, byAuthorityBelong,authorityBelo
 //reducers
 const reducer = (state = initialState, action) => {
     switch (action.type) {
-        case types.VERIFY_LOGIN:
+        case types.VERIFY_TOKEN:
         case types.LOGIN:
             return { ...state, user: action.user, byAuthorities: action.byAuthorities, byAuthorityBelong: action.byAuthorityBelong, authorityBelong: action.authorityBelong };
         ///////////////////////////////

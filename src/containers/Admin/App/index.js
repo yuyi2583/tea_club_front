@@ -20,7 +20,7 @@ class App extends React.Component {
 
     componentDidMount() {
         //页面刷新后发送请求给后端验证是否已经登陆，未登录则跳转会登陆界面
-        this.props.verifyLogin()
+        this.props.verifyToken()
             .then(() => {
                 this.setState({ isVerifying: false });
             })

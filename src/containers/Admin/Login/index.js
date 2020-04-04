@@ -78,11 +78,16 @@ class NormalLoginForm extends React.Component {
             clearInterval(this.timer);
           }
         }, 1000);
+        alert("验证码已发送");
       })
       .catch(error => {
         this.setState({ error })
       })
 
+  }
+
+  componentWillMount(){
+    clearInterval(this.timer);
   }
 
   render() {

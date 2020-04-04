@@ -97,7 +97,7 @@ export default {
     fetchArticles:(status,timeRange)=>`${HOME}/admin/articles/${status}/${timeRange.startDate}/${timeRange.endDate}`,
     terminalArticle:(uid)=>`${HOME}/admin/article/${uid}`,
     idPswLogin:()=>`${HOME}/admin/idLogin`,
-    sendOtp:(contact)=>`${HOME}/sms?contact=${contact}`,
+    sendClerkOtp:(contact)=>`${HOME}/clerkSms?contact=${contact}`,
     otpLogin:(contact,otp)=>`${HOME}/admin/otpLogin?contact=${contact}&otp=${otp}`,
-    verifyLogin:()=>`${HOME}/verifyLogin`
+    verifyToken:()=>`${HOME}/verifyLogin`
 }
