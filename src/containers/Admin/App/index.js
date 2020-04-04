@@ -1,5 +1,5 @@
 import React from "react";
-import { Layout, Breadcrumb } from 'antd';
+import { Layout } from 'antd';
 import "./style.css";
 import SiderContent from "../../../components/SiderContent";
 import { bindActionCreators } from "redux";
@@ -10,21 +10,30 @@ import Drawer from "../../../components/MessageDrawer";
 import Routers, { map } from "../../../router";
 import { Route, Redirect, Switch } from "react-router-dom";
 import { actions as authActions, getUser, getByAuthorities, getByAuthorityBelong } from "../../../redux/modules/adminAuth";
-import { getRetrieveRequestQuantity, getError } from "../../../redux/modules/app";
 
 const { Content, Sider } = Layout;
 
 class App extends React.Component {
+    state = {
+        isVerifying: true
+    }
 
     componentDidMount() {
-        console.log(" i am in");
         //页面刷新后发送请求给后端验证是否已经登陆，未登录则跳转会登陆界面
-        this.props.verifyLogin();
+        this.props.verifyLogin()
+            .then(() => {
+                this.setState({ isVerifying: false });
+            })
+            .catch((err) => {
+                this.props.callMessage("error", err);
+                this.setState({ isVerifying: false });
+            });
     }
 
     render() {
         const { from } = this.props.location.state || { from: { pathname: map.admin.AdminHome() } };
-        const { user, byAuthorities, byAuthorityBelong, retrieveRequestQuantity, error } = this.props;
+        const { user, byAuthorities } = this.props;
+        const { isVerifying } = this.state;
         return (
             <Layout>
                 <Header location={this.props.location} />
@@ -58,12 +67,12 @@ class App extends React.Component {
                                         return <Route key={index} path={item.path} exact render={(props) => (
                                             !item.auth ? <item.component {...props} /> :
                                                 user.name != undefined ?
-                                                    // true ?
                                                     <item.component {...props} /> :
-                                                    <Redirect to={{
-                                                        pathname: map.admin.AdminLogin(),
-                                                        state: { from }
-                                                    }} />
+                                                    isVerifying ? <item.component {...props} /> :
+                                                        <Redirect to={{
+                                                            pathname: map.admin.AdminLogin(),
+                                                            state: { from }
+                                                        }} />
                                         )} />
                                     })}
                                     {user.authorities != undefined && user.authorities.map((uid) => {
@@ -72,12 +81,12 @@ class App extends React.Component {
                                             return (
                                                 !byAuthorities[uid].auth ? <item.component {...props} authority={byAuthorities} /> :
                                                     user.name != undefined ?
-                                                        // true ?
                                                         <item.component {...props} authority={byAuthorities} /> :
-                                                        <Redirect to={{
-                                                            pathname: map.admin.AdminLogin(),
-                                                            state: { from }
-                                                        }} />
+                                                        isVerifying ? <item.component {...props} /> :
+                                                            <Redirect to={{
+                                                                pathname: map.admin.AdminLogin(),
+                                                                state: { from }
+                                                            }} />
                                             )
                                         }} />
                                     })}

@@ -13,7 +13,7 @@ class NotFound extends React.Component {
   }
 
   render() {
-    const { from } = this.props.location.state || { from: { pathname: map.client.ClientHome() } };
+    const { from } = { from: { pathname: map.admin.AdminHome() } };//this.props.location.state || { from: { pathname: map.client.ClientHome() } };
     // console.log(from);
     return (<Result
       status="404"

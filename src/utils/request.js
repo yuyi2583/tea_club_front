@@ -3,7 +3,6 @@ import { callNotification } from "./commonUtils";
 const headers = new Headers({
   "Accept": "application/json",
   "Content-Type": "application/json",
-
 });
 
 function get(url) {

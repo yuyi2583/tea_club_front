@@ -16,6 +16,7 @@ const initialState = {
 export const types = {
     LOGIN: "AUTH/LOGIN",                    //登录
     SEND_OTP: "AUTH/SEND_OTP",//发送短信验证码
+    VERIFY_LOGIN:"AUTH/VERIFY_LOGIN",
     ////////////////////////////
     LOGOUT: "AUTH/LOGOUT",                  //注销
     CHECK_AUTHORITY: "AUTH/CHECK_AUTHORITY"  //检查权限
@@ -41,7 +42,7 @@ export const actions = {
         }
     },
     //发送短信验证码
-    sendClerkOtp: (contact) => {
+    sendOtp: (contact) => {
         return (dispatch) => {
             dispatch(appActions.startRequest(requestType.modalRequest));
             return post(url.sendClerkOtp(contact)).then((result) => {
@@ -79,7 +80,7 @@ export const actions = {
             return get(url.verifyLogin()).then((result) => {
                 dispatch(appActions.finishRequest());
                 if (!result.error) {
-                    // dispatch(loginSuccess(convertAuthorityToPlainStructure(result.data)));
+                    dispatch(verifyLoginSuccess(convertAuthorityToPlainStructure(result.data)));
                     return Promise.resolve();
                 } else {
                     dispatch(appActions.setError(result.error));
@@ -177,9 +178,18 @@ const sendOtpSuccess = () => ({
     type: types.SEND_OTP
 })
 
+const verifyLoginSuccess=({ user, byAuthorities, byAuthorityBelong,authorityBelong }) => ({
+    type: types.VERIFY_LOGIN,
+    user,
+    byAuthorities,
+    byAuthorityBelong,
+    authorityBelong
+})
+
 //reducers
 const reducer = (state = initialState, action) => {
     switch (action.type) {
+        case types.VERIFY_LOGIN:
         case types.LOGIN:
             return { ...state, user: action.user, byAuthorities: action.byAuthorities, byAuthorityBelong: action.byAuthorityBelong, authorityBelong: action.authorityBelong };
         ///////////////////////////////
