@@ -16,7 +16,7 @@ const initialState = {
 
 export const types = {
     FETCH_SHOPS: "SHOP/FETCH_SHOPS",
-    REMOVE_SHOP: "SHOP/REMOVE_SHOP",
+    TERMINAL_SHOP: "SHOP/TERMINAL_SHOP",
     ADD_SHOP: "SHOP/ADD_SHOP",                       //新增门店
     FETCH_SHOP: "SHOP/FETCH_SHOP",     //获取门店信息
     ADD_SHOP_BOX: "SHOP/ADD_SHOP_BOX",               //新增包厢
@@ -28,6 +28,7 @@ export const types = {
 };
 
 export const actions = {
+    //获取门店列表
     fetchShops: () => {
         return (dispatch) => {
             dispatch(appActions.startRequest());
@@ -36,22 +37,23 @@ export const actions = {
                 if (!result.error) {
                     dispatch(fetchShopsSuccess(convertShopsToPlainStructure(result.data)));
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             })
         }
     },
-    removeShop: (uid) => {
+    //将门店失效
+    terminalShop: (uid) => {
         return (dispatch) => {
             dispatch(appActions.startRequest());
-            return _delete(url.removeShop(uid)).then((result) => {
+            return _delete(url.terminalShop(uid)).then((result) => {
                 dispatch(appActions.finishRequest());
                 if (!result.error) {
-                    dispatch(removeShopSuccess(uid));
+                    dispatch(terminalShopSuccess(uid));
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             })
@@ -68,7 +70,7 @@ export const actions = {
                     dispatch(addShopSuccess(result.data));
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             })
@@ -85,7 +87,7 @@ export const actions = {
                     dispatch(clerkActions.fetchShopClerks(clerks, byClerks));
                     dispatch(fetchShopSuccess(shop, byOpenHours, byPhotos, shopBoxes, byShopBoxes));
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             })
@@ -102,7 +104,7 @@ export const actions = {
                     dispatch(addShopBoxSuccess(result.data));
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             })
@@ -117,7 +119,7 @@ export const actions = {
                 if (!result.error) {
                     dispatch(fetchShopBoxesSuccess(convertShopBoxesToPlainStructure(result.data)));
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             })
@@ -133,7 +135,7 @@ export const actions = {
                     dispatch(removeShopBoxSuccess(uid));
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             })
@@ -148,7 +150,7 @@ export const actions = {
                 if (!result.error) {
                     dispatch(fetchShopBoxSuccess(convertShopBoxToPlainStructure(result.data)));
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             })
@@ -164,7 +166,7 @@ export const actions = {
                 if (!result.error) {
                     dispatch(updateShopBoxSuccess(convertShopBoxToPlainStructure(result.data)));
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             })
@@ -182,7 +184,7 @@ export const actions = {
                     dispatch(clerkActions.fetchShopClerks(clerks, byClerks));
                     dispatch(updateShopSuccess(shop, byOpenHours, byPhotos, shopBoxes, byShopBoxes));
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             })
@@ -195,8 +197,8 @@ const addShopSuccess = (shop) => ({
     shop
 })
 
-const removeShopSuccess = (uid) => ({
-    type: types.REMOVE_SHOP,
+const terminalShopSuccess = (uid) => ({
+    type: types.TERMINAL_SHOP,
     uid
 });
 
@@ -350,15 +352,9 @@ const reducer = (state = initialState, action) => {
     switch (action.type) {
         case types.FETCH_SHOPS:
             return { ...state, shops: action.shops, byShops: action.byShops };
-        case types.REMOVE_SHOP:
-            shops = state.shops.filter(item => item != action.uid);
-            byShops = new Object();
-            shops.forEach(uid => {
-                if (!byShops[uid]) {
-                    byShops[uid] = state.byShops[uid];
-                }
-            })
-            return { ...state, shops, byShops };
+        case types.TERMINAL_SHOP:
+            byShops={...state.byShops,[action.uid]:{...state.byShops[action.uid],enforceTerminal:true}};
+            return { ...state,  byShops };
         case types.ADD_SHOP:
             if (state.shops.indexOf(action.shop.uid) == -1) {
                 shops = state.shops.concat([action.shop.uid]);

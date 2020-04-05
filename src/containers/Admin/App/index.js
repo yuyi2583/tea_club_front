@@ -15,7 +15,8 @@ const { Content, Sider } = Layout;
 
 class App extends React.Component {
     state = {
-        isVerifying: true
+        isVerifying: true,
+        toError: false,
     }
 
     componentDidMount() {
@@ -26,14 +27,25 @@ class App extends React.Component {
             })
             .catch((err) => {
                 this.props.callMessage("error", err);
-                this.setState({ isVerifying: false });
+                this.setState({ isVerifying: false, toError: true });
             });
     }
+
+
+
 
     render() {
         const { from } = this.props.location.state || { from: { pathname: map.admin.AdminHome() } };
         const { user, byAuthorities } = this.props;
-        const { isVerifying } = this.state;
+        const { isVerifying, toError } = this.state;
+        if (toError) {
+            return (
+                <Redirect to={{
+                    pathname: map.admin.AdminLogin(),
+                    state: { from }
+                }} />
+            )
+        }
         return (
             <Layout>
                 <Header location={this.props.location} />
@@ -90,10 +102,6 @@ class App extends React.Component {
                                             )
                                         }} />
                                     })}
-                                    <Redirect to={{
-                                        pathname: map.error(),
-                                        state: { from }
-                                    }} />
                                 </Switch>
                             </div>
                         </Content>

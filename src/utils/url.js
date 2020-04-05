@@ -16,7 +16,7 @@ export default {
     fetchShops: () =>
         HOME + "/admin/shops",
     // "/mock/shopList.json",
-    removeShop: (uid) => HOME + `/admin/shop/${uid}`,
+    terminalShop: (uid) => HOME + `/admin/shop/${uid}`,
     //"/mock/alterBoxInfo.json",
     fetchClerks: () => HOME + `/admin/clerks`,
     // "/mock/allClerks.json",
@@ -99,5 +99,5 @@ export default {
     idPswLogin:()=>`${HOME}/admin/idLogin`,
     sendClerkOtp:(contact)=>`${HOME}/clerkSms?contact=${contact}`,
     otpLogin:(contact,otp)=>`${HOME}/admin/otpLogin?contact=${contact}&otp=${otp}`,
-    verifyToken:()=>`${HOME}/verifyLogin`
+    verifyToken:()=>`${HOME}/verifyToken`
 }

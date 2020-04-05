@@ -39,7 +39,8 @@ class CompanyInfo extends React.Component {
     };
 
     componentDidMount() {
-        this.props.fetchCompanyInfo();
+        this.props.fetchCompanyInfo()
+            .catch(err => this.props.callMessage("error", err));
     }
 
     render() {

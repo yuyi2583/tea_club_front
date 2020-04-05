@@ -141,18 +141,18 @@ const convertAuthorityToPlainStructure = (data) => {
     let byAuthorities = new Object;
     let authorityBelong = new Array()
     let byAuthorityBelong = new Object();
-    data.authorities.forEach((item) => {
-        authorities.push(item.uid);
-        if(authorityBelong.indexOf(item.belong.uid)==-1){
-            authorityBelong.push(item.belong.uid)
+    data.positionAutorityFrontDetails.forEach((item) => {
+        authorities.push(item.authorityFront.uid);
+        if(authorityBelong.indexOf(item.authorityFront.belong.uid)==-1){
+            authorityBelong.push(item.authorityFront.belong.uid)
         }
-        byAuthorities[item.uid] = {
-            ...item,
-            belong: item.belong.uid,
-            pathname: map.admin.AdminHome() + "/" + item.belong.name + "/" + item.name
+        byAuthorities[item.authorityFront.uid] = {
+            ...item.authorityFront,
+            belong: item.authorityFront.belong.uid,
+            pathname: map.admin.AdminHome() + "/" + item.authorityFront.belong.name + "/" + item.authorityFront.name
         };
-        if (!byAuthorityBelong[item.belong.uid]) {
-            byAuthorityBelong[item.belong.uid] = item.belong;
+        if (!byAuthorityBelong[item.authorityFront.belong.uid]) {
+            byAuthorityBelong[item.authorityFront.belong.uid] = item.authorityFront.belong;
         }
     });
 

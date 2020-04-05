@@ -72,7 +72,7 @@ export const actions = {
                     dispatch(fetchCompanyInfoSuccess(result.data));
                     return Promise.resolve();
                 } else {
-                    dispatch(actions.setError(result.msg));
+                    dispatch(actions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             })
@@ -90,7 +90,7 @@ export const actions = {
                     dispatch(alterCompanyInfoSuccess(result.data));
                     return Promise.resolve()
                 } else {
-                    dispatch(actions.setError(result.msg));
+                    dispatch(actions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             })

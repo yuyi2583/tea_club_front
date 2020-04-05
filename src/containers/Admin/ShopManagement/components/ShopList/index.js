@@ -15,7 +15,8 @@ class ShopList extends React.Component {
     };
 
     componentDidMount() {
-        this.props.fetchShops();
+        this.props.fetchShops()
+            .catch(err => this.props.callMessage("error", err));
     }
 
     getColumnSearchProps = dataIndex => ({
@@ -92,6 +93,7 @@ class ShopList extends React.Component {
                 const dataItem = {
                     key: uid,
                     ...byShops[uid],
+                    status:byShops[uid].enforceTerminal?"失效":"运营中",
                 };
                 dataSource.push(dataItem);
             } catch (err) {
@@ -130,6 +132,12 @@ class ShopList extends React.Component {
                 ...this.getColumnSearchProps('contact'),
             },
             {
+                title: '状态',
+                dataIndex: 'status',
+                key: 'status',
+                ...this.getColumnSearchProps('status'),
+            },
+            {
                 title: "操作",
                 dataIndex: "action",
                 key: "action",
@@ -138,30 +146,34 @@ class ShopList extends React.Component {
                         <Tooltip title={`查看详细信息`}>
                             <Link to={`${match.url}/shop/${record.uid}`}>查看</Link>
                         </Tooltip>
-                        <Divider type="vertical" />
-                        <Tooltip title={`删除此门店信息`}>
-                            <Button type="link" onClick={() => this.removeShop(record.uid)}>删除</Button>
-                        </Tooltip>
+                        {record.enforceTerminal ? null :
+                            <span>
+                                <Divider type="vertical" />
+                                <Tooltip title={`不再将此门店在商城展示`}>
+                                    <Button type="link" onClick={() => this.terminalShop(record.uid)}>失效</Button>
+                                </Tooltip>
+                            </span>
+                        }
                     </span>
                 ),
             }
         ];
     }
 
-    removeShop = (uid) => {
+    terminalShop = (uid) => {
         const thiz = this;
         confirm({
-            title: '确认删除?',
-            content: '确认要在删除此门店信息？',
+            title: '确认失效?',
+            content: '确认要将此门店失效？',
             onCancel() {
             },
             onOk() {
-                thiz.props.removeShop(uid)
+                thiz.props.terminalShop(uid)
                     .then(() => {
-                        thiz.props.callMessage("success", "删除门店成功");
+                        thiz.props.callMessage("success", "门店失效成功");
                     })
                     .catch(err => {
-                        thiz.props.callMessage("error", "删除门店失败" + err.msg);
+                        thiz.props.callMessage("error", "门店失效失败:" + err);
                     });
             },
         });
