@@ -99,5 +99,6 @@ export default {
     idPswLogin:()=>`${HOME}/admin/idLogin`,
     sendClerkOtp:(contact)=>`${HOME}/clerkSms?contact=${contact}`,
     otpLogin:(contact,otp)=>`${HOME}/admin/otpLogin?contact=${contact}&otp=${otp}`,
-    verifyToken:()=>`${HOME}/verifyToken`
+    verifyToken:()=>`${HOME}/verifyToken`,
+    savePhoto:()=>`${HOME}/savephoto`,
 }

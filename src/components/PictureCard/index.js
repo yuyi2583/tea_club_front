@@ -3,6 +3,7 @@ import { Upload, Modal, Icon } from "antd";
 import PropTypes from "prop-types";
 import { callNotification } from "../../utils/commonUtils";
 import "./style.css";
+import url from "../../utils/url";
 
 class PictureCard extends React.Component {
     constructor(props) {
@@ -80,7 +81,7 @@ class PictureCard extends React.Component {
                         ) : null
                     :
                     <Upload
-                        action="http://localhost:8080/savephoto"
+                        action={url.savePhoto()}
                         listType="picture-card"
                         className="upload-photo"
                         fileList={fileList}

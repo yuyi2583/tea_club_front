@@ -7,6 +7,7 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { requestType } from "../../../../../../../utils/common";
 import CheckableTag from "../../../../../../../components/CheckableTag";
+import { callMessage} from "../../../../../../../utils/commonUtils";
 
 /**
  * 门店职员修改面板组件
@@ -37,7 +38,8 @@ class ShopClerkInput extends React.Component {
         this.props.fetchClerks(requestType.updateRequest)
             .then(() => {
                 this.setState({ visible: true });
-            });
+            })
+            .catch(err=>callMessage("error",err));
     }
 
     handleClickOtherClerk = (uid) => {

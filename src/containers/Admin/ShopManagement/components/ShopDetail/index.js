@@ -32,7 +32,8 @@ class ShopDetail extends React.Component {
         this.props.fetchShop(shopId)
             .then(() => {
                 this.setState({ fileList: this.props.byShops[shopId].photos })
-            });
+            })
+            .catch(err=>this.props.callMessage("error",err));
     }
 
     getOpenHoursDisplay = () => {
@@ -208,7 +209,7 @@ class ShopDetail extends React.Component {
                                             initialValue: byShops[shopId].contact
                                         })(<Input allowClear name="contact" placeholder="请输入门店联系方式" />)}
                                     </Form.Item>
-                                    : byShops[shopId].contact}
+                                    : isDataNull ? null:byShops[shopId].contact}
                             </Descriptions.Item>
                             <Descriptions.Item label="地址" span={2}>
                                 {alterInfo ?
