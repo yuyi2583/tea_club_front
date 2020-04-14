@@ -190,7 +190,6 @@ class ActivityDetail extends React.Component {
                 )
             })
         } catch (err) {
-            console.error("get rule err", err);
             display = new Array();
         }
         return display;

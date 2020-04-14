@@ -168,7 +168,7 @@ class ProductList extends React.Component {
                         thiz.props.callMessage("success", "产品下架成功");
                     })
                     .catch(err => {
-                        thiz.props.callMessage("error", "产品下架失败" + err);
+                        thiz.props.callMessage("error", "产品下架失败，" + err);
                     });
             },
             onCancel() {
@@ -179,7 +179,7 @@ class ProductList extends React.Component {
 
 
     componentDidMount() {
-        this.props.fetchProducts();
+        this.props.fetchProducts().catch(err=>this.props.callMessage("error",err));
     }
 
     render() {

@@ -58,6 +58,10 @@ class AddProduct extends React.Component {
 
     handleCreateNewCategory = () => {
         const { newCategory } = this.state;
+        if(newCategory.length==0){
+            alert("产品类型名称不能为空！");
+            return;
+        }
         this.props.addProductType(newCategory)
             .then(() => {
                 this.props.closeModal();

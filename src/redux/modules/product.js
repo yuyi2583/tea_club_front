@@ -313,6 +313,10 @@ const reducer = (state = initialState, action) => {
             byProducts = { ...state.byProducts, [action.product.uid]: { ...action.product, activities: state.byProducts[action.product.uid].activities } }
             return { ...state, byProducts, byPhotos: action.byPhotos };
         case types.FETCH_PRODUCT:
+            products=state.products;
+            if(products.indexOf(action.product.uid)==-1){
+                products.push(action.product.uid);
+            }
             byProducts = { ...state.byProducts, [action.product.uid]: action.product };
             return { ...state, byProducts, byPhotos: action.byPhotos, byActivities: action.byActivities };
         default:

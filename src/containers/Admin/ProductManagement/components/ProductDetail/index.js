@@ -27,7 +27,8 @@ class ProductDetail extends React.Component {
         this.props.fetchProduct(productId)
             .then(() => {
                 this.setState({ fileList: this.props.byProducts[productId].photos })
-            });
+            })
+            .catch(err => this.props.callMessage("error", err));
         this.props.fetchProductTypes();
     }
 
@@ -145,6 +146,7 @@ class ProductDetail extends React.Component {
                 </Paragraph>
             )
         } catch (err) {
+            console.error(err)
             display = <Empty />;
         }
         return display;
@@ -157,6 +159,7 @@ class ProductDetail extends React.Component {
         const priceDisplay = this.getPriceDisplay();
         const photoDisplay = this.getPhotosDisplay();
         const activitiesDisplay = this.getActivitiesDisplay();
+        const isDataNull = byProducts[productId] == undefined ? true : false;
         return (
             <div style={{ marginBottom: "20px" }}>
                 <Spin spinning={updateRequestQuantity > 0}>
@@ -168,7 +171,7 @@ class ProductDetail extends React.Component {
                                 <Descriptions.Item label="产品名称">
                                     {
                                         !alterInfo ?
-                                            byProducts[productId].name
+                                            isDataNull ? null : byProducts[productId].name
                                             : <Form.Item>
                                                 {getFieldDecorator('name', {
                                                     rules: [{ required: true, message: '请输入产品名称!' }],
@@ -180,7 +183,7 @@ class ProductDetail extends React.Component {
                                 <Descriptions.Item label="产品种类" >
                                     {
                                         !alterInfo ?
-                                            byProducts[productId].type.name
+                                            isDataNull ? null : byProducts[productId].type.name
                                             : <Form.Item>
                                                 {getFieldDecorator('type', {
                                                     rules: [{ required: true, message: '请选择产品种类!' }],
@@ -202,7 +205,7 @@ class ProductDetail extends React.Component {
                                 <Descriptions.Item label="产品描述">
                                     {
                                         !alterInfo ?
-                                            byProducts[productId].description
+                                            isDataNull ? null : byProducts[productId].description
                                             : <Form.Item>
                                                 {getFieldDecorator('description', {
                                                     rules: [
@@ -219,12 +222,12 @@ class ProductDetail extends React.Component {
                                     }
                                 </Descriptions.Item>
                                 <Descriptions.Item label="产品状态">
-                                    {byProducts[productId].enforceTerminal ? productStatus["off_shelves"] : byProducts[productId].storage > 0 ? productStatus["on_sale"] : productStatus["sold_out"]}
+                                    {isDataNull ? null : byProducts[productId].enforceTerminal ? productStatus["off_shelves"] : byProducts[productId].storage > 0 ? productStatus["on_sale"] : productStatus["sold_out"]}
                                 </Descriptions.Item>
                                 <Descriptions.Item label="价格">
                                     {
                                         !alterInfo ?
-                                            priceDisplay :
+                                            isDataNull ? null : priceDisplay :
                                             <Row>
                                                 <Col span={11}>
                                                     <Form.Item>
@@ -262,7 +265,7 @@ class ProductDetail extends React.Component {
                                 <Descriptions.Item label="库存（件）">
                                     {
                                         !alterInfo ?
-                                            byProducts[productId].storage :
+                                            isDataNull ? null : byProducts[productId].storage :
                                             <Form.Item>
                                                 {getFieldDecorator('storage', {
                                                     rules: [
@@ -279,7 +282,7 @@ class ProductDetail extends React.Component {
                                     }
                                 </Descriptions.Item>
                                 <Descriptions.Item label="产品适用活动" span={2}>
-                                    {activitiesDisplay}
+                                    { activitiesDisplay}
                                 </Descriptions.Item>
                                 <Descriptions.Item label="产品照片" span={2}>
                                     {
