@@ -23,7 +23,7 @@ export default {
     alterBoxInfo: () => "/mock/alterBoxInfo.json",
     removeShopBox: (uid) => HOME + `/admin/shopBox/${uid}`,
     // "/mock/alterBoxInfo.json",
-    addBoxInfo: () => HOME + "/admin/shopBox",
+    addBox: () => HOME + "/admin/shopBox",
     // "/mock/addBoxInfo.json",
     alterShopInfo: () => "/mock/alterBoxInfo.json",
     addShop: () => HOME + "/admin/shop",

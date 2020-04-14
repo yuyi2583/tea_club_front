@@ -2,7 +2,7 @@ import React from "react";
 import { Button, Icon, Divider, Input, Spin, Modal, Tooltip, Table } from "antd";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { actions as shopActions, getShopBoxes,getByShopBoxes  } from "../../../../../redux/modules/shop";
+import { actions as shopActions, getShopBoxes, getByShopBoxes } from "../../../../../redux/modules/shop";
 import Highlighter from 'react-highlight-words';
 import { Link } from "react-router-dom";
 
@@ -15,7 +15,7 @@ class ShopBoxList extends React.Component {
     };
 
     componentDidMount() {
-        this.props.fetchShopBoxes();
+        this.props.fetchShopBoxes().catch(err => this.props.callMessage("error", err));
     }
 
     getColumnSearchProps = dataIndex => ({
@@ -92,7 +92,8 @@ class ShopBoxList extends React.Component {
                 const dataItem = {
                     key: uid,
                     ...byShopBoxes[uid],
-                    shopName:byShopBoxes[uid].shop.name,
+                    shopName: byShopBoxes[uid].shop.name,
+                    status: byShopBoxes[uid].enforceTerminal ? "失效" : "运营中",
                 };
                 dataSource.push(dataItem);
             } catch (err) {
@@ -131,6 +132,12 @@ class ShopBoxList extends React.Component {
                 ...this.getColumnSearchProps('shopName'),
             },
             {
+                title: '状态',
+                dataIndex: 'status',
+                key: 'status',
+                ...this.getColumnSearchProps('status'),
+            },
+            {
                 title: "操作",
                 dataIndex: "action",
                 key: "action",
@@ -139,10 +146,14 @@ class ShopBoxList extends React.Component {
                         <Tooltip title={`查看详细信息`}>
                             <Link to={`${match.url}/shop_box/${record.uid}`}>查看</Link>
                         </Tooltip>
-                        <Divider type="vertical" />
-                        <Tooltip title={`删除此包厢信息`}>
-                            <Button type="link" onClick={() => this.removeShopBox(record.uid)}>删除</Button>
-                        </Tooltip>
+                        {record.enforceTerminal ? null :
+                            <span>
+                                <Divider type="vertical" />
+                                <Tooltip title={`将此包厢失效`}>
+                                    <Button type="link" onClick={() => this.removeShopBox(record.uid)}>失效</Button>
+                                </Tooltip>
+                            </span>
+                        }
                     </span>
                 ),
             }
@@ -152,17 +163,17 @@ class ShopBoxList extends React.Component {
     removeShopBox = (uid) => {
         const thiz = this;
         confirm({
-            title: '确认删除?',
-            content: '确认要在删除此包厢信息？',
+            title: '确认失效?',
+            content: '确认要将此包厢失效？',
             onCancel() {
             },
             onOk() {
                 thiz.props.removeShopBox(uid)
                     .then(() => {
-                        thiz.props.callMessage("success", "删除包厢成功");
+                        thiz.props.callMessage("success", "包厢失效成功");
                     })
                     .catch(err => {
-                        thiz.props.callMessage("error", "删除包厢失败" + err.msg);
+                        thiz.props.callMessage("error", "包厢失效失败，" + err);
                     });
             },
         });

@@ -4,7 +4,7 @@ import PictureCard from "../../../components/PictureCard";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actions as shopActions, getShops, getByShops } from "../../../redux/modules/shop";
-import { Redirect, Link ,Prompt} from "react-router-dom";
+import { Redirect, Link, Prompt } from "react-router-dom";
 import { map } from "../../../router";
 import { formItemLayout, tailFormItemLayout } from "../../../utils/common";
 
@@ -37,7 +37,7 @@ class AddShopBox extends React.Component {
                         const shop = { uid: values.shopId };
                         const price = { ingot: values.ingot, credit: values.credit };
                         const shopBox = { ...values, shop, photos: fileList, price };
-                        thiz.props.addBoxInfo(shopBox).then(() => {
+                        thiz.props.addBox(shopBox).then(() => {
                             thiz.props.callMessage("success", "新增包厢成功！");
                             thiz.setState({
                                 from: map.admin.AdminHome() + `/shop_management/shop_boxes`
@@ -52,7 +52,7 @@ class AddShopBox extends React.Component {
         });
     };
 
-    handleDisplayChange = (type,data) => {
+    handleDisplayChange = (type, data) => {
         const { fileList } = this.state;
         switch (type) {
             case "done":
@@ -70,7 +70,8 @@ class AddShopBox extends React.Component {
     }
 
     componentDidMount() {
-        this.props.fetchShops();
+        this.props.fetchShops()
+            .catch(err => this.props.callMessage("error", err));
     }
 
     render() {
@@ -118,10 +119,10 @@ class AddShopBox extends React.Component {
                                 <div>
                                     {menu}
                                     <Divider style={{ margin: '4px 0' }} />
-                                    <Link to={`${map.admin.AdminHome()}/shop_management/add_shop`}><Icon type="plus" /> 添加门店</Link>
+                                    <Link to={`${map.admin.AdminHome()}/shop_management/add_shop`} style={{margin:"5px"}}><Icon type="plus" /> 添加门店</Link>
                                 </div>
                             )}>
-                                {shops.map(uid => <Option key={uid}>{byShops[uid].name}</Option>)}
+                                {shops.filter(uid=>!byShops[uid].enforceTerminal).map(uid => <Option key={uid}>{byShops[uid].name}</Option>)}
                             </Select>)}
                         </Form.Item>
                         <Form.Item

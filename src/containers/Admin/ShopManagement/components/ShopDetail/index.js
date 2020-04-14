@@ -16,6 +16,7 @@ import DynamicFieldSet from "../../../../../components/DynamicFieldSet";
 import ShopOpenHour from "../../../../../components/ShopOpenHour";
 import ShopClerkInput from "./components/ShopClerkInput";
 import ShopBoxInput from "./components/ShopBoxInput";
+import validator from "../../../../../utils/validator";
 
 const { confirm } = Modal;
 
@@ -205,7 +206,7 @@ class ShopDetail extends React.Component {
                                 {alterInfo ?
                                     <Form.Item>
                                         {getFieldDecorator('contact', {
-                                            rules: [{ required: true, message: '请输入门店联系方式!' }],
+                                            rules: [{ required: true, message: '请输入门店联系方式!' },validator.phone],
                                             initialValue: byShops[shopId].contact
                                         })(<Input allowClear name="contact" placeholder="请输入门店联系方式" />)}
                                     </Form.Item>

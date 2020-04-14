@@ -5,6 +5,7 @@ import { connect } from "react-redux";
 import { Redirect } from "react-router-dom";
 import { map } from "../../../router";
 import { actions as appActions, getCompanyInfo, getError, getRetrieveRequestQuantity } from "../../../redux/modules/app";
+import validator from "../../../utils/validator";
 
 const { confirm } = Modal;
 
@@ -73,7 +74,7 @@ class CompanyInfo extends React.Component {
                                     {!alterInfo ? companyInfo.postCode :
                                         <Form.Item>
                                             {getFieldDecorator('postCode', {
-                                                rules: [{ required: true, message: '请输入邮编!' }],
+                                                rules: [{ required: true, message: '请输入邮编!' },validator.postCode],
                                                 initialValue: companyInfo.postCode
                                             })(<Input allowClear name="postCode" placeholder="请输入邮编！" />)}
                                         </Form.Item>
@@ -83,7 +84,7 @@ class CompanyInfo extends React.Component {
                                     {!alterInfo ? companyInfo.contact :
                                         <Form.Item>
                                             {getFieldDecorator('contact', {
-                                                rules: [{ required: true, message: '请输入联系方式!' }],
+                                                rules: [{ required: true, message: '请输入联系方式!' }, validator.phone],
                                                 initialValue: companyInfo.contact
                                             })(<Input allowClear name="contact" placeholder="请输入联系方式！" />)}
                                         </Form.Item>

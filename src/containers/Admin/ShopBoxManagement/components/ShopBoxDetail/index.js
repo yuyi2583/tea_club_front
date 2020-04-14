@@ -5,6 +5,7 @@ import { connect } from "react-redux";
 import { actions as shopActions, getShopBoxes, getByShopBoxes, getByPhotos, getShops, getByShops } from "../../../../../redux/modules/shop";
 import { Prompt, Redirect } from "react-router-dom";
 import PictureCard from "../../../../../components/PictureCard";
+import { map } from "../../../../../router";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -21,10 +22,19 @@ class ShopBoxDetail extends React.Component {
 
     componentDidMount() {
         const { shopBoxId } = this.props.match.params;
-        this.props.fetchShopBox(shopBoxId).then(() => {
-            this.setState({ fileList: this.props.byShopBoxes[shopBoxId].photos });
-        });
-        this.props.fetchShops();
+        this.props.fetchShopBox(shopBoxId)
+            .then(() => {
+                this.setState({ fileList: this.props.byShopBoxes[shopBoxId].photos });
+            })
+            .catch(err => {
+                this.props.callMessage("error", err);
+                this.setState({ from: `${map.admin.AdminHome()}/shop_management/shop_boxes` });
+            });
+        this.props.fetchShops()
+            .catch(err => {
+                this.props.callMessage("error", err);
+                this.setState({ from: `${map.admin.AdminHome()}/shop_management/shop_boxes` });
+            });;
     }
 
     handleSubmit = e => {
@@ -79,16 +89,20 @@ class ShopBoxDetail extends React.Component {
     getPriceDisplay = () => {
         const { shopBoxId } = this.props.match.params;
         const { byShopBoxes } = this.props;
-        const { price } = byShopBoxes[shopBoxId];
         let priceDisplay = "";
-        if (price == null || price == undefined) {
-            return priceDisplay;
-        }
-        if (price.ingot != 0) {
-            priceDisplay += price.ingot + "元宝";
-        }
-        if (price.credit != 0) {
-            priceDisplay += price.credit + "积分";
+        try {
+            const { price } = byShopBoxes[shopBoxId];
+            if (price == null || price == undefined) {
+                return priceDisplay;
+            }
+            if (price.ingot != 0) {
+                priceDisplay += price.ingot + "元宝";
+            }
+            if (price.credit != 0) {
+                priceDisplay += price.credit + "积分";
+            }
+        } catch{
+            priceDisplay = "";
         }
         return priceDisplay;
     }
@@ -122,6 +136,7 @@ class ShopBoxDetail extends React.Component {
         const { getFieldDecorator } = form;
         const photoDisplay = this.getPhotosDisplay();
         const priceDisplay = this.getPriceDisplay();
+        const isDataNull = byShopBoxes[shopBoxId] == undefined ? true : false;
         return (
             <div>
                 <Spin spinning={updateRequestQuantity > 0}>
@@ -132,7 +147,7 @@ class ShopBoxDetail extends React.Component {
                                 <Descriptions.Item label="包厢名称">
                                     {
                                         !alterInfo ?
-                                            byShopBoxes[shopBoxId].name
+                                            isDataNull ? null : byShopBoxes[shopBoxId].name
                                             : <Form.Item>
                                                 {getFieldDecorator('name', {
                                                     rules: [{ required: true, message: '请输入包厢名称!' }],
@@ -144,7 +159,7 @@ class ShopBoxDetail extends React.Component {
                                 <Descriptions.Item label="包厢编号" >
                                     {
                                         !alterInfo ?
-                                            byShopBoxes[shopBoxId].boxNum
+                                            isDataNull ? null : byShopBoxes[shopBoxId].boxNum
                                             : <Form.Item>
                                                 {getFieldDecorator('boxNum', {
                                                     rules: [{ required: true, message: '请输入包厢编号!' }],
@@ -156,7 +171,7 @@ class ShopBoxDetail extends React.Component {
                                 <Descriptions.Item label="包厢描述" span={2}>
                                     {
                                         !alterInfo ?
-                                            byShopBoxes[shopBoxId].description
+                                            isDataNull ? null : byShopBoxes[shopBoxId].description
                                             : <Form.Item>
                                                 {getFieldDecorator('description', {
                                                     rules: [
@@ -175,7 +190,7 @@ class ShopBoxDetail extends React.Component {
                                 <Descriptions.Item label="价格/泡茶">
                                     {
                                         !alterInfo ?
-                                            priceDisplay :
+                                            isDataNull ? null : priceDisplay :
                                             <div>
                                                 <Form.Item>
                                                     {getFieldDecorator('ingot', {
@@ -209,7 +224,7 @@ class ShopBoxDetail extends React.Component {
                                 <Descriptions.Item label="一泡茶时间（分钟）">
                                     {
                                         !alterInfo ?
-                                            byShopBoxes[shopBoxId].duration :
+                                            isDataNull ? null : byShopBoxes[shopBoxId].duration :
                                             <Form.Item>
                                                 {getFieldDecorator('duration', {
                                                     rules: [
@@ -228,7 +243,7 @@ class ShopBoxDetail extends React.Component {
                                 <Descriptions.Item label="所属门店" span={2}>
                                     {
                                         !alterInfo ?
-                                            byShopBoxes[shopBoxId].shop==null?null:byShopBoxes[shopBoxId].shop.name :
+                                            isDataNull ? null : byShopBoxes[shopBoxId].shop == null ? null : byShopBoxes[shopBoxId].shop.name :
                                             <Form.Item>
                                                 {getFieldDecorator('shopId', {
                                                     rules: [
@@ -240,7 +255,7 @@ class ShopBoxDetail extends React.Component {
                                                     initialValue: byShopBoxes[shopBoxId].shop.uid
                                                 })(
                                                     <Select name="shopId">
-                                                        {shops.map(uid => <Option key={uid} value={uid}>{byShops[uid].name}</Option>)}
+                                                        {shops.filter(uid => !byShops[uid].enforceTerminal).map(uid => <Option key={uid} value={uid}>{byShops[uid].name}</Option>)}
                                                     </Select>
                                                 )}
                                             </Form.Item>

@@ -21,7 +21,7 @@ export const types = {
     FETCH_SHOP: "SHOP/FETCH_SHOP",     //获取门店信息
     ADD_SHOP_BOX: "SHOP/ADD_SHOP_BOX",               //新增包厢
     FETCH_SHOP_BOXES: "SHOP/FETCH_SHOP_BOXES",//获取包厢列表
-    REMOVE_SHOP_BOX: "SHOP/REMOVE_SHOP_BOX",         //删除包厢
+    TERMINAL_SHOP_BOX: "SHOP/TERMINAL_SHOP_BOX",         //删除包厢
     FETCH_SHOP_BOX: "SHOP/FETCH_SHOP_BOX",//获取包厢信息
     UPDATE_SHOP_BOX: "SHOP/UPDATE_SHOP_BOX",//更新包厢信息
     UPDATE_SHOP: "SHOP/UPDATE_SHOP",         //修改门店信息
@@ -94,11 +94,11 @@ export const actions = {
         }
     },
     //新增包厢
-    addBoxInfo: (shopBox) => {
+    addBox: (shopBox) => {
         return (dispatch) => {
             dispatch(appActions.startRequest());
             const params = { ...shopBox };
-            return post(url.addBoxInfo(), params).then((result) => {
+            return post(url.addBox(), params).then((result) => {
                 dispatch(appActions.finishRequest());
                 if (!result.error) {
                     dispatch(addShopBoxSuccess(result.data));
@@ -125,14 +125,14 @@ export const actions = {
             })
         }
     },
-    //删除包厢信息
-    removeShopBox: (uid) => {
+    //失效包厢
+    terminalShopBox: (uid) => {
         return (dispatch) => {
             dispatch(appActions.startRequest());
             return _delete(url.removeShopBox(uid)).then((result) => {
                 dispatch(appActions.finishRequest());
                 if (!result.error) {
-                    dispatch(removeShopBoxSuccess(uid));
+                    dispatch(terminalShopBoxSuccess(uid));
                     return Promise.resolve();
                 } else {
                     dispatch(appActions.setError(result.error));
@@ -202,8 +202,8 @@ const terminalShopSuccess = (uid) => ({
     uid
 });
 
-const removeShopBoxSuccess = (uid) => ({
-    type: types.REMOVE_SHOP_BOX,
+const terminalShopBoxSuccess = (uid) => ({
+    type: types.TERMINAL_SHOP_BOX,
     uid,
 })
 
@@ -240,7 +240,7 @@ const fetchShopBoxesSuccess = ({ shopBoxes, byShopBoxes }) => ({
     type: types.FETCH_SHOP_BOXES,
     shopBoxes,
     byShopBoxes
-})
+});
 
 const fetchShopBoxSuccess = ({ shopBox, byPhotos }) => ({
     type: types.FETCH_SHOP_BOX,
@@ -353,8 +353,8 @@ const reducer = (state = initialState, action) => {
         case types.FETCH_SHOPS:
             return { ...state, shops: action.shops, byShops: action.byShops };
         case types.TERMINAL_SHOP:
-            byShops={...state.byShops,[action.uid]:{...state.byShops[action.uid],enforceTerminal:true}};
-            return { ...state,  byShops };
+            byShops = { ...state.byShops, [action.uid]: { ...state.byShops[action.uid], enforceTerminal: true } };
+            return { ...state, byShops };
         case types.ADD_SHOP:
             if (state.shops.indexOf(action.shop.uid) == -1) {
                 shops = state.shops.concat([action.shop.uid]);
@@ -379,15 +379,19 @@ const reducer = (state = initialState, action) => {
             return { ...state, shopBoxes, byShopBoxes };
         case types.FETCH_SHOP_BOXES:
             return { ...state, shopBoxes: action.shopBoxes, byShopBoxes: action.byShopBoxes };
-        case types.REMOVE_SHOP_BOX:
-            shopBoxes = state.shopBoxes.filter(item => item != action.uid);
+        case types.TERMINAL_SHOP_BOX:
             byShopBoxes = new Object();
-            shopBoxes.forEach(uid => {
+            state.shopBoxes.forEach(uid => {
                 if (!byShopBoxes[uid]) {
-                    byShopBoxes[uid] = state.byShopBoxes[uid];
+                    if (uid == action.uid) {
+                        byShopBoxes[uid] = { ...state.byShopBoxes[uid], enforceTerminal: true };
+                    } else {
+                        byShopBoxes[uid] = state.byShopBoxes[uid];
+                    }
+
                 }
             });
-            return { ...state, shopBoxes, byShopBoxes };
+            return { ...state, byShopBoxes };
         case types.FETCH_SHOP_BOX:
             shopBoxes = state.shopBoxes;
             if (state.shopBoxes.indexOf(action.shopBox.uid) == -1) {

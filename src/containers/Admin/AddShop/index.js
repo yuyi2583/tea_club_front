@@ -11,6 +11,7 @@ import "./style.css";
 import { formItemLayout, tailFormItemLayout } from "../../../utils/common";
 import DynamicFieldSet from "../../../components/DynamicFieldSet";
 import ShopOpenHour from "../../../components/ShopOpenHour";
+import validator from "../../../utils/validator";
 
 const { confirm } = Modal;
 
@@ -117,6 +118,7 @@ class AddShop extends React.Component {
                                         required: true,
                                         message: '请输入门店联系方式!',
                                     },
+                                    validator.phone
                                 ],
                             })(<Input allowClear />)}
                         </Form.Item>
