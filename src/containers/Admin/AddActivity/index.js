@@ -30,11 +30,11 @@ class AddActivity extends React.Component {
     }
 
     componentDidMount() {
-        this.props.fetchActivitiesNameDesc();
-        this.props.fetchActivityRuleTypes();
-        this.props.fetchProductTypes();
-        this.props.fetchCustomerTypes();
-        this.props.fetchProductsName();
+        this.props.fetchActivitiesNameDesc().catch(err=>this.props.callMessage("error",err));
+        this.props.fetchActivityRuleTypes().catch(err=>this.props.callMessage("error",err));
+        this.props.fetchProductTypes().catch(err=>this.props.callMessage("error",err));
+        this.props.fetchCustomerTypes().catch(err=>this.props.callMessage("error",err));
+        this.props.fetchProductsName().catch(err=>this.props.callMessage("error",err));
     }
 
     handleSubmit = e => {

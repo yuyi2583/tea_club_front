@@ -64,7 +64,7 @@ export const actions = {
             return post(url.addActivity(), params).then((result) => {
                 dispatch(appActions.finishRequest());
                 if (!result.error) {//TODO
-                    dispatch(addActivitySuccess(activity));
+                    dispatch(addActivitySuccess());
                     return Promise.resolve();
                 } else {
                     dispatch(appActions.setError(result.msg));
@@ -197,9 +197,8 @@ const fetchActivityRuleTypesSuccess = ({ activityRuleTypes, byActivityRuleTypes 
     byActivityRuleTypes
 });
 
-const addActivitySuccess = (activity) => ({
-    type: types.ADD_ACTIVITY,
-    activity
+const addActivitySuccess = () => ({
+    type: types.ADD_ACTIVITY
 });
 
 
@@ -294,10 +293,15 @@ const updateActivitySuccess = (data) => ({
 
 
 const reducer = (state = initialState, action) => {
+    let activities;
     let byActivities;
     switch (action.type) {
         case types.UPDATE_ACTIVITY:
         case types.FETCH_ACTIVITY:
+            activities=state.activities;
+            if(state.activities.indexOf(action.activity.uid)==-1){
+                activities.push(action.activity.uid);
+            }
             byActivities = { ...state.byActivities, [action.activity.uid]: action.activity };
             return {
                 ...state, byActivities, byPhotos: action.byPhotos, byMutexActivities: action.byMutexActivities,

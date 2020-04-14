@@ -169,7 +169,7 @@ class ActivityList extends React.Component {
                         thiz.props.callMessage("success", "活动终止成功");
                     })
                     .catch((err) => {
-                        thiz.props.callMessage("error", "活动终止失败" + err);
+                        thiz.props.callMessage("error", "活动终止失败，" + err);
                     });
             },
             onCancel() {
@@ -180,7 +180,7 @@ class ActivityList extends React.Component {
 
 
     componentDidMount() {
-        this.props.fetchActivities();
+        this.props.fetchActivities().catch(err => this.props.callMessage("error", err));
     }
 
     render() {
