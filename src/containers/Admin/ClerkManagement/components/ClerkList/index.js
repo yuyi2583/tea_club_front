@@ -94,7 +94,8 @@ class ClerkList extends React.Component {
                     key: uid,
                     shop: byClerks[uid].shop != null ? byClerks[uid].shop.name : "暂未分配门店",
                     position: byClerks[uid].position != null ? byClerks[uid].position.name : "暂未分配职位",
-                    sex: sex[byClerks[uid].sex],
+                    gender: sex[byClerks[uid].gender],
+                    status:byClerks[uid].enforceTerminal?"离职":"在职",
                 };
                 dataSource.push(dataItem);
             })
@@ -115,9 +116,9 @@ class ClerkList extends React.Component {
             },
             {
                 title: '性别',
-                dataIndex: 'sex',
-                key: 'sex',
-                ...this.getColumnSearchProps('sex'),
+                dataIndex: 'gender',
+                key: 'gender',
+                ...this.getColumnSearchProps('gender'),
             },
             {
                 title: '职位',
@@ -138,6 +139,12 @@ class ClerkList extends React.Component {
                 ...this.getColumnSearchProps('contact'),
             },
             {
+                title: '状态',
+                dataIndex: 'status',
+                key: 'status',
+                ...this.getColumnSearchProps('status'),
+            },
+            {
                 title: "操作",
                 dataIndex: "action",
                 key: "action",
@@ -146,10 +153,14 @@ class ClerkList extends React.Component {
                         <Tooltip title={`查看${record.name}的详细信息`}>
                             <Link to={`${match.url}/clerk/${record.uid}`}>查看</Link>
                         </Tooltip>
-                        <Divider type="vertical" />
-                        <Tooltip title={`将${record.name}从系统中删除`}>
-                            <a onClick={() => this.removeClerk(record.uid)}>删除</a>
-                        </Tooltip>
+                        {record.enforceTerminal ? null :
+                            <span>
+                                <Divider type="vertical" />
+                                <Tooltip title={`将${record.name}失效`}>
+                                    <a onClick={() => this.terminalClerk(record.uid)}>失效</a>
+                                </Tooltip>
+                            </span>
+                        }
                     </span>
                 ),
             }
@@ -157,22 +168,22 @@ class ClerkList extends React.Component {
     }
 
     componentDidMount() {
-        this.props.fetchClerks();
+        this.props.fetchClerks().catch(err => this.props.callMessage("error", err));
     }
 
-    removeClerk = (uid) => {
+    terminalClerk = (uid) => {
         const { byClerks } = this.props;
         const thiz = this;
         confirm({
             title: "确认",
-            content: `确定要删除${byClerks[uid].name}吗?`,
+            content: `${byClerks[uid].name}已确认离职?`,
             onOk() {
-                thiz.props.removeClerk(uid)
+                thiz.props.terminalClerk(uid)
                     .then(() => {
-                        thiz.props.callMessage("success", "删除职员成功");
+                        thiz.props.callMessage("success", "职员失效成功");
                     })
                     .catch(err => {
-                        thiz.props.callMessage("error", "删除职员失败" + err.msg);
+                        thiz.props.callMessage("error", "职员失效失败，" + err);
                     });;
             },
             onCancel() {

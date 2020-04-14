@@ -7,6 +7,8 @@ import { actions as shopActions, getShops, getByShops } from "../../../../../red
 import { Prompt, Redirect } from "react-router-dom";
 import PictureCard from "../../../../../components/PictureCard";
 import { sex } from "../../../../../utils/common";
+import { map } from "../../../../../router";
+import validator from "../../../../../utils/validator";
 
 const { Option } = Select;
 const { confirm } = Modal;
@@ -22,11 +24,16 @@ class ClerkDetail extends React.Component {
 
     componentDidMount() {
         const { clerkId } = this.props.match.params;
-        this.props.fetchShops();
-        this.props.fetchPositions();
-        this.props.fetchClerk(clerkId).then(() => {
-            this.setState({ fileList: this.props.byClerks[clerkId].avatar == null ? new Array() : [this.props.byClerks[clerkId].avatar.uid] });
-        });
+        this.props.fetchShops().catch(err => this.props.callMessage("error", err));
+        this.props.fetchPositions().catch(err => this.props.callMessage("error", err));
+        this.props.fetchClerk(clerkId)
+            .then(() => {
+                this.setState({ fileList: this.props.byClerks[clerkId].avatar == null ? new Array() : [this.props.byClerks[clerkId].avatar.uid] });
+            })
+            .catch(err => {
+                this.props.callMessage("error", err);
+                this.setState({ from: `${map.admin.AdminHome()}/clerk_management/clerks` });
+            });
     }
 
     handleSubmit = e => {
@@ -129,11 +136,11 @@ class ClerkDetail extends React.Component {
                                 <Descriptions.Item label="性别" >
                                     {
                                         !alterInfo ?
-                                            isDataNull ? null : sex[byClerks[clerkId].sex]
+                                            isDataNull ? null : sex[byClerks[clerkId].gender]
                                             : <Form.Item>
-                                                {getFieldDecorator('sex', {
+                                                {getFieldDecorator('gender', {
                                                     rules: [{ required: true, message: '请选择性别!' }],
-                                                    initialValue: byClerks[clerkId].sex
+                                                    initialValue: byClerks[clerkId].gender
                                                 })(<Radio.Group>
                                                     <Radio value={0}>{sex[0]}</Radio>
                                                     <Radio value={1}>{sex[1]}</Radio>
@@ -151,7 +158,8 @@ class ClerkDetail extends React.Component {
                                                         {
                                                             required: true,
                                                             message: "请输入联系方式！",
-                                                        }
+                                                        },
+                                                        validator.phone
                                                     ],
                                                     initialValue: byClerks[clerkId].contact
                                                 })(
@@ -166,7 +174,7 @@ class ClerkDetail extends React.Component {
                                             isDataNull ? null : byClerks[clerkId].identityId :
                                             <Form.Item>
                                                 {getFieldDecorator('identityId', {
-                                                    rules: [{ required: true, message: '请输入身份证号!' }],
+                                                    rules: [{ required: true, message: '请输入身份证号!' },validator.identityId],
                                                     initialValue: byClerks[clerkId].identityId
                                                 })(<Input allowClear />)}
                                             </Form.Item>

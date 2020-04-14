@@ -8,6 +8,7 @@ import { actions as clerkActions, getPositions, getByPositions, getByAuthority, 
 import { Redirect } from "react-router-dom";
 import { map } from "../../../router";
 import { formItemLayout, tailFormItemLayout, sex } from "../../../utils/common";
+import validator from "../../../utils/validator";
 
 const { Option } = Select;
 const { confirm } = Modal;
@@ -39,7 +40,7 @@ class AddClerk extends React.Component {
                             .then(() => {
                                 thiz.props.callMessage("success", "新增职员完成！")
                                 thiz.setState({
-                                    from: map.admin.AdminHome() + `/clerk_management/clerks`
+                                    from: `${map.admin.AdminHome()}/clerk_management/clerks`
                                 });
                             })
                             .catch((err) => {
@@ -70,8 +71,8 @@ class AddClerk extends React.Component {
     }
 
     componentDidMount() {
-        this.props.fetchShops();
-        this.props.fetchPositions();
+        this.props.fetchShops().catch(err=>this.props.callMessage("error",err));
+        this.props.fetchPositions().catch(err=>this.props.callMessage("error",err));
     }
 
     render() {
@@ -98,7 +99,7 @@ class AddClerk extends React.Component {
                             })(<Input allowClear />)}
                         </Form.Item>
                         <Form.Item label="性别">
-                            {getFieldDecorator('sex', {
+                            {getFieldDecorator('gender', {
                                 rules: [
                                     {
                                         required: true,
@@ -114,7 +115,7 @@ class AddClerk extends React.Component {
                         </Form.Item>
                         <Form.Item label="联系方式">
                             {getFieldDecorator('contact', {
-                                rules: [{ required: true, message: '请输入联系方式!' }],
+                                rules: [{ required: true, message: '请输入联系方式!' },validator.phone],
                             })(<Input allowClear />)}
                         </Form.Item>
                         <Form.Item label="住址">
@@ -124,14 +125,14 @@ class AddClerk extends React.Component {
                         </Form.Item>
                         <Form.Item label="身份证号">
                             {getFieldDecorator('identityId', {
-                                rules: [{ required: true, message: '请输入身份证号!' }],
+                                rules: [{ required: true, message: '请输入身份证号!' },validator.identityId],
                             })(<Input allowClear />)}
                         </Form.Item>
                         <Form.Item label="所属门店">
                             {getFieldDecorator('shop')(
                                 <Select placeholder="请选择门店">
                                     {
-                                        shops.map((uid) => (
+                                        shops.filter(uid=>!byShops[uid].enforceTerminal).map((uid) => (
                                             <Option key={uid} value={uid}>{byShops[uid].name}</Option>
                                         ))
                                     }
