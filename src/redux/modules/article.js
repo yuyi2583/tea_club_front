@@ -32,7 +32,7 @@ export const actions = {
                     dispatch(fetchTagsSuccess(convertTagsToPlainStructure(result.data)));
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             });
@@ -49,7 +49,7 @@ export const actions = {
                     dispatch(addTagSuccess((result.data)));
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             });
@@ -66,7 +66,7 @@ export const actions = {
                     dispatch(addArticleSuccess());
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             });
@@ -82,7 +82,7 @@ export const actions = {
                     dispatch(fetchArticlesSuccess(convertArticlesToPlainStructure(result.data)));
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             });
@@ -98,7 +98,7 @@ export const actions = {
                     dispatch(terminalArticleSuccess(uid));
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             });

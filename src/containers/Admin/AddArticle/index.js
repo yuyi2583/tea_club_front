@@ -8,6 +8,7 @@ import { Redirect } from "react-router-dom";
 import { map } from "../../../router";
 import { formItemLayout, tailFormItemLayout } from "../../../utils/common";
 import TagsSelect from "../../../components/TagsSelect";
+import valodator from "../../../utils/validator";
 
 const { confirm } = Modal;
 
@@ -106,7 +107,7 @@ class AddArticle extends React.Component {
                         </Form.Item>
                         <Form.Item label="文章链接">
                             {getFieldDecorator('url', {
-                                rules: [{ required: true, message: '请输入文章链接!' }],
+                                rules: [{ required: true, message: '请输入文章链接!' },valodator.url],
                             })(<Input allowClear />)}
                         </Form.Item>
                         <Form.Item label="文章展示图片">

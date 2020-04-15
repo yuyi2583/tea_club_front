@@ -91,7 +91,7 @@ export default {
     fetchOrders:(status,timeRange)=>`${HOME}/admin/orders/${status}/${timeRange.startDate}/${timeRange.endDate}`,
     fetchOrder:(uid)=>`${HOME}/admin/order/${uid}`,
     updateOrderStatus:(status)=>`${HOME}/admin/order${status}`,
-    fetchTags:()=>`${HOME}/admin/tags`,
+    fetchTags:()=>`${HOME}/tags`,
     addTag:()=>`${HOME}/admin/tag`,
     addArticle:()=>`${HOME}/admin/article`,
     fetchArticles:(status,timeRange)=>`${HOME}/admin/articles/${status}/${timeRange.startDate}/${timeRange.endDate}`,

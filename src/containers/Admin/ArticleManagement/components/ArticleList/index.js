@@ -171,7 +171,7 @@ class ArticleList extends React.Component {
                         thiz.props.callMessage("success", "文章失效成功");
                     })
                     .catch((err) => {
-                        thiz.props.callMessage("error", "文章失效失败" + err);
+                        thiz.props.callMessage("error", "文章失效失败!" + err);
                     });
             },
             onCancel() {
@@ -182,7 +182,7 @@ class ArticleList extends React.Component {
 
 
     componentDidMount() {
-        this.props.fetchArticles();
+        this.props.fetchArticles().catch(err => this.props.callMessage("error", err));
     }
 
     disabledDate = (current) => {
@@ -224,12 +224,14 @@ class ArticleList extends React.Component {
         if (endDate == undefined) {
             endDate = getNDaysAgoTimeStamp(-1);
         }
-        this.props.fetchArticles(value, { startDate, endDate });
+        this.props.fetchArticles(value, { startDate, endDate })
+            .catch(err => this.props.callMessage("error", err));
     }
 
     fetchAllArticles = () => {
         this.setState({ status: undefined, startDate: null, endDate: null });
-        this.props.fetchArticles(fetchArticleStatus.all, fetchTimeRange["all"]());
+        this.props.fetchArticles(fetchArticleStatus.all, fetchTimeRange["all"]())
+            .catch(err => this.props.callMessage("error", err));
     }
 
     render() {

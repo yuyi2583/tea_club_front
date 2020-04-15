@@ -5,7 +5,7 @@ import { Tag, Icon, Input } from "antd";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actions as articleActions, getByTags, getTags } from "../../redux/modules/article";
-import {callMessage}from "../../utils/commonUtils";
+import { callMessage } from "../../utils/commonUtils";
 
 class TagsSelect extends React.Component {
     constructor(props) {
@@ -56,19 +56,23 @@ class TagsSelect extends React.Component {
         }
         this.props.addTag(inputValue)
             .then(() => {
-                callMessage("success", "新增标签成功")
+                callMessage("success", "新增标签成功");
                 this.setState({
                     inputVisible: false,
                     inputValue: '',
                 });
             })
             .catch(err => {
-                callMessage("error", "新增标签失败")
+                callMessage("error", "新增标签失败!"+err);
+                this.setState({
+                    inputVisible: false,
+                    inputValue: '',
+                });
             });
     };
 
     componentDidMount() {
-        this.props.fetchTags();
+        this.props.fetchTags().catch(err => callMessage("error", err));
     }
 
     saveInputRef = input => (this.input = input);
@@ -88,7 +92,7 @@ class TagsSelect extends React.Component {
                         value={inputValue}
                         onChange={this.handleInputChange}
                         onBlur={this.handleInputConfirm}
-                        // onPressEnter={this.handleInputConfirm}
+                    // onPressEnter={this.handleInputConfirm}
                     />
                 )}
                 {!inputVisible && (

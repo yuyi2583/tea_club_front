@@ -34,7 +34,7 @@ export const actions = {
                     dispatch(fetchProductTypesSuccess(convertProductTypesToPlainStructure(result.data)));
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             })
@@ -50,7 +50,7 @@ export const actions = {
                     dispatch(fetchProductsNameByTypeSuccess(convertProductsNameByTypesToPlainStructure(result.data)));
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             })
@@ -67,7 +67,7 @@ export const actions = {
                     dispatch(addProductTypeSuccess(result.data));
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             })
@@ -84,7 +84,7 @@ export const actions = {
                     dispatch(addProductSuccess());
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             })
@@ -100,7 +100,7 @@ export const actions = {
                     dispatch(fetchProductsSuccess(convertProductsToPlainStructure(result.data)));
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             })
@@ -116,7 +116,7 @@ export const actions = {
                     dispatch(termianlProductSuccess(uid));
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             })
@@ -132,7 +132,7 @@ export const actions = {
                     dispatch(fetchProductSuccess(convertProductToPlainStructure(result.data)));
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             })
@@ -149,7 +149,7 @@ export const actions = {
                     dispatch(updateProductSuccess(convertUpdateProductToPlainStructure(result.data)));
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             })

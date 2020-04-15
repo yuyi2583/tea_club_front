@@ -38,7 +38,7 @@ export const actions = {
                     dispatch(fetchCustomersTypeSuccess(convetCustomerTypesToPlainStructure(result.data)));
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             });
@@ -56,7 +56,7 @@ export const actions = {
                     dispatch(fetchEnterpriseCustomerApplicationsSuccess(convertEnterpriseCustomerApplicationsToPlainStructure(result.data)));
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             });
@@ -72,7 +72,7 @@ export const actions = {
                     dispatch(startApplicationCheckSuccess(uid));
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             });
@@ -88,7 +88,7 @@ export const actions = {
                     dispatch(fetchApplicationSuccess(convertEnterpriseCustomerApplicationToPlainStructure(result.data)));
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             });
@@ -104,7 +104,7 @@ export const actions = {
                     dispatch(approveApplicationSuccess(uid));
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             });
@@ -120,7 +120,7 @@ export const actions = {
                     dispatch(rejectApplicationSuccess(uid));
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             });
@@ -136,7 +136,7 @@ export const actions = {
                     dispatch(fetchCustomersSuccess(convetCustomersToPlainStructure(result.data)));
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             });
@@ -152,25 +152,8 @@ export const actions = {
                     dispatch(setSuperVIPSuccess(result.data));
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
-                }
-            });
-        }
-    },
-    ////////////////////////////////////
-    fetchCustomerById: (uid, reqType = requestType.appRequest) => {
-        return (dispatch) => {
-            dispatch(appActions.startRequest(reqType));
-            const params = { uid };
-            return get(url.fetchCustomerById(), params).then((data) => {
-                dispatch(appActions.finishRequest(reqType));
-                if (!data.error) {
-                    dispatch(fetchCustomerByIdSuccess(data.customer));
-                    return Promise.resolve();
-                } else {
-                    dispatch(appActions.setError(data.error));
-                    return Promise.reject();
                 }
             });
         }

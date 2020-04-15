@@ -35,7 +35,7 @@ export const actions = {
                 if (!result.error) {
                     dispatch(fetchActivitiesNameDescSuccess(convertActivitiesToPlainStructure(result.data)));
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             })
@@ -50,7 +50,7 @@ export const actions = {
                 if (!result.error) {
                     dispatch(fetchActivityRuleTypesSuccess(convertActivityRuleTypeToPlainStructure(result.data)));
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             })
@@ -67,7 +67,7 @@ export const actions = {
                     dispatch(addActivitySuccess());
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             })
@@ -83,7 +83,7 @@ export const actions = {
                     dispatch(fetchActivitiesSuccess(convertActivitiesToPlainStructure(result.data)));
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             });
@@ -99,7 +99,7 @@ export const actions = {
                     dispatch(terminalActivitySuccess(uid));
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             });
@@ -115,7 +115,7 @@ export const actions = {
                     dispatch(fetchActivitySuccess(convertActivityToPlainStructure(result.data)));
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             });
@@ -132,8 +132,7 @@ export const actions = {
                     dispatch(updateActivitySuccess(convertActivityToPlainStructure(result.data)));
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(result.msg));
-                    // console.error(result.error);
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             });
