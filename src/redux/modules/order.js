@@ -32,7 +32,7 @@ export const actions = {
                     dispatch(fetchOrdersByCustomerSuccess(convertOrdersToPlainStructure(result.data)));
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             });
@@ -48,7 +48,7 @@ export const actions = {
                     dispatch(fetchUncompleteOrdersSuccess(convertOrdersToPlainStructure(result.data)));
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             });
@@ -64,7 +64,7 @@ export const actions = {
                     dispatch(fetchOrdersSuccess(convertOrdersToPlainStructure(result.data)));
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             });
@@ -80,7 +80,7 @@ export const actions = {
                     dispatch(fetchOrderSuccess(convertOrderToPlainStructure(result.data)));
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             });
@@ -97,7 +97,7 @@ export const actions = {
                     dispatch(updateOrderStatusSuccess(convertOrderToPlainStructure(result.data)));
                     return Promise.resolve();
                 } else {
-                    dispatch(appActions.setError(result.msg));
+                    dispatch(appActions.setError(result.error));
                     return Promise.reject(result.error);
                 }
             });

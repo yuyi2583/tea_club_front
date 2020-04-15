@@ -9,6 +9,7 @@ import { map } from "../../../../../router";
 import { sex, fetchOrdersTimeRange, orderStatus, fetchOrderStatus } from "../../../../../utils/common";
 import { timeStampConvertToFormatTime } from "../../../../../utils/timeUtil";
 import PictureDisplay from "../../../../../components/PictrueDispaly";
+import validator from "../../../../../utils/validator";
 
 const { Title } = Typography;
 
@@ -19,17 +20,17 @@ class OrderDetail extends React.Component {
             orderStatus: "",
             modalVisible: false,
             currentModal: "express",
-            from:null,
+            from: null,
         }
     }
 
     componentDidMount() {
         const { orderId } = this.props.match.params;
-        console.log("this in order detail",this);
-        this.props.fetchOrder(orderId).catch(err=>{
-            this.props.callMessage("error",err);
-            const from=this.props.location.state||`${map.admin.AdminHome()}/order_management/orders`;
-            this.setState({from});
+        console.log("this in order detail", this);
+        this.props.fetchOrder(orderId).catch(err => {
+            this.props.callMessage("error", err);
+            const from = this.props.location.state || `${map.admin.AdminHome()}/order_management/orders`;
+            this.setState({ from });
         });
         // this.props.fetchCustomerById(customerId);
     }
@@ -45,45 +46,55 @@ class OrderDetail extends React.Component {
         const { match, byOrders } = this.props;
         const { orderId } = match.params;
         let button = null;
-        switch (byOrders[orderId].status.status) {
-            case fetchOrderStatus.payed:
-                button = (
-                    <span>
-                        <Button type="primary" name={fetchOrderStatus.shipped} onClick={this.changeOrderStatus}>发货</Button>
-                        &nbsp;&nbsp;
-                        <Button name={fetchOrderStatus.refunded} onClick={this.changeOrderStatus}>退款</Button>
-                    </span>
-                );
-                break;
-            case fetchOrderStatus.requestRefund:
-                button = (
-                    <span>
-                        <Button type="primary" name={fetchOrderStatus.refunded} onClick={this.changeOrderStatus}>允许退款</Button>
-                        &nbsp;&nbsp;
-                        <Button name={fetchOrderStatus.rejectRefund} onClick={this.changeOrderStatus}>拒绝退款</Button>
-                    </span>
-                )
+        let titlBar = null;
+        try {
+            switch (byOrders[orderId].status.status) {
+                case fetchOrderStatus.payed:
+                    button = (
+                        <span>
+                            <Button type="primary" name={fetchOrderStatus.shipped} onClick={this.changeOrderStatus}>发货</Button>
+                            &nbsp;&nbsp;
+                            <Button name={fetchOrderStatus.refunded} onClick={this.changeOrderStatus}>退款</Button>
+                        </span>
+                    );
+                    break;
+                case fetchOrderStatus.requestRefund:
+                    button = (
+                        <span>
+                            <Button type="primary" name={fetchOrderStatus.refunded} onClick={this.changeOrderStatus}>允许退款</Button>
+                            &nbsp;&nbsp;
+                            <Button name={fetchOrderStatus.rejectRefund} onClick={this.changeOrderStatus}>拒绝退款</Button>
+                        </span>
+                    );
+                    break;
+                default:
+                    button = null;
+            }
+            titlBar = (
+                <Row>
+                    <Col span={16}>
+                        <Row>
+                            <Col span={12}>
+                                提单时间:{timeStampConvertToFormatTime(byOrders[orderId].orderTime)}
+                            </Col>
+                            <Col span={6}>
+                                订单编号:{orderId}
+                            </Col>
+                            <Col span={6}>
+                                订单状态:{orderStatus[byOrders[orderId].status.status]}
+                            </Col>
+                        </Row>
+                    </Col>
+                    <Col span={8} style={{ display: "flex", justifyContent: "flex-end" }}>
+                        {button}
+                    </Col>
+                </Row>
+            );
+        } catch{
+            button = null;
+            titlBar = null;
         }
-        return (
-            <Row>
-                <Col span={16}>
-                    <Row>
-                        <Col span={12}>
-                            提单时间:{timeStampConvertToFormatTime(byOrders[orderId].orderTime)}
-                        </Col>
-                        <Col span={6}>
-                            订单编号:{orderId}
-                        </Col>
-                        <Col span={6}>
-                            订单状态:{orderStatus[byOrders[orderId].status.status]}
-                        </Col>
-                    </Row>
-                </Col>
-                <Col span={8} style={{ display: "flex", justifyContent: "flex-end" }}>
-                    {button}
-                </Col>
-            </Row>
-        )
+        return titlBar;
     }
 
     getProductsDisplay = () => {
@@ -118,11 +129,15 @@ class OrderDetail extends React.Component {
         const { orderId } = match.params;
         const order = byOrders[orderId];
         let display = "";
-        if (order.amount.ingot != 0) {
-            display += `${order.amount.ingot}元宝`;
-        }
-        if (order.amount.credit != 0) {
-            display += `${order.amount.credit}积分`;
+        try {
+            if (order.amount.ingot != 0) {
+                display += `${order.amount.ingot}元宝`;
+            }
+            if (order.amount.credit != 0) {
+                display += `${order.amount.credit}积分`;
+            }
+        } catch{
+            display = "";
         }
         return display;
     }
@@ -214,6 +229,7 @@ class OrderDetail extends React.Component {
                                                 required: true,
                                                 message: '请输入配送人电话!',
                                             },
+                                            validator.phone
                                         ],
                                     })(<Input allowClear />)}
                                 </Form.Item>
@@ -280,16 +296,16 @@ class OrderDetail extends React.Component {
     }
 
     render() {
-        const {from}=this.state;
-        if(from!=null){
-            return <Redirect to={from}/>
+        const { from } = this.state;
+        if (from != null) {
+            return <Redirect to={from} />
         }
         const { match, retrieveRequestQuantity, modalRequestQuantity, orders, byOrders, byOrderProducts, byOrderCustomers, byOrderClerks } = this.props;
         const { orderId } = match.params;
         const { modalVisible } = this.state;
         const order = byOrders[orderId];
         const titleBar = this.getTitleBar();
-        let isDataNull = false;
+        let isDataNull = order == undefined;
         const productsDisplay = this.getProductsDisplay();
         const amountDisplay = this.getAmountDisplay();
         const { title, content } = this.getModalContent()
@@ -301,44 +317,46 @@ class OrderDetail extends React.Component {
                     style={{ margin: "10px 0 20px 0" }}
                     column={2}>
                     <Descriptions.Item label={
-                        <span>
-                            提单人（账号ID）
-                            <Tooltip title="查看提单人详细信息">
-                                <Link to={`${map.admin.AdminHome()}/customer_management/customers/customer/${order.customer}`}>
-                                    <Icon type="info-circle" />
-                                </Link>
-                            </Tooltip>
-                        </span>
-                    }>
-                        {byOrderCustomers[order.customer].uid}
-                    </Descriptions.Item>
-                    <Descriptions.Item label="提单人联系方式">{byOrderCustomers[order.customer].contact}</Descriptions.Item>
-                    <Descriptions.Item label="地址" span={2}>{byOrderCustomers[order.customer].address}</Descriptions.Item>
-                    <Descriptions.Item label="产品" span={2}>
-                        {productsDisplay}
-                    </Descriptions.Item>
-                    <Descriptions.Item label="买家留言">
-                        {order.buyerPs}
-                    </Descriptions.Item>
-                    {order.status.status != "payed" && order.status.status != "unpayed" ?
-                        <Descriptions.Item label={
+                        isDataNull ? null :
                             <span>
-                                订单处理人
-                            <Tooltip title="查看订单处理人详细信息">
-                                    <Link to={`${map.admin.AdminHome()}/clerk_management/clerks/clerk/${order.clerk}`}>
+                                提单人（账号ID）
+                                <Tooltip title="查看提单人详细信息">
+                                    <Link to={`${map.admin.AdminHome()}/customer_management/customers/customer/${order.customer}`}>
                                         <Icon type="info-circle" />
                                     </Link>
                                 </Tooltip>
                             </span>
+                    }>
+                        {isDataNull ? null : byOrderCustomers[order.customer].uid}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="提单人联系方式">{isDataNull ? null : byOrderCustomers[order.customer].contact}</Descriptions.Item>
+                    <Descriptions.Item label="地址" span={2}>{isDataNull ? null : byOrderCustomers[order.customer].address}</Descriptions.Item>
+                    <Descriptions.Item label="产品" span={2}>
+                        {isDataNull ? null : productsDisplay}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="买家留言">
+                        {isDataNull ? null : order.buyerPs}
+                    </Descriptions.Item>
+                    {isDataNull ? null : order.status.status != "payed" && order.status.status != "unpayed" ?
+                        <Descriptions.Item label={
+                            isDataNull ? null :
+                                <span>
+                                    订单处理人
+                                    <Tooltip title="查看订单处理人详细信息">
+                                        <Link to={`${map.admin.AdminHome()}/clerk_management/clerks/clerk/${order.clerk}`}>
+                                            <Icon type="info-circle" />
+                                        </Link>
+                                    </Tooltip>
+                                </span>
                         }>
-                            {byOrderClerks[order.clerk].name}
+                            {isDataNull ? null :byOrderClerks[order.clerk].name}
                         </Descriptions.Item>
                         : null}
                     <Descriptions.Item label="总价">
-                        {amountDisplay}
+                        {isDataNull ? null :amountDisplay}
                     </Descriptions.Item>
                 </Descriptions>
-                {order.trackInfo == null || order.trackInfo == undefined ? null :
+                {isDataNull ? null : order.trackInfo == null || order.trackInfo == undefined ? null :
                     order.trackInfo.trackingId != null ?
                         <Descriptions bordered title="物流信息" style={{ marginBottom: "20px" }} column={2}>
                             <Descriptions.Item label="物流单号">
@@ -357,11 +375,11 @@ class OrderDetail extends React.Component {
                             </Descriptions.Item>
                         </Descriptions>
                 }
-                {order.buyerRefundReason != null || order.buyerRefundReason != "" ?
+                {isDataNull ? null : order.buyerRefundReason != null || order.buyerRefundReason != "" ?
                     <Descriptions bordered title="买家退款理由" style={{ marginBottom: "20px" }}>
                         <Descriptions.Item label="理由">{order.buyerRefundReason}</Descriptions.Item>
                     </Descriptions> : null}
-                {order.sellerPs == null || order.sellerPs == "" ? null :
+                {isDataNull ? null : order.sellerPs == null || order.sellerPs == "" ? null :
                     <Descriptions bordered title="卖家退款说明" style={{ marginBottom: "20px" }}>
                         <Descriptions.Item label="说明">{order.sellerPs}</Descriptions.Item>
                     </Descriptions>

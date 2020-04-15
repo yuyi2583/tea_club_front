@@ -27,7 +27,7 @@ class OrderList extends React.Component {
     };
 
     componentDidMount() {
-        this.props.fetchUncompleteOrders();
+        this.props.fetchUncompleteOrders().catch(err => this.props.callMessage("error", err));
     }
 
     getColumnSearchProps = dataIndex => ({
@@ -207,7 +207,8 @@ class OrderList extends React.Component {
 
     fetchAllOrders = () => {
         this.setState({ status: undefined, startDate: null, endDate: null });
-        this.props.fetchOrders(fetchOrderStatus.all, fetchTimeRange["all"]());
+        this.props.fetchOrders(fetchOrderStatus.all, fetchTimeRange["all"]())
+            .catch(err => this.props.callMessage("error", err));
     }
 
     handleSelectChange = (value) => {
