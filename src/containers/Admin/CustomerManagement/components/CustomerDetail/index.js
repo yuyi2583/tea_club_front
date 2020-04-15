@@ -7,6 +7,8 @@ import { connect } from "react-redux";
 import { sex, fetchTimeRange } from "../../../../../utils/common";
 import OrderList from "./components/OrderList";
 import PictureDispaly from "../../../../../components/PictrueDispaly";
+import { Redirect } from "react-router-dom";
+import { map } from "../../../../../router";
 
 const { Title } = Typography;
 
@@ -15,13 +17,17 @@ class CustomerDetail extends React.Component {
         super(props);
         this.state = {
             current: 'detail',
+            from: null,
         }
     }
 
     componentDidMount() {
         const { customerId } = this.props.match.params;
-        this.props.fetchOrdersByCustomer(customerId);
-        // this.props.fetchCustomerById(customerId);
+        this.props.fetchOrdersByCustomer(customerId)
+            .catch(err => {
+                this.props.callMessage("error", err);
+                this.setState({ from: `${map.admin.AdminHome()}/customer_management/customers` });
+            });
     }
 
     handleClickMenu = e => {
@@ -42,13 +48,11 @@ class CustomerDetail extends React.Component {
     }
 
     render() {
+        const { from } = this.state;
+        if (from != null) {
+            return <Redirect to={from} />
+        }
         const { match, retrieveRequestQuantity, orders, byOrders, byOrderActivityRules, byOrderClerks, byOrderCustomers, byProducts } = this.props;
-        // if (customers.length == 0) {
-        //     this.props.fetchAllCustomers();
-        // }
-        // if (customerType.length == 0) {
-        //     this.props.fetchCustomerType();
-        // }
         const { customerId } = match.params;
         const { current } = this.state;
         let isDataNull = true;
@@ -87,6 +91,7 @@ class CustomerDetail extends React.Component {
                                 byOrderActivityRules={byOrderActivityRules}
                                 byOrderClerks={byOrderClerks}
                                 byProducts={byProducts}
+                                customerId={customerId}
                                 deleteOrdersByBatch={(orders) => this.props.deleteOrdersByBatch(orders)}
                                 fetchOrdersTimeRange={this.fetchOrdersByCustomerAndTimeRange}
                                 callMessage={this.props.callMessage}

@@ -4,7 +4,7 @@ import { Descriptions, Button, Typography, Col, Row, Spin, Tooltip, Icon, Empty,
 import { actions as orderActions, getByOrders, getOrders, getByOrderActivityRules, getByOrderClerks, getByOrderCustomers, getByProducts } from "../../../../../redux/modules/order";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import { map } from "../../../../../router";
 import { sex, fetchOrdersTimeRange, orderStatus, fetchOrderStatus } from "../../../../../utils/common";
 import { timeStampConvertToFormatTime } from "../../../../../utils/timeUtil";
@@ -19,12 +19,18 @@ class OrderDetail extends React.Component {
             orderStatus: "",
             modalVisible: false,
             currentModal: "express",
+            from:null,
         }
     }
 
     componentDidMount() {
         const { orderId } = this.props.match.params;
-        this.props.fetchOrder(orderId);
+        console.log("this in order detail",this);
+        this.props.fetchOrder(orderId).catch(err=>{
+            this.props.callMessage("error",err);
+            const from=this.props.location.state||`${map.admin.AdminHome()}/order_management/orders`;
+            this.setState({from});
+        });
         // this.props.fetchCustomerById(customerId);
     }
 
@@ -274,6 +280,10 @@ class OrderDetail extends React.Component {
     }
 
     render() {
+        const {from}=this.state;
+        if(from!=null){
+            return <Redirect to={from}/>
+        }
         const { match, retrieveRequestQuantity, modalRequestQuantity, orders, byOrders, byOrderProducts, byOrderCustomers, byOrderClerks } = this.props;
         const { orderId } = match.params;
         const { modalVisible } = this.state;

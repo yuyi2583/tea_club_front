@@ -16,7 +16,7 @@ class CustomerList extends React.Component {
     };
 
     componentDidMount() {
-        this.props.fetchCustomers();
+        this.props.fetchCustomers().catch(err => this.props.callMessage("error", err));
         // this.props.fetchCustomerType();
     }
 

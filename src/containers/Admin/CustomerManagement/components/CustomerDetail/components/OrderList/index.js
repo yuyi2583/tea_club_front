@@ -161,7 +161,11 @@ class OrderList extends React.Component {
         render: (text, record) => (
           <span>
             <Tooltip title={`编辑订单`}>
-              <Link to={`${map.admin.AdminHome()}/order_management/orders/order/${record.uid}`}>编辑</Link>
+              <Link 
+              to={{
+                pathname:`${map.admin.AdminHome()}/order_management/orders/order/${record.uid}`,
+                state:`${map.admin.AdminHome()}/customer_management/customers/customer/${this.props.customerId}`
+              }}>编辑</Link>
             </Tooltip>
           </span>
         ),
