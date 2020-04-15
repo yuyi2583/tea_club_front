@@ -16,7 +16,7 @@ class ApplicationList extends React.Component {
     };
 
     componentDidMount() {
-        this.props.fetchEnterpriseCustomerApplication();
+        this.props.fetchEnterpriseCustomerApplication().catch(err=>this.props.callMessage("error",err));
     }
 
     getColumnSearchProps = dataIndex => ({
@@ -188,7 +188,7 @@ class ApplicationList extends React.Component {
                 this.setState({ from: `${match.url}/enterprise_customer_application/${uid}` })
             })
             .catch(err => {
-                this.props.callMessage("error", "开始审核失败" + err);
+                this.props.callMessage("error", "开始审核失败，" + err);
             })
     }
 

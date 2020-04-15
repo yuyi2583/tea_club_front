@@ -1,5 +1,5 @@
 import React from "react";
-import { PageHeader, Button } from "antd";
+import { PageHeader, Button, Modal } from "antd";
 import { Route } from "react-router-dom";
 import ApplicantionDetail from "./components/ApplicationDetail";
 import ApplicantionList from "./components/ApplicantionList";
@@ -10,7 +10,9 @@ import {
     actions as customerActions, getByEnterpriseBusinessLicense, getByCustomerAvatar,
     getEnterpriseCustomerApplications, getByEnterpriseCustomerApplications
 } from "../../../redux/modules/customer";
+import { enterpriseCustomerApplicationStatus } from "../../../utils/common";
 
+const { confirm } = Modal;
 
 class EnterpriseCustomerApplication extends React.Component {
 
@@ -21,29 +23,49 @@ class EnterpriseCustomerApplication extends React.Component {
             if (history.location.pathname.indexOf("/enterprise_customer_application/") != -1) {
                 const pathname = history.location.pathname.split("/");
                 const uid = pathname[pathname.length - 1];
-                if (byEnterpriseCustomerApplications[uid].status != "pending") {
-                    extra = null;
+                if (byEnterpriseCustomerApplications[uid].status == "approve") {
+                    extra = <strong>状态：{enterpriseCustomerApplicationStatus["approve"]}</strong>;
+                } else if (byEnterpriseCustomerApplications[uid].status == "reject") {
+                    extra = <strong>状态：{enterpriseCustomerApplicationStatus["reject"]}</strong>;
                 } else {
                     extra = (
                         <span>
                             <Button type="primary" onClick={() => {
-                                this.props.approveApplication(uid)
-                                    .then(() => {
-                                        this.props.callMessage("success", "审核通过成功");
-                                    })
-                                    .catch(err => {
-                                        this.props.callMessage("error", "操作失败" + err);
-                                    })
+                                const thiz = this;
+                                confirm({
+                                    title: '确认通过?',
+                                    content: '企业信息无误，确认通过审核',
+                                    onCancel() {
+                                    },
+                                    onOk() {
+                                        thiz.props.approveApplication(uid)
+                                            .then(() => {
+                                                thiz.props.callMessage("success", "审核通过成功");
+                                            })
+                                            .catch(err => {
+                                                thiz.props.callMessage("error", "操作失败，" + err);
+                                            })
+                                    }
+                                });
                             }}>通过申请</Button>
                             &nbsp;&nbsp;
                             <Button type="danger" onClick={() => {
-                                this.props.rejectApplication(uid)
-                                    .then(() => {
-                                        this.props.callMessage("success", "拒绝申请成功");
-                                    })
-                                    .catch(err => {
-                                        this.props.callMessage("error", "操作失败" + err);
-                                    })
+                                const thiz = this;
+                                confirm({
+                                    title: '确认新增?',
+                                    content: '确认拒绝审核？',
+                                    onCancel() {
+                                    },
+                                    onOk() {
+                                        thiz.props.rejectApplication(uid)
+                                            .then(() => {
+                                                thiz.props.callMessage("success", "拒绝申请成功");
+                                            })
+                                            .catch(err => {
+                                                thiz.props.callMessage("error", "操作失败，" + err);
+                                            })
+                                    }
+                                });
                             }}>拒绝申请</Button>
                         </span>
                     );

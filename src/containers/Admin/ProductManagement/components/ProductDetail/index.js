@@ -8,6 +8,7 @@ import { callNotification } from "../../../../../utils/commonUtils";
 import { Prompt, Link } from "react-router-dom";
 import PictureCard from "../../../../../components/PictureCard";
 import { map } from "../../../../../router";
+import {Redirect} from "react-router-dom";
 
 const { Paragraph } = Typography;
 const { TextArea } = Input;
@@ -19,6 +20,7 @@ class ProductDetail extends React.Component {
         super(props);
         this.state = {
             fileList: new Array(),
+            from:null,
         }
     }
 
@@ -28,7 +30,10 @@ class ProductDetail extends React.Component {
             .then(() => {
                 this.setState({ fileList: this.props.byProducts[productId].photos })
             })
-            .catch(err => this.props.callMessage("error", err));
+            .catch(err => {
+                this.props.callMessage("error", err);
+                this.setState({from:`${map.admin.AdminHome()}/product_management/products`})
+            });
         this.props.fetchProductTypes();
     }
 
@@ -153,6 +158,10 @@ class ProductDetail extends React.Component {
     }
 
     render() {
+        const { from } = this.state;
+        if (from != null) {
+            return <Redirect to={from} />;
+        }
         const { productId } = this.props.match.params;
         const { alterInfo, retrieveRequestQuantity, updateRequestQuantity, form, productTypes, byProductTypes, byProducts } = this.props;
         const { getFieldDecorator } = form;
