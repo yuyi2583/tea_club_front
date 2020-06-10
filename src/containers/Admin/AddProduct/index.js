@@ -1,5 +1,5 @@
 import React from "react";
-import { PageHeader, Button, Form,  Input, Select, Spin, Row, Col, Modal, InputNumber } from "antd";
+import { PageHeader, Button, Form,  Input, Select, Radio,Spin, Row, Col, Modal, InputNumber } from "antd";
 import PictureCard from "../../../components/PictureCard";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
@@ -16,6 +16,7 @@ class AddProduct extends React.Component {
         super(props);
         this.state = {
             fileList: new Array(),
+            detailFileList:new Array(),
             from: null,
             newCategory: "",
         }
@@ -97,6 +98,22 @@ class AddProduct extends React.Component {
                 break;
         }
     }
+    handleDetailDisplayChange = (type, data) => {
+        const { detailFileList } = this.state;
+        switch (type) {
+            case "done":
+                console.log("add shop photo ", data);
+                if (detailFileList.indexOf(data.uid) == -1) {
+                    this.setState({ detailFileList: detailFileList.concat([data.uid]) });
+                }
+                break;
+            case "removed":
+                console.log("remove shop photo ", data);
+                let newFileList = detailFileList.filter(uid => uid != data.uid);
+                this.setState({ detailFileList: newFileList });
+                break;
+        }
+    }
     //TODO 新增产品分属于那哪个门店
 
     render() {
@@ -161,6 +178,15 @@ class AddProduct extends React.Component {
                                     </Col>
                                 </Row>
                             </Form.Item>
+                            <Form.Item label="是否在首页展示">
+                                {getFieldDecorator('showOnHome', {
+                                    rules: [{ required: true, message: '请选择是否在首页展示!' }],
+                                    initialValue: false
+                                })(<Radio.Group>
+                                    <Radio value={false}>否</Radio>
+                                    <Radio value={true}>是</Radio>
+                                </Radio.Group>)}
+                            </Form.Item>
                             <Form.Item label="产品存量">
                                 {getFieldDecorator('storage', {
                                     rules: [{ required: true, message: '请输入产品存量!' }],
@@ -175,15 +201,18 @@ class AddProduct extends React.Component {
                                     rules: [
                                         {
                                             required: true,
-                                            message: "请选择活动描述！",
+                                            message: "请输入产品描述",
                                         }
                                     ]
                                 })(
-                                    <Input.TextArea rows={4} allowClear placeholder="请选择活动描述" />
+                                    <Input.TextArea rows={4} allowClear placeholder="请输入产品描述" />
                                 )}
                             </Form.Item>
-                            <Form.Item label="活动展示照片">
+                            <Form.Item label="产品展示照片">
                                 <PictureCard onChange={this.handleDisplayChange} />
+                            </Form.Item>
+                            <Form.Item label="产品详情照片">
+                                <PictureCard onChange={this.handleDetailDisplayChange} />
                             </Form.Item>
                             <Form.Item {...tailFormItemLayout}>
                                 <Button type="primary" htmlType="submit" block loading={retrieveRequestQuantity > 0}>
