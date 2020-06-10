@@ -120,7 +120,7 @@ class ActivityRuleInput extends React.Component {
                                 initialValue: isUpdate ? isOriginalRuleType ? activityRule.activityRule1 : null : null
                             })(<InputNumber
                                 min={0}
-                                style={{ width: "100px", marginRight: "10px" }} />)}分钟
+                                style={{ width: "100px", marginRight: "10px" }} />)}秒
                                 </Form.Item>
                         </Col>
                         <Col span={13}>

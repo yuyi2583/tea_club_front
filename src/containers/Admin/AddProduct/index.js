@@ -97,6 +97,7 @@ class AddProduct extends React.Component {
                 break;
         }
     }
+    //TODO 新增产品分属于那哪个门店
 
     render() {
         const { from } = this.state;

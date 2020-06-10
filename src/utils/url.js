@@ -21,7 +21,7 @@ export default {
     fetchClerks: () => HOME + `/admin/clerks`,
     // "/mock/allClerks.json",
     alterBoxInfo: () => "/mock/alterBoxInfo.json",
-    removeShopBox: (uid) => HOME + `/admin/shopBox/${uid}`,
+    terminalShopBox: (uid) => HOME + `/admin/shopBox/${uid}`,
     // "/mock/alterBoxInfo.json",
     addBox: () => HOME + "/admin/shopBox",
     // "/mock/addBoxInfo.json",

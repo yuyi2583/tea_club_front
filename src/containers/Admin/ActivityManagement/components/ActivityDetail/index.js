@@ -152,7 +152,7 @@ class ActivityDetail extends React.Component {
                 let rule;
                 switch (byActivityRules[uid].activityRuleType.name) {
                     case "阅读":
-                        rule = `阅读时长满${byActivityRules[uid].activityRule1}分钟
+                        rule = `阅读时长满${byActivityRules[uid].activityRule1}秒
                         ${operation}${byActivityRules[uid].activityRule2.number}${currency}`;
                         break;
                     case "购物":

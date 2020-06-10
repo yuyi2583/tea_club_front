@@ -80,7 +80,7 @@ export const convertToDay = (arry) => {
             case "6":
                 day = "周六";
                 break;
-            case "7":
+            case "0":
                 day = "周日";
                 break;
         }

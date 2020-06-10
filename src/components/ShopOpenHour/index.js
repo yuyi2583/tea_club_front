@@ -60,7 +60,7 @@ class ShopOpenHour extends React.Component {
                             <Option key={4} value={"4"}>周四</Option>
                             <Option key={5} value={"5"}>周五</Option>
                             <Option key={6} value={"6"}>周六</Option>
-                            <Option key={7} value={"7"}>周日</Option>
+                            <Option key={0} value={"0"}>周日</Option>
                         </Select>
                         )}
                     </Form.Item>

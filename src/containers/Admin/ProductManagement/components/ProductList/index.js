@@ -155,6 +155,7 @@ class ProductList extends React.Component {
         ];
     }
 
+    //TODO 根据门店不同展示门店拥有商品
     terminalProduct = (uid) => {
         console.log("terminal id", uid);
         const { byProducts } = this.props;

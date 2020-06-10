@@ -37,6 +37,10 @@ class ShopDetail extends React.Component {
             .catch(err=>this.props.callMessage("error",err));
     }
 
+    componentWillUnmount(){ 
+        this.props.finishAlterInfo();
+    }
+
     getOpenHoursDisplay = () => {
         const { shopId } = this.props.match.params;
         const { byShops, byOpenHours } = this.props;

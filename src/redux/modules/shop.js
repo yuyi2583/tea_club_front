@@ -129,7 +129,7 @@ export const actions = {
     terminalShopBox: (uid) => {
         return (dispatch) => {
             dispatch(appActions.startRequest());
-            return _delete(url.removeShopBox(uid)).then((result) => {
+            return _delete(url.terminalShopBox(uid)).then((result) => {
                 dispatch(appActions.finishRequest());
                 if (!result.error) {
                     dispatch(terminalShopBoxSuccess(uid));

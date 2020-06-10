@@ -1,11 +1,13 @@
 import React from "react";
-import { Descriptions, Row, Col, Skeleton, Button, Spin, Input, Select, Form, Modal, InputNumber } from "antd";
+import { Descriptions, Radio, Row, Col, Skeleton, Button, Spin, Input, Select, Form, Modal, InputNumber } from "antd";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actions as shopActions, getShopBoxes, getByShopBoxes, getByPhotos, getShops, getByShops } from "../../../../../redux/modules/shop";
 import { Prompt, Redirect } from "react-router-dom";
 import PictureCard from "../../../../../components/PictureCard";
 import { map } from "../../../../../router";
+import ShopBoxInfoInput from "../../../../../components/ShopBoxInfoInput";
+import DynamicFieldSet from "../../../../../components/DynamicFieldSet";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -51,9 +53,24 @@ class ShopBoxDetail extends React.Component {
                     onCancel() {
                     },
                     onOk() {
+                        const { keys } = values;
+                        let infos = new Array();
+                        keys.forEach(index => {
+                            let info = new Object();
+                            for (let key in values) {
+                                if (key.indexOf(index) != -1) {
+                                    if (key.indexOf("title") == -1) {
+                                        info[key.split("_")[0]] = values[key];
+                                    } else {
+                                        info[key.split("_")[0]] = values[key];
+                                    }
+                                }
+                            }
+                            infos.push(info);
+                        })
                         const shop = { uid: values.shopId };
                         const price = { ingot: values.ingot, credit: values.credit, uid: byShopBoxes[shopBoxId].price.uid };
-                        const shopBox = { ...values, price, photos: fileList, uid: shopBoxId, shop };
+                        const shopBox = { ...values, price, photos: fileList, uid: shopBoxId, shop,infos };
                         console.log("new shop box", shopBox);
                         thiz.props.updateShopBox(shopBox).then(() => {
                             thiz.props.callMessage("success", "更新包厢成功！");
@@ -136,7 +153,7 @@ class ShopBoxDetail extends React.Component {
         const { getFieldDecorator } = form;
         const photoDisplay = this.getPhotosDisplay();
         const priceDisplay = this.getPriceDisplay();
-        const isDataNull = byShopBoxes[shopBoxId] == undefined ? true : false;
+        const isDataNull = byShopBoxes[shopBoxId] == undefined || byShopBoxes[shopBoxId].infos == null ? true : false;
         return (
             <div>
                 <Spin spinning={updateRequestQuantity > 0}>
@@ -240,10 +257,10 @@ class ShopBoxDetail extends React.Component {
                                             </Form.Item>
                                     }
                                 </Descriptions.Item>
-                                <Descriptions.Item label="所属门店" span={2}>
+                                <Descriptions.Item label="所属门店">
                                     {
                                         !alterInfo ?
-                                            isDataNull ? null : byShopBoxes[shopBoxId].shop == null ? null : byShopBoxes[shopBoxId].shop.name :
+                                            isDataNull ? null : byShopBoxes[shopBoxId].shop == null ? "无所属门店" : byShopBoxes[shopBoxId].shop.name :
                                             <Form.Item>
                                                 {getFieldDecorator('shopId', {
                                                     rules: [
@@ -252,13 +269,55 @@ class ShopBoxDetail extends React.Component {
                                                             message: "请选择包厢所属门店！",
                                                         }
                                                     ],
-                                                    initialValue: byShopBoxes[shopBoxId].shop.uid
+                                                    initialValue: byShopBoxes[shopBoxId].shop==null?null:byShopBoxes[shopBoxId].shop.uid
                                                 })(
                                                     <Select name="shopId">
                                                         {shops.filter(uid => !byShops[uid].enforceTerminal).map(uid => <Option key={uid} value={uid}>{byShops[uid].name}</Option>)}
                                                     </Select>
                                                 )}
                                             </Form.Item>
+                                    }
+                                </Descriptions.Item>
+                                <Descriptions.Item label="是否在首页展示">
+                                    {
+                                        !alterInfo ?
+                                            isDataNull ? null : byShopBoxes[shopBoxId].showOnHome ? "在首页展示" : "不在首页展示" :
+                                            <Form.Item>
+                                                {getFieldDecorator('showOnHome', {
+                                                    rules: [{ required: true, message: '请选择是否在首页展示!' }],
+                                                    initialValue: byShopBoxes[shopBoxId].showOnHome
+                                                })(<Radio.Group>
+                                                    <Radio value={false}>否</Radio>
+                                                    <Radio value={true}>是</Radio>
+                                                </Radio.Group>)}
+                                            </Form.Item>
+                                    }
+                                </Descriptions.Item>
+                                <Descriptions.Item label="包厢须知" span={2}>
+                                    {
+                                        alterInfo ?
+                                            <DynamicFieldSet
+                                                form={this.props.form}
+                                                content={"添加包厢须知"}
+                                                template={
+                                                    <ShopBoxInfoInput form={this.props.form} />
+                                                }
+                                            >
+                                                {
+                                                    byShopBoxes[shopBoxId].infos.map(item =>
+                                                        <ShopBoxInfoInput
+                                                            key={item.uid}
+                                                            form={this.props.form}
+                                                            info={item}
+                                                        />)
+                                                }
+                                            </DynamicFieldSet>
+                                            : isDataNull ? null : byShopBoxes[shopBoxId].infos.map((item) =>
+                                                <div key={item.uid}>
+                                                    <strong>{item.title}:</strong>
+                                                    <span>{item.info}</span>
+                                                </div>
+                                            )
                                     }
                                 </Descriptions.Item>
                                 <Descriptions.Item label="照片" span={2}>

@@ -37,6 +37,7 @@ class AddActivity extends React.Component {
         this.props.fetchProductsName().catch(err=>this.props.callMessage("error",err));
     }
 
+    //TODO 优先级设置
     handleSubmit = e => {
         e.preventDefault();
         const { fileList } = this.state;;

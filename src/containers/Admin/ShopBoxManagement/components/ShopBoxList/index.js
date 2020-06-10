@@ -92,7 +92,7 @@ class ShopBoxList extends React.Component {
                 const dataItem = {
                     key: uid,
                     ...byShopBoxes[uid],
-                    shopName: byShopBoxes[uid].shop.name,
+                    shopName: byShopBoxes[uid].shop==null?"无所属门店":byShopBoxes[uid].shop.name,
                     status: byShopBoxes[uid].enforceTerminal ? "失效" : "运营中",
                 };
                 dataSource.push(dataItem);
@@ -150,7 +150,7 @@ class ShopBoxList extends React.Component {
                             <span>
                                 <Divider type="vertical" />
                                 <Tooltip title={`将此包厢失效`}>
-                                    <Button type="link" onClick={() => this.removeShopBox(record.uid)}>失效</Button>
+                                    <Button type="link" onClick={() => this.terminalShopBox(record.uid)}>失效</Button>
                                 </Tooltip>
                             </span>
                         }
@@ -160,7 +160,7 @@ class ShopBoxList extends React.Component {
         ];
     }
 
-    removeShopBox = (uid) => {
+    terminalShopBox = (uid) => {
         const thiz = this;
         confirm({
             title: '确认失效?',
@@ -168,7 +168,7 @@ class ShopBoxList extends React.Component {
             onCancel() {
             },
             onOk() {
-                thiz.props.removeShopBox(uid)
+                thiz.props.terminalShopBox(uid)
                     .then(() => {
                         thiz.props.callMessage("success", "包厢失效成功");
                     })

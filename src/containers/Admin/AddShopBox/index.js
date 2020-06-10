@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, Input, Tooltip, Icon, Button, InputNumber, PageHeader, Select, Modal, Spin, Divider, Row, Col } from 'antd';
+import { Form, Input, Tooltip, Icon,Radio, Button, InputNumber, PageHeader, Select, Modal, Spin, Divider, Row, Col } from 'antd';
 import PictureCard from "../../../components/PictureCard";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
@@ -7,6 +7,8 @@ import { actions as shopActions, getShops, getByShops } from "../../../redux/mod
 import { Redirect, Link, Prompt } from "react-router-dom";
 import { map } from "../../../router";
 import { formItemLayout, tailFormItemLayout } from "../../../utils/common";
+import DynamicFieldSet from "../../../components/DynamicFieldSet";
+import ShopBoxInfoInput from "../../../components/ShopBoxInfoInput";
 
 const { confirm } = Modal;
 const { Option } = Select;
@@ -34,9 +36,25 @@ class AddShopBox extends React.Component {
                     },
                     onOk() {
                         console.log("values", values);
+                        const { keys } = values;
+                        let infos = new Array();
+                        keys.forEach(index => {
+                            let info = new Object();
+                            for (let key in values) {
+                                if (key.indexOf(index) != -1) {
+                                    if (key.indexOf("title") == -1) {
+                                        info[key.split("_")[0]] = values[key];
+                                    } else {
+                                        info[key.split("_")[0]] = values[key];
+                                    }
+                                }
+                            }
+                            infos.push(info);
+                        })
                         const shop = { uid: values.shopId };
                         const price = { ingot: values.ingot, credit: values.credit };
-                        const shopBox = { ...values, shop, photos: fileList, price };
+                        const shopBox = { ...values, shop, photos: fileList, price, infos };
+                        console.log("shopbox", shopBox)
                         thiz.props.addBox(shopBox).then(() => {
                             thiz.props.callMessage("success", "新增包厢成功！");
                             thiz.setState({
@@ -119,10 +137,10 @@ class AddShopBox extends React.Component {
                                 <div>
                                     {menu}
                                     <Divider style={{ margin: '4px 0' }} />
-                                    <Link to={`${map.admin.AdminHome()}/shop_management/add_shop`} style={{margin:"5px"}}><Icon type="plus" /> 添加门店</Link>
+                                    <Link to={`${map.admin.AdminHome()}/shop_management/add_shop`} style={{ margin: "5px" }}><Icon type="plus" /> 添加门店</Link>
                                 </div>
                             )}>
-                                {shops.filter(uid=>!byShops[uid].enforceTerminal).map(uid => <Option key={uid}>{byShops[uid].name}</Option>)}
+                                {shops.filter(uid => !byShops[uid].enforceTerminal).map(uid => <Option key={uid}>{byShops[uid].name}</Option>)}
                             </Select>)}
                         </Form.Item>
                         <Form.Item
@@ -160,10 +178,25 @@ class AddShopBox extends React.Component {
                                 initialValue: 120
                             })(<InputNumber min={0} />)}分钟
                         </Form.Item>
+                        <Form.Item label="是否在首页展示">
+                            {getFieldDecorator('showOnHome', {
+                                rules: [{ required: true, message: '请选择是否在首页展示!' }],
+                                initialValue: false
+                            })(<Radio.Group>
+                                <Radio value={false}>否</Radio>
+                                <Radio value={true}>是</Radio>
+                            </Radio.Group>)}
+                        </Form.Item>
                         <Form.Item label="包厢描述">
                             {getFieldDecorator('description', {
                                 rules: [{ required: true, message: '请输入包厢描述!' }],
                             })(<Input.TextArea rows={4} />)}
+                        </Form.Item>
+                        <Form.Item label="包厢须知" style={{ marginBottom: 0 }} required>
+                            <DynamicFieldSet form={this.props.form} content={"添加包厢须知"}
+                                template={<ShopBoxInfoInput
+                                    form={this.props.form} />}
+                            />
                         </Form.Item>
                         <Form.Item label="包厢展示">
                             <PictureCard onChange={this.handleDisplayChange} />
