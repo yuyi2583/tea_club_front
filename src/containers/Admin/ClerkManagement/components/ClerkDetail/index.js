@@ -24,6 +24,7 @@ class ClerkDetail extends React.Component {
 
     componentDidMount() {
         const { clerkId } = this.props.match.params;
+        console.log("clerkId in clerk detail",clerkId)
         this.props.fetchShops().catch(err => this.props.callMessage("error", err));
         this.props.fetchPositions().catch(err => this.props.callMessage("error", err));
         this.props.fetchClerk(clerkId)

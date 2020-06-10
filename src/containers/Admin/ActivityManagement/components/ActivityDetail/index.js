@@ -1,5 +1,5 @@
 import React from "react";
-import { Descriptions, Row, Col, Skeleton, Typography, Button, Spin, Input, Select, Empty, Form, DatePicker, Modal } from "antd";
+import { Descriptions, Row, Col, Skeleton, Typography, Button, Spin,Tooltip,Icon,Radio, Input, Select, Empty, Form, DatePicker, Modal } from "antd";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import {
@@ -48,52 +48,53 @@ class ActivityDetail extends React.Component {
                     },
                     onOk() {
                         console.log("values", values);
-                        // const index = values.keys;
-                        // let activityRules = new Array();
+                        const index = values.keys;
+                        let activityRules = new Array();
                         let activity = new Object();
-                        // index.forEach(item => {
-                        //     let rule = new Object();
-                        //     for (let key in values) {
-                        //         let splitKey = key.split("_");
-                        //         if (splitKey.length == 1) {
-                        //             activity[key] = values[key];
-                        //             continue;
-                        //         }
-                        //         if (splitKey[1].indexOf(item) != -1) {
-                        //             if (splitKey[0] == "activityApplyForProduct") {
-                        //                 let activityApplyForProduct = new Array();
-                        //                 try {
-                        //                     values[key].forEach(item => {
-                        //                         if (item.indexOf("type") != -1) {//表示某一类型产品全选，将其转化为该类型下所有产品id
-                        //                             let productsUid = new Array();
-                        //                             try {
-                        //                                 productsUid = products.filter(uid => byProducts[uid].type.uid == parseInt(item.split("_")[1]));
-                        //                             } catch{
-                        //                                 productsUid = new Array();
-                        //                             }
-                        //                             activityApplyForProduct = activityApplyForProduct.concat(productsUid);
-                        //                         } else {
-                        //                             activityApplyForProduct.push(parseInt(item.split("_")[1]));
-                        //                         }
-                        //                     })
-                        //                 } catch{
-                        //                     activityApplyForProduct = new Array();
-                        //                 }
-                        //                 rule[splitKey[0]] = activityApplyForProduct;
-                        //             } else {
-                        //                 rule[splitKey[0]] = values[key];
-                        //             }
-                        //         }
-                        //     }
-                        //     activityRules.push(rule);
-                        // })
+                        index.forEach(item => {
+                            let rule = new Object();
+                            for (let key in values) {
+                                let splitKey = key.split("_");
+                                if (splitKey.length == 1) {
+                                    activity[key] = values[key];
+                                    continue;
+                                }
+                                if (splitKey[1].indexOf(item) != -1) {
+                                    if (splitKey[0] == "activityApplyForProduct") {
+                                        let activityApplyForProduct = new Array();
+                                        try {
+                                            values[key].forEach(item => {
+                                                if (item.indexOf("type") != -1) {//表示某一类型产品全选，将其转化为该类型下所有产品id
+                                                    let productsUid = new Array();
+                                                    try {
+                                                        productsUid = products.filter(uid => byProducts[uid].type.uid == parseInt(item.split("_")[1]));
+                                                    } catch{
+                                                        productsUid = new Array();
+                                                    }
+                                                    activityApplyForProduct = activityApplyForProduct.concat(productsUid);
+                                                } else {
+                                                    activityApplyForProduct.push(parseInt(item.split("_")[1]));
+                                                }
+                                            })
+                                        } catch{
+                                            activityApplyForProduct = new Array();
+                                        }
+                                        rule[splitKey[0]] = activityApplyForProduct;
+                                    } else {
+                                        rule[splitKey[0]] = values[key];
+                                    }
+                                }
+                            }
+                            activityRules.push(rule);
+                        })
                         activity["name"] = values.name;
                         activity["startTime"] = timeStringConvertToTimeStamp(values["duration"][0].format("YYYY-MM-DD HH:mm:ss"));
                         activity["endTime"] = timeStringConvertToTimeStamp(values["duration"][1].format("YYYY-MM-DD HH:mm:ss"));
                         activity["photos"] = fileList;
                         activity["uid"] = activityId;
                         activity["mutexActivities"] = values["mutexActivities"] == undefined ? new Array() : values["mutexActivities"];
-                        activity["description"]=values.description;
+                        activity["description"] = values.description;
+                        activity["activityRules"]=activityRules;
                         console.log("submit values", activity);
                         thiz.props.updateActivity(activity)
                             .then(() => {
@@ -111,7 +112,7 @@ class ActivityDetail extends React.Component {
     };
 
     componentDidMount() {
-        this.props.fetchActivitiesNameDesc().catch(err=>this.props.callMessage("error",err));
+        this.props.fetchActivitiesNameDesc().catch(err => this.props.callMessage("error", err));
         const { activityId } = this.props.match.params;
         this.props.fetchActivity(activityId)
             .then(() => {
@@ -200,7 +201,7 @@ class ActivityDetail extends React.Component {
         const { byActivities, byMutexActivities } = this.props;
         let display = <Empty />;
         try {
-            display = (
+            display = byActivities[activityId].mutexActivities.length == 0 ? <Empty /> : (
                 <Paragraph>
                     {byActivities[activityId].mutexActivities.map(uid => <span style={{ margin: "0 5px" }} key={uid}>{byMutexActivities[uid].name}</span>)}
                 </Paragraph>
@@ -322,6 +323,45 @@ class ActivityDetail extends React.Component {
                                 <Descriptions.Item label="活动状态">
                                     {activityStatus}
                                 </Descriptions.Item>
+                                <Descriptions.Item label="是否在首页展示">
+                                    {
+                                        !alterInfo ?
+                                            isDataNull ? null : byActivities[activityId].showOnHome ? "在首页展示" : "不在首页展示" :
+                                            <Form.Item>
+                                                {getFieldDecorator('showOnHome', {
+                                                    rules: [{ required: true, message: '请选择是否在首页展示!' }],
+                                                    initialValue: byActivities[activityId].showOnHome
+                                                })(<Radio.Group>
+                                                    <Radio value={false}>否</Radio>
+                                                    <Radio value={true}>是</Radio>
+                                                </Radio.Group>)}
+                                            </Form.Item>
+                                    }
+                                </Descriptions.Item>
+                                <Descriptions.Item label={
+                                    <span>
+                                        优先级&nbsp;
+                                     <Tooltip title="数字越小优先级越高">
+                                            <Icon type="question-circle-o" />
+                                        </Tooltip>
+                                    </span>
+                                }>
+                                    {
+                                        !alterInfo ?
+                                            isDataNull ? null : byActivities[activityId].priority :
+                                            <Form.Item>
+                                                {getFieldDecorator('priority', {
+                                                    rules: [{ required: true, message: '请选择优先级!' }],
+                                                    initialValue: byActivities[activityId].priority
+                                                })(<Select
+                                                    placeholder="请选择活动优先级">
+                                                    {
+                                                        [1, 2, 3, 4, 5].map((item) => <Option value={item} key={item} >{item}</Option>)
+                                                    }
+                                                </Select>)}
+                                            </Form.Item>
+                                    }
+                                </Descriptions.Item>
                                 <Descriptions.Item label="活动描述" span={2}>
                                     {
                                         !alterInfo ?
@@ -338,40 +378,40 @@ class ActivityDetail extends React.Component {
                                 </Descriptions.Item>
                                 <Descriptions.Item label="优惠规则" span={2}>
                                     {
-                                        // !alterInfo ?
-                                            ruleDisplay
-                                            // : <Form.Item required>
-                                            //     <DynamicFieldSet form={this.props.form} content={"添加优惠规则"}
-                                            //         template={<ActivityRuleInput
-                                            //             form={this.props.form}
-                                            //             customerTypes={customerTypes}
-                                            //             byCustomerTypes={byCustomerTypes}
-                                            //             productTypes={productTypes}
-                                            //             byProductTypes={byProductTypes}
-                                            //             activityRuleTypes={activityRuleTypes}
-                                            //             byActivityRuleTypes={byActivityRuleTypes}
-                                            //             products={products}
-                                            //             byProducts={byProducts}
-                                            //         />}
-                                            //     >
-                                            //         {
-                                            //             byActivities[activityId].activityRules.map(uid =>
-                                            //                 <ActivityRuleInput
-                                            //                     key={uid}
-                                            //                     customerTypes={customerTypes}
-                                            //                     byCustomerTypes={byCustomerTypes}
-                                            //                     productTypes={productTypes}
-                                            //                     byProductTypes={byProductTypes}
-                                            //                     activityRuleTypes={activityRuleTypes}
-                                            //                     byActivityRuleTypes={byActivityRuleTypes}
-                                            //                     products={products}
-                                            //                     byProducts={byProducts}
-                                            //                     activityRule={byActivityRules[uid]}
-                                            //                     form={this.props.form} />
-                                            //             )
-                                            //         }
-                                            //     </DynamicFieldSet>
-                                            // </Form.Item>
+                                        !alterInfo ?
+                                        ruleDisplay
+                                        : <Form.Item required>
+                                            <DynamicFieldSet form={this.props.form} content={"添加优惠规则"}
+                                                template={<ActivityRuleInput
+                                                    form={this.props.form}
+                                                    customerTypes={customerTypes}
+                                                    byCustomerTypes={byCustomerTypes}
+                                                    productTypes={productTypes}
+                                                    byProductTypes={byProductTypes}
+                                                    activityRuleTypes={activityRuleTypes}
+                                                    byActivityRuleTypes={byActivityRuleTypes}
+                                                    products={products}
+                                                    byProducts={byProducts}
+                                                />}
+                                            >
+                                                {
+                                                    byActivities[activityId].activityRules.map(uid =>
+                                                        <ActivityRuleInput
+                                                            key={uid}
+                                                            customerTypes={customerTypes}
+                                                            byCustomerTypes={byCustomerTypes}
+                                                            productTypes={productTypes}
+                                                            byProductTypes={byProductTypes}
+                                                            activityRuleTypes={activityRuleTypes}
+                                                            byActivityRuleTypes={byActivityRuleTypes}
+                                                            products={products}
+                                                            byProducts={byProducts}
+                                                            activityRule={byActivityRules[uid]}
+                                                            form={this.props.form} />
+                                                    )
+                                                }
+                                            </DynamicFieldSet>
+                                        </Form.Item>
                                     }
                                 </Descriptions.Item>
                                 <Descriptions.Item label="活动照片">

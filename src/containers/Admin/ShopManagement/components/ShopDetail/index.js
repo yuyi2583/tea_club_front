@@ -67,7 +67,7 @@ class ShopDetail extends React.Component {
         try {
             clerksDisplay = byShops[shopId].clerks.map((uid) => (
                 <Tooltip key={uid} title={"点击查看员工详情"} placement="topLeft">
-                    <Link to={`${map.admin.AdminHome()}/clerk_management/clerks/${uid}`}>
+                    <Link to={`${map.admin.AdminHome()}/clerk_management/clerks/clerk/${uid}`}>
                         <Tag color="purple" onClick={this.showClerkInfo} style={{ margin: "10px" }}>
                             {byClerks[uid].name} · {byClerks[uid].position == null || byClerks[uid].position == undefined ? "暂未分配职务" : byClerks[uid].position.name}
                         </Tag></Link>
@@ -149,7 +149,7 @@ class ShopDetail extends React.Component {
                     onCancel() {
                     },
                     onOk() {
-                        const { keys } = values;
+                        const { keys ,clerks,shopBoxes} = values;
                         let openHours = new Array();
                         keys.forEach(index => {
                             let openHour = new Object();
@@ -164,7 +164,9 @@ class ShopDetail extends React.Component {
                             }
                             openHours.push(openHour);
                         })
-                        const shop = { ...values, photos: fileList, uid: shopId, openHours };
+                        // let updateClerks=clerks.map(uid=>{return {uid}})
+                        // let updateBoxes=shopBoxes.map(uid=>{return {uid}})
+                        const shop = { ...values, photos: fileList, uid: shopId, openHours};
                         console.log(shop);
                         thiz.props.updateShop(shop).then(() => {
                             thiz.props.callMessage("success", "更新门店信息成功！");

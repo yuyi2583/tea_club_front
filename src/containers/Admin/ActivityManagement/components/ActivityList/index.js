@@ -96,7 +96,7 @@ class ActivityList extends React.Component {
                 const dataItem = {
                     key: item,
                     ...byActivities[item],
-                    description: stringWithEllipsis(byActivities[item].description, 30),
+                    description: stringWithEllipsis(byActivities[item].description, 20),
                     status: byActivities[item].status != null && byActivities[item].status != undefined ? activityStatus[byActivities[item].status] : status,
                     duration: timeStampConvertToFormatTime(byActivities[item].startTime) + "~" + timeStampConvertToFormatTime(byActivities[item].endTime)
                 };

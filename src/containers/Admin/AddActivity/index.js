@@ -1,12 +1,12 @@
 import React from "react";
-import { PageHeader, Button, Form, DatePicker, Input, Select, Spin, Modal } from "antd";
+import { PageHeader, Button, Form, DatePicker, Input, Select, Radio, Spin, Modal,Tooltip,Icon } from "antd";
 import PictureCard from "../../../components/PictureCard";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actions as activityActions, getActivities, getByActivities, getActivityRuleTypes, getByActivityRuleTypes } from "../../../redux/modules/activity";
 import { actions as customerActions, getByCustomerTypes, getCustomerTypes } from "../../../redux/modules/customer";
 import { actions as productActions, getByProductTypes, getProductTypes, getProducts, getByProducts } from "../../../redux/modules/product";
-import { Redirect } from "react-router-dom";
+import { Redirect,Prompt } from "react-router-dom";
 import { map } from "../../../router";
 import "./style.css";
 import ActivityRuleInput from "../../../components/ActivityRuleInput";
@@ -30,11 +30,11 @@ class AddActivity extends React.Component {
     }
 
     componentDidMount() {
-        this.props.fetchActivitiesNameDesc().catch(err=>this.props.callMessage("error",err));
-        this.props.fetchActivityRuleTypes().catch(err=>this.props.callMessage("error",err));
-        this.props.fetchProductTypes().catch(err=>this.props.callMessage("error",err));
-        this.props.fetchCustomerTypes().catch(err=>this.props.callMessage("error",err));
-        this.props.fetchProductsName().catch(err=>this.props.callMessage("error",err));
+        this.props.fetchActivitiesNameDesc().catch(err => this.props.callMessage("error", err));
+        this.props.fetchActivityRuleTypes().catch(err => this.props.callMessage("error", err));
+        this.props.fetchProductTypes().catch(err => this.props.callMessage("error", err));
+        this.props.fetchCustomerTypes().catch(err => this.props.callMessage("error", err));
+        this.props.fetchProductsName().catch(err => this.props.callMessage("error", err));
     }
 
     //TODO 优先级设置
@@ -131,7 +131,7 @@ class AddActivity extends React.Component {
                 break;
         }
     }
-//TODO 购物优惠规则无rule1待更改
+    //TODO 购物优惠规则无rule1待更改
     render() {
         const { from } = this.state;
         if (from != null) {
@@ -190,6 +190,33 @@ class AddActivity extends React.Component {
                                     <RangePicker showTime format="YYYY-MM-DD HH:mm:ss" />,
                                 )}
                             </Form.Item>
+                            <Form.Item label="是否在首页展示">
+                                {getFieldDecorator('showOnHome', {
+                                    rules: [{ required: true, message: '请选择是否在首页展示!' }],
+                                    initialValue: false
+                                })(<Radio.Group>
+                                    <Radio value={false}>否</Radio>
+                                    <Radio value={true}>是</Radio>
+                                </Radio.Group>)}
+                            </Form.Item>
+                            <Form.Item label={
+                                <span>
+                                    优先级&nbsp;
+                                     <Tooltip title="数字越小优先级越高">
+                                        <Icon type="question-circle-o" />
+                                    </Tooltip>
+                                </span>
+                            }>
+                                {getFieldDecorator('priority', {
+                                    rules: [{ required: true, message: '请选择活动优先级' }],
+                                    initialValue: false
+                                })(<Select
+                                    placeholder="请选择活动优先级">
+                                    {
+                                        [1,2,3,4,5].map((item) => <Option value={item} key={item} >{item}</Option>)
+                                    }
+                                </Select>)}
+                            </Form.Item>
                             <Form.Item label="互斥活动">
                                 {getFieldDecorator('mutexActivities')
                                     (<Select
@@ -200,18 +227,6 @@ class AddActivity extends React.Component {
                                         }
                                     </Select>)}
                             </Form.Item>
-                            {/* <Form.Item label="活动优先级">
-                                {getFieldDecorator('priority', {
-                                    rules: [{ required: true, message: '请选择活动优先级!' }],
-                                })(
-                                    <Select
-                                        placeholder="请选择活动优先级"
-                                        onChange={this.handleSelectActivityTypeChange}>
-                                        <Option value="1">{activityType["1"]}</Option>
-                                        <Option value="2">{activityType["2"]}</Option>
-                                    </Select>)
-                                }
-                            </Form.Item> */}
                             <Form.Item label="活动展示照片">
                                 <PictureCard onChange={this.handleDisplayChange} />
                             </Form.Item>
@@ -223,6 +238,7 @@ class AddActivity extends React.Component {
                         </Form>
                     </Spin>
                 </PageHeader>
+                <Prompt message="当前页面正在输入中，离开此页面您输入的数据不会被保存，是否离开?" when={true} />
             </div>
         )
     }
