@@ -36,6 +36,10 @@ class ClerkDetail extends React.Component {
             });
     }
 
+    componentWillUnmount(){
+        this.props.finishAlterInfo();
+    }
+
     handleSubmit = e => {
         e.preventDefault();
         const { fileList } = this.state;
@@ -142,8 +146,8 @@ class ClerkDetail extends React.Component {
                                                     rules: [{ required: true, message: '请选择性别!' }],
                                                     initialValue: byClerks[clerkId].gender
                                                 })(<Radio.Group>
-                                                    <Radio value={0}>{sex[0]}</Radio>
                                                     <Radio value={1}>{sex[1]}</Radio>
+                                                    <Radio value={2}>{sex[2]}</Radio>
                                                 </Radio.Group>)}
                                             </Form.Item>
                                     }

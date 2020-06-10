@@ -108,8 +108,8 @@ class AddClerk extends React.Component {
                                 ]
                             })(
                                 <Radio.Group>
-                                    <Radio value={0}>{sex[0]}</Radio>
                                     <Radio value={1}>{sex[1]}</Radio>
+                                    <Radio value={2}>{sex[2]}</Radio>
                                 </Radio.Group>
                             )}
                         </Form.Item>
