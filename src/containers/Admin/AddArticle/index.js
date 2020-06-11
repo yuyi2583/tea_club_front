@@ -4,7 +4,7 @@ import PictureCard from "../../../components/PictureCard";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import {actions as articleActions} from "../../../redux/modules/article";
-import { Redirect } from "react-router-dom";
+import { Redirect,Prompt } from "react-router-dom";
 import { map } from "../../../router";
 import { formItemLayout, tailFormItemLayout } from "../../../utils/common";
 import TagsSelect from "../../../components/TagsSelect";
@@ -120,6 +120,7 @@ class AddArticle extends React.Component {
                         </Form.Item>
                     </Form>
                 </Spin>
+                <Prompt message="当前页面正在输入中，离开此页面您输入的数据不会被保存，是否离开?" when={true} />
             </PageHeader>
         )
     }

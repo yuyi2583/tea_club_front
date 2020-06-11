@@ -5,7 +5,7 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actions as shopActions, getShops, getByShops } from "../../../redux/modules/shop";
 import { actions as clerkActions, getPositions, getByPositions, getByAuthority, getByBelong } from "../../../redux/modules/clerk";
-import { Redirect } from "react-router-dom";
+import { Redirect,Prompt } from "react-router-dom";
 import { map } from "../../../router";
 import { formItemLayout, tailFormItemLayout, sex } from "../../../utils/common";
 import validator from "../../../utils/validator";
@@ -160,6 +160,7 @@ class AddClerk extends React.Component {
                         </Form.Item>
                     </Form>
                 </Spin>
+                <Prompt message="当前页面正在输入中，离开此页面您输入的数据不会被保存，是否离开?" when={true} />
             </PageHeader>
         )
     }

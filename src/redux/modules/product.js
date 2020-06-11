@@ -239,11 +239,18 @@ const termianlProductSuccess = (uid) => ({
 
 const convertProductToPlainStructure = (data) => {
     let photos = new Array();
+    let productDetails=new Array();
     let byPhotos = new Object();
     let activities = new Array();
     let byActivities = new Object();
     data.photos.forEach(photo => {
         photos.push(photo.uid);
+        if (!byPhotos[photo.uid]) {
+            byPhotos[photo.uid] = photo;
+        }
+    });
+    data.productDetails.forEach(photo => {
+        productDetails.push(photo.uid);
         if (!byPhotos[photo.uid]) {
             byPhotos[photo.uid] = photo;
         }
@@ -255,7 +262,7 @@ const convertProductToPlainStructure = (data) => {
         }
     }));
     return {
-        product: { ...data, photos, activities },
+        product: { ...data, photos, activities,productDetails },
         byPhotos,
         byActivities
     }
@@ -270,16 +277,32 @@ const fetchProductSuccess = ({ product, byPhotos, byActivities }) => ({
 
 const convertUpdateProductToPlainStructure = (data) => {
     let photos = new Array();
+    let productDetails=new Array();
     let byPhotos = new Object();
+    let activities = new Array();
+    let byActivities = new Object();
     data.photos.forEach(photo => {
         photos.push(photo.uid);
         if (!byPhotos[photo.uid]) {
             byPhotos[photo.uid] = photo;
         }
     });
+    data.productDetails.forEach(photo => {
+        productDetails.push(photo.uid);
+        if (!byPhotos[photo.uid]) {
+            byPhotos[photo.uid] = photo;
+        }
+    });
+    data.activities.forEach((activity => {
+        activities.push(activity.uid);
+        if (!byActivities[activity.uid]) {
+            byActivities[activity.uid] = activity;
+        }
+    }));
     return {
-        product: { ...data, photos },
+        product: { ...data, photos, activities,productDetails },
         byPhotos,
+        byActivities
     }
 }
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { Descriptions, Row, Col, Skeleton, Typography, Button, Spin, Input, Select, Empty, Form, Modal, InputNumber, Tooltip, Icon } from "antd";
+import { Descriptions, Row, Col, Skeleton,Radio, Typography, Button, Spin, Input, Select, Empty, Form, Modal, InputNumber, Tooltip, Icon } from "antd";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actions as productActions, getProducts, getByProducts, getProductTypes, getByProductTypes, getByProductActivities, getByProductPhotos } from "../../../../../redux/modules/product";
@@ -20,6 +20,7 @@ class ProductDetail extends React.Component {
         super(props);
         this.state = {
             fileList: new Array(),
+            detailFileList:new Array(),
             from:null,
         }
     }
@@ -28,7 +29,10 @@ class ProductDetail extends React.Component {
         const { productId } = this.props.match.params;
         this.props.fetchProduct(productId)
             .then(() => {
-                this.setState({ fileList: this.props.byProducts[productId].photos })
+                this.setState({
+                    fileList: this.props.byProducts[productId].photos,
+                    detailFileList: this.props.byProducts[productId].productDetails
+                 })
             })
             .catch(err => {
                 this.props.callMessage("error", err);
@@ -50,7 +54,7 @@ class ProductDetail extends React.Component {
     handleSubmit = e => {
         e.preventDefault();
         const { productId } = this.props.match.params;
-        const { fileList } = this.state;;
+        const { fileList,detailFileList } = this.state;;
         const { byProducts, byProductTypes } = this.props;
         const thiz = this;
         this.props.form.validateFieldsAndScroll((err, values) => {
@@ -62,7 +66,7 @@ class ProductDetail extends React.Component {
                     },
                     onOk() {
                         const product = {
-                            ...values, photos: fileList, uid: productId, type: { ...byProductTypes[values.type] },
+                            ...values, productDetails:detailFileList,photos: fileList, uid: productId, type: { ...byProductTypes[values.type] },
                             price: { ingot: values.ingot, credit: values.credit, uid: byProducts[productId].price.uid }
                         };
                         console.log("submit values", product);
@@ -101,6 +105,7 @@ class ProductDetail extends React.Component {
         const { productId } = this.props.match.params;
         const { byProducts, byProductPhotos } = this.props;
         let photoDisplay = new Array();
+        let photoDetailDisplay=new Array();
         try {
             photoDisplay = byProducts[productId].photos.map((uid) => ({
                 uid,
@@ -109,11 +114,24 @@ class ProductDetail extends React.Component {
                 type: "image/jpeg",
                 thumbUrl: `data:image/png;base64,${byProductPhotos[uid].photo}`,
             }))
+            photoDetailDisplay = byProducts[productId].productDetails.map((uid) => ({
+                uid,
+                name: 'image.png',
+                status: 'done',
+                type: "image/jpeg",
+                thumbUrl: `data:image/png;base64,${byProductPhotos[uid].photo}`,
+            }))
         } catch (err) {
             photoDisplay = new Array();
+            photoDetailDisplay=new Array();
         }
-        return photoDisplay;
+        return {
+            photoDisplay,
+            photoDetailDisplay
+        };
     }
+
+    
 
     handleDisplayChange = (type, data) => {
         const { fileList } = this.state;
@@ -128,6 +146,23 @@ class ProductDetail extends React.Component {
                 console.log("remove shop photo", data);
                 let newFileList = fileList.filter(uid => uid != data.uid);
                 this.setState({ fileList: newFileList });
+                break;
+        }
+    }
+
+    handleDisplayDetailChange = (type, data) => {
+        const { detailFileList } = this.state;
+        switch (type) {
+            case "done":
+                console.log("add shop photo", data);
+                if (detailFileList.indexOf(data.uid) == -1) {
+                    this.setState({ detailFileList: detailFileList.concat([data.uid]) });
+                }
+                break;
+            case "removed":
+                console.log("remove shop photo", data);
+                let newFileList = detailFileList.filter(uid => uid != data.uid);
+                this.setState({ detailFileList: newFileList });
                 break;
         }
     }
@@ -166,7 +201,7 @@ class ProductDetail extends React.Component {
         const { alterInfo, retrieveRequestQuantity, updateRequestQuantity, form, productTypes, byProductTypes, byProducts } = this.props;
         const { getFieldDecorator } = form;
         const priceDisplay = this.getPriceDisplay();
-        const photoDisplay = this.getPhotosDisplay();
+        const {photoDisplay,photoDetailDisplay} = this.getPhotosDisplay();
         const activitiesDisplay = this.getActivitiesDisplay();
         const isDataNull = byProducts[productId] == undefined ? true : false;
         return (
@@ -211,7 +246,7 @@ class ProductDetail extends React.Component {
                                             </Form.Item>
                                     }
                                 </Descriptions.Item>
-                                <Descriptions.Item label="产品描述">
+                                <Descriptions.Item label="产品描述" span={2}>
                                     {
                                         !alterInfo ?
                                             isDataNull ? null : byProducts[productId].description
@@ -227,6 +262,21 @@ class ProductDetail extends React.Component {
                                                 })(
                                                     <TextArea rows={4} allowClear placeholder="请输入产品描述" />
                                                 )}
+                                            </Form.Item>
+                                    }
+                                </Descriptions.Item>
+                                <Descriptions.Item label="是否在首页展示">
+                                    {
+                                        !alterInfo ?
+                                            isDataNull ? null :byProducts[productId].showOnHome ? "在首页展示" : "不在首页展示" :
+                                            <Form.Item>
+                                                {getFieldDecorator('showOnHome', {
+                                                    rules: [{ required: true, message: '请选择是否在首页展示!' }],
+                                                    initialValue:byProducts[productId].showOnHome
+                                                })(<Radio.Group>
+                                                    <Radio value={false}>否</Radio>
+                                                    <Radio value={true}>是</Radio>
+                                                </Radio.Group>)}
                                             </Form.Item>
                                     }
                                 </Descriptions.Item>
@@ -293,7 +343,7 @@ class ProductDetail extends React.Component {
                                 <Descriptions.Item label="产品适用活动" span={2}>
                                     { activitiesDisplay}
                                 </Descriptions.Item>
-                                <Descriptions.Item label="产品照片" span={2}>
+                                <Descriptions.Item label="产品展示照片" span={2}>
                                     {
                                         alterInfo ?
                                             <PictureCard
@@ -302,6 +352,18 @@ class ProductDetail extends React.Component {
                                             :
                                             <PictureCard
                                                 fileList={photoDisplay}
+                                                type={"display"} />
+                                    }
+                                </Descriptions.Item>
+                                <Descriptions.Item label="产品详情照片" span={2}>
+                                    {
+                                        alterInfo ?
+                                            <PictureCard
+                                                onChange={this.handleDisplayDetailChange}
+                                                fileList={photoDetailDisplay} />
+                                            :
+                                            <PictureCard
+                                                fileList={photoDetailDisplay}
                                                 type={"display"} />
                                     }
                                 </Descriptions.Item>

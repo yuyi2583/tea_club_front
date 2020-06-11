@@ -4,7 +4,7 @@ import PictureCard from "../../../components/PictureCard";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { actions as productActions, getProductTypes, getByProductTypes } from "../../../redux/modules/product";
-import { Redirect } from "react-router-dom";
+import { Redirect,Prompt } from "react-router-dom";
 import { map } from "../../../router";
 import { formItemLayout, tailFormItemLayout } from "../../../utils/common";
 
@@ -28,7 +28,7 @@ class AddProduct extends React.Component {
 
     handleSubmit = e => {
         e.preventDefault();
-        const { fileList } = this.state;;
+        const { fileList,detailFileList } = this.state;;
         const thiz = this;
         this.props.form.validateFieldsAndScroll((err, values) => {
             if (!err) {
@@ -38,7 +38,7 @@ class AddProduct extends React.Component {
                     onCancel() {
                     },
                     onOk() {
-                        const product = { ...values, photos: fileList, price: { ingot: values.ingot, credit: values.credit } };
+                        const product = { ...values,productDetails:detailFileList, photos: fileList, price: { ingot: values.ingot, credit: values.credit } };
                         console.log("submit values", product);
                         thiz.props.addProduct(product)
                             .then(() => {
@@ -231,6 +231,7 @@ class AddProduct extends React.Component {
                 >
                     <Input placeholder="请输入种类名称" name="newCategory" value={newCategory} onChange={this.handleNewCategoryChange} />
                 </Modal>
+                <Prompt message="当前页面正在输入中，离开此页面您输入的数据不会被保存，是否离开?" when={true} />
             </div>
         )
     }
