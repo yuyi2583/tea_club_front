@@ -2,6 +2,7 @@ import React from "react";
 import { Descriptions, Button, Typography, Menu, Icon, Spin } from "antd";
 // import { actions as customerActions, getCustomers, getByCustomers } from "../../../../../redux/modules/customer";
 import { actions as orderActions, getByOrders, getOrders, getByOrderActivityRules, getByOrderClerks, getByOrderCustomers, getByProducts } from "../../../../../redux/modules/order";
+import { actions as customerActions, getByCustomers } from "../../../../../redux/modules/customer";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import { sex, fetchTimeRange } from "../../../../../utils/common";
@@ -23,6 +24,11 @@ class CustomerDetail extends React.Component {
 
     componentDidMount() {
         const { customerId } = this.props.match.params;
+        this.props.fetchCustomer(customerId)
+            .catch(err => {
+                this.props.callMessage("error", err);
+                this.setState({ from: `${map.admin.AdminHome()}/customer_management/customers` });
+            });
         this.props.fetchOrdersByCustomer(customerId)
             .catch(err => {
                 this.props.callMessage("error", err);
@@ -52,11 +58,12 @@ class CustomerDetail extends React.Component {
         if (from != null) {
             return <Redirect to={from} />
         }
-        const { match, retrieveRequestQuantity, orders, byOrders, byOrderActivityRules, byOrderClerks, byOrderCustomers, byProducts } = this.props;
+        const { match, retrieveRequestQuantity, orders, byOrders, byCustomers,
+            byOrderActivityRules, byOrderClerks, byProducts } = this.props;
         const { customerId } = match.params;
         const { current } = this.state;
         let isDataNull = true;
-        if (byOrderCustomers[customerId] != undefined && byOrderCustomers[customerId].avatar != null) {
+        if (byCustomers[customerId] != undefined ) {
             isDataNull = false;
         }
         return (
@@ -74,13 +81,12 @@ class CustomerDetail extends React.Component {
                 {
                     current == "detail" ?
                         <Descriptions title={`客户编号:${customerId}`} bordered style={{ marginTop: "10px" }}>
-                            <Descriptions.Item label="姓名">{isDataNull ? null : byOrderCustomers[customerId].name}</Descriptions.Item>
-                            <Descriptions.Item label="性别">{isDataNull ? null : sex[byOrderCustomers[customerId].gender]}</Descriptions.Item>
-                            <Descriptions.Item label="联系方式">{isDataNull ? null : byOrderCustomers[customerId].contact}</Descriptions.Item>
-                            <Descriptions.Item label="邮箱">{isDataNull ? null : byOrderCustomers[customerId].email}</Descriptions.Item>
-                            <Descriptions.Item label="客户类型">{isDataNull ? null : byOrderCustomers[customerId].customerType.name}</Descriptions.Item>
-                            <Descriptions.Item label="地址">{isDataNull ? null : byOrderCustomers[customerId].address}</Descriptions.Item>
-                            <Descriptions.Item label="客户头像">{isDataNull ? null : <PictureDispaly photo={byOrderCustomers[customerId].avatar.photo} />}</Descriptions.Item>
+                            <Descriptions.Item label="姓名">{isDataNull ? null : byCustomers[customerId].name}</Descriptions.Item>
+                            <Descriptions.Item label="性别">{isDataNull ? null : sex[byCustomers[customerId].gender]}</Descriptions.Item>
+                            <Descriptions.Item label="联系方式">{isDataNull ? null : byCustomers[customerId].contact}</Descriptions.Item>
+                            <Descriptions.Item label="邮箱">{isDataNull ? null : byCustomers[customerId].email}</Descriptions.Item>
+                            <Descriptions.Item label="客户类型">{isDataNull ? null : byCustomers[customerId].customerType.name}</Descriptions.Item>
+                            <Descriptions.Item label="客户头像">{isDataNull ? null :byCustomers[customerId].avatar==null?null: <PictureDispaly photo={byCustomers[customerId].avatar.photo} />}</Descriptions.Item>
                         </Descriptions> :
                         <div>
                             <span>当前为最近3个月的申请数据</span>
@@ -106,10 +112,7 @@ class CustomerDetail extends React.Component {
 
 const mapStateToProps = (state, props) => {
     return {
-        // customers: getCustomers(state),
-        // byCustomers: getByCustomers(state),
-        // customerType: getCustomerType(state),
-        // byCustomerType: getByCustomerType(state),
+        byCustomers: getByCustomers(state),
         orders: getOrders(state),
         byOrders: getByOrders(state),
         byOrderActivityRules: getByOrderActivityRules(state),
@@ -121,7 +124,7 @@ const mapStateToProps = (state, props) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        // ...bindActionCreators(customerActions, dispatch),
+        ...bindActionCreators(customerActions, dispatch),
         ...bindActionCreators(orderActions, dispatch),
     };
 };

@@ -101,4 +101,5 @@ export default {
     otpLogin:(contact,otp)=>`${HOME}/admin/otpLogin?contact=${contact}&otp=${otp}`,
     verifyToken:()=>`${HOME}/verifyToken`,
     savePhoto:()=>`${HOME}/savephoto`,
+    fetchCustomer:(customerId)=>`${HOME}/admin/customers/${customerId}`,
 }

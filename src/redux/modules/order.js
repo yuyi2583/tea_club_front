@@ -113,9 +113,13 @@ const convertOrdersToPlainStructure = (data) => {
     let byProducts = new Object();
     data.forEach((order) => {
         let products = new Array();
+        let clerk=null
         orders.push(order.uid);
         byOrderCustomers = { ...byOrderCustomers, [order.customer.uid]: order.customer };
-        byOrderClerks = { ...byOrderClerks, [order.clerk.uid]: order.clerk };
+        if(order.status.processer!=null&&order.status.processer!=undefined){
+            clerk=order.status.processer.uid
+            byOrderClerks = { ...byOrderClerks, [clerk]: order.status.processer };
+        }
         order.products.forEach(product => {
             products.push(product.uid);
             if (!byProducts[product.uid]) {
@@ -123,7 +127,7 @@ const convertOrdersToPlainStructure = (data) => {
             }
         });
         if (!byOrders[order.uid]) {
-            byOrders[order.uid] = { ...order, customer: order.customer.uid, clerk: order.clerk.uid, products };
+            byOrders[order.uid] = { ...order, customer: order.customer.uid, clerk, products };
         }
     });
     return {
@@ -169,8 +173,11 @@ const convertOrderToPlainStructure = (data) => {
     let byOrderCustomers = new Object();
     let byProducts = new Object();
     let products = new Array();
+    let clerk=data.status.processer==null&&data.status.processer==undefined?null:data.status.processer.uid;
     byOrderCustomers = { [data.customer.uid]: data.customer };
-    byOrderClerks = { [data.clerk.uid]: data.clerk };
+    if(clerk){
+        byOrderClerks = { [clerk]: data.status.processer };
+    }
     data.products.forEach(product => {
         products.push(product.uid);
         if (!byOrderActivityRules[product.activityRule.uid]) {
@@ -180,7 +187,7 @@ const convertOrderToPlainStructure = (data) => {
             byProducts[product.uid] = { ...product, activityRule: product.activityRule.uid };
         }
     });
-    const order = { ...data, customer: data.customer.uid, clerk: data.clerk.uid, products };
+    const order = { ...data, customer: data.customer.uid, clerk, products };
     return {
         order,
         byOrderClerks,

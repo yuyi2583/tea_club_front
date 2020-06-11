@@ -23,8 +23,8 @@ export const types = {
     REJECT_APPLICATION: "CUSTOMER/REJECT_APPLICATION",
     FETCH_CUSTOMERS: "CUSTOMER/FETCH_CUSTOMERS",
     SET_SUPER_VIP: "CUSTOMER/SET_SUPER_VIP",
-    ////////////////////////////////////
-    FETCH_CUSTOMER_BY_ID: "CUSTOMER/FETCH_CUSTOMER_BY_ID",
+    FETCH_CUSTOMER: "CUSTOMER/FETCH_CUSTOMER",
+
 };
 
 export const actions = {
@@ -158,7 +158,28 @@ export const actions = {
             });
         }
     },
+    fetchCustomer: (customerId) => {
+        return (dispatch) => {
+            dispatch(appActions.startRequest());
+            return get(url.fetchCustomer(customerId)).then((result) => {
+                dispatch(appActions.finishRequest());
+                if (!result.error) {
+                    dispatch(fetchCustomerSuccess(result.data));
+                    return Promise.resolve();
+                } else {
+                    dispatch(appActions.setError(result.error));
+                    return Promise.reject(result.error);
+                }
+            });
+        }
+
+    }
 }
+
+const fetchCustomerSuccess = (customer) => ({
+    type: types.FETCH_CUSTOMER,
+    customer
+})
 
 const convetCustomerTypesToPlainStructure = (data) => {
     let customerTypes = new Array();
@@ -267,13 +288,6 @@ const setSuperVIPSuccess = (customer) => ({
     type: types.SET_SUPER_VIP,
     customer
 })
-//////////////////////////////////////////////////
-
-
-const fetchCustomerByIdSuccess = (customer) => ({
-    type: types.FETCH_CUSTOMER_BY_ID,
-    customer
-})
 
 
 
@@ -284,6 +298,12 @@ const reducer = (state = initialState, action) => {
     let byCustomers;
     let byEnterpriseCustomerApplications;
     switch (action.type) {
+        case types.FETCH_CUSTOMER:
+            if (state.customers.indexOf(action.customer.uid) == -1) {
+                customers = state.customers.concat([action.customer.uid]);
+            }
+            byCustomers = { ...state.byCustomers, [action.customer.uid]: action.customer };
+            return { ...state, customers, byCustomers };
         case types.FETCH_CUSTOMER_TYPES:
             return { ...state, customerTypes: action.customerTypes, byCustomerTypes: action.byCustomerTypes };
         case types.FETCH_ENTERPRISE_CUSTOMER_APPLICATIONS:
@@ -305,14 +325,6 @@ const reducer = (state = initialState, action) => {
         case types.SET_SUPER_VIP:
             byCustomers = { ...state.byCustomers, [action.customer.uid]: action.customer };
             return { ...state, byCustomers };
-        //////////////////////////////////////
-        case types.FETCH_CUSTOMER_BY_ID:
-            customers = state.customers;
-            byCustomers = { ...state.byCustomers, [action.customer.uid]: action.customer };
-            if (state.customers.indexOf(action.customer.uid) == -1) {
-                customers.push(action.customer.uid);
-            }
-            return { ...state, customers, byCustomers };
         default:
             return state;
     }
@@ -326,6 +338,5 @@ export const getEnterpriseCustomerApplications = (state) => state.customer.enter
 export const getByEnterpriseCustomerApplications = (state) => state.customer.byEnterpriseCustomerApplications;
 export const getByCustomerAvatar = (state) => state.customer.byCustomerAvatar;
 export const getByEnterpriseBusinessLicense = (state) => state.customer.byEnterpriseBusinessLicense;
-///////////////////////////////////////////
 export const getCustomers = (state) => state.customer.customers;
 export const getByCustomers = (state) => state.customer.byCustomers;

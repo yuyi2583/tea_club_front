@@ -38,8 +38,20 @@ class OrderDetail extends React.Component {
 
     changeOrderStatus = (event) => {
         console.log(event.target.name);
-        this.setState({ orderStatus: event.target.name, modalVisible: true });
-
+        const {byOrders,match,user}=this.props;
+        const { orderId } = match.params;
+        if(byOrders[orderId].deliverMode=="selfPick"){
+            let orderStatus=event.target.name;
+            let params = { uid: orderId,clerk:{uid:user.uid}}
+            this.props.updateOrderStatus(orderStatus, params).then(() => {
+                this.props.callMessage("success", "更新订单状态成功！");
+                this.setState({ modalVisible: false });
+            }).catch((err) => {
+                this.props.callMessage("error", "更新订单状态失败!" + err);
+            });
+        }else{
+            this.setState({ orderStatus: event.target.name, modalVisible: true });
+        }
     }
 
     getTitleBar = () => {
@@ -53,8 +65,6 @@ class OrderDetail extends React.Component {
                     button = (
                         <span>
                             <Button type="primary" name={fetchOrderStatus.shipped} onClick={this.changeOrderStatus}>发货</Button>
-                            &nbsp;&nbsp;
-                            <Button name={fetchOrderStatus.refunded} onClick={this.changeOrderStatus}>退款</Button>
                         </span>
                     );
                     break;
@@ -150,7 +160,7 @@ class OrderDetail extends React.Component {
     handleModalOk = () => {
         const { orderStatus, currentModal } = this.state;
         const { orderId } = this.props.match.params;
-        const { byOrders } = this.props;
+        const { byOrders,user } = this.props;
         this.props.form.validateFieldsAndScroll((err, values) => {
             if (!err) {
                 let params = new Object();
@@ -159,6 +169,7 @@ class OrderDetail extends React.Component {
                 } else if (orderStatus == fetchOrderStatus.refunded || orderStatus == fetchOrderStatus.rejectRefund) {
                     params = { ...values, uid: orderId };
                 }
+                params={...params,clerk:{uid:user.uid}};
                 this.props.updateOrderStatus(orderStatus, params).then(() => {
                     this.props.callMessage("success", "更新订单状态成功！");
                     this.setState({ modalVisible: false });
@@ -295,6 +306,29 @@ class OrderDetail extends React.Component {
         }
     }
 
+    getAddressDisplay=()=>{
+        const {byOrders}=this.props;
+        const { orderId } = this.props.match.params;
+        console.log(byOrders[orderId]);
+        let addressDisplay="暂无数据";
+        try{
+            const {deliverMode}=byOrders[orderId];
+            if(deliverMode=="selfPick"){
+                const {placeOrderWay}=byOrders[orderId];
+                addressDisplay=`门店自提 ${placeOrderWay.name}`;
+            }else{
+                const {address}=byOrders[orderId];
+                addressDisplay=`${address.name} ${address.phone} \n`;
+                addressDisplay+=`${address.province} ${address.city} ${address.district} ${address.detail}`;
+            }
+        }catch(err){
+            console.error(err);
+            addressDisplay="暂无数据";
+        }
+        console.log("address",addressDisplay);
+        return addressDisplay;
+    }
+
     render() {
         const { from } = this.state;
         if (from != null) {
@@ -309,6 +343,7 @@ class OrderDetail extends React.Component {
         const productsDisplay = this.getProductsDisplay();
         const amountDisplay = this.getAmountDisplay();
         const { title, content } = this.getModalContent()
+        const address=this.getAddressDisplay();
         return (
             <Spin spinning={retrieveRequestQuantity > 0}>
                 <Descriptions
@@ -330,14 +365,14 @@ class OrderDetail extends React.Component {
                         {isDataNull ? null : byOrderCustomers[order.customer].uid}
                     </Descriptions.Item>
                     <Descriptions.Item label="提单人联系方式">{isDataNull ? null : byOrderCustomers[order.customer].contact}</Descriptions.Item>
-                    <Descriptions.Item label="地址" span={2}>{isDataNull ? null : byOrderCustomers[order.customer].address}</Descriptions.Item>
+                    <Descriptions.Item label="收件地址" span={2}>{address}</Descriptions.Item>
                     <Descriptions.Item label="产品" span={2}>
                         {isDataNull ? null : productsDisplay}
                     </Descriptions.Item>
                     <Descriptions.Item label="买家留言">
                         {isDataNull ? null : order.buyerPs}
                     </Descriptions.Item>
-                    {isDataNull ? null : order.status.status != "payed" && order.status.status != "unpayed" ?
+                    {isDataNull ? null : order.clerk==null?null:order.status.status != "payed" && order.status.status != "unpayed" ?
                         <Descriptions.Item label={
                             isDataNull ? null :
                                 <span>
@@ -375,7 +410,7 @@ class OrderDetail extends React.Component {
                             </Descriptions.Item>
                         </Descriptions>
                 }
-                {isDataNull ? null : order.buyerRefundReason != null || order.buyerRefundReason != "" ?
+                {isDataNull ? null : order.buyerRefundReason != null && order.buyerRefundReason != "" ?
                     <Descriptions bordered title="买家退款理由" style={{ marginBottom: "20px" }}>
                         <Descriptions.Item label="理由">{order.buyerRefundReason}</Descriptions.Item>
                     </Descriptions> : null}

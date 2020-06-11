@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 import { handleBack, callMessage } from "./commonUtils";
 import { Button } from "antd";
+import { actions as authActions, getUser } from "../redux/modules/adminAuth";
 import { actions as uiActions, getAlterInfoState, getModalLoading, getModalVisible, getShopId_shopManagement, getAddButtonVisible_shopManagement } from "../redux/modules/ui";
 import { getRetrieveRequestQuantity, getUpdateRequestQuantity, getModalRequestQuantity, getConnectError, getError } from "../redux/modules/app";
 import { bindActionCreators } from "redux";
-import {actions as customerActions} from "../redux/modules/customer";
+import { actions as customerActions } from "../redux/modules/customer";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 
@@ -54,7 +55,7 @@ export default function asyncComponent(importComponent) {
         extra = (<Button type="primary" onClick={this.props.startAlterInfo}>修改包厢信息</Button>);
       } else if (history.location.pathname.indexOf("/clerk/") != -1) {
         extra = (<Button type="primary" onClick={this.props.startAlterInfo}>修改职员信息</Button>);
-      }  else {
+      } else {
         extra = null;
       }
       return extra;
@@ -127,11 +128,13 @@ export default function asyncComponent(importComponent) {
       shopId: getShopId_shopManagement(state),
       addButtonVisible: getAddButtonVisible_shopManagement(state),
       error: getError(state),
+      user: getUser(state),
     };
   };
 
   const mapDispatchToProps = (dispatch) => {
     return {
+      ...bindActionCreators(authActions, dispatch),
       ...bindActionCreators(uiActions, dispatch),
       ...bindActionCreators(customerActions, dispatch),
     };
