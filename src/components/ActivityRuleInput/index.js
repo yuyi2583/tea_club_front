@@ -63,8 +63,8 @@ class ActivityRuleInput extends React.Component {
                             <Form.Item className="inline-input">
                                 {getFieldDecorator('activityRule2_' + index, {
                                     rules: [{ required: true, message: '请输入优惠规则!' }],
-                                    initialValue: isUpdate ? isOriginalRuleType ? activityRule.activityRule2 : { number: 0, currency: "ingot", operation: "plus" } : { number: 0, currency: "ingot", operation: "plus" }
-                                })(<Price />)}
+                                    initialValue: isUpdate ? isOriginalRuleType ? activityRule.activityRule2 : { number: 0, currency: "ingot", operation: "minus" } : { number: 0, currency: "ingot", operation: "minus" }
+                                })(<Price type="shopping" showOperation={false}/>)}
                             </Form.Item>
                         </Col>
                     </Row>

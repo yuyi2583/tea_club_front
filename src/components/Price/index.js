@@ -32,18 +32,18 @@ class PriceInput extends React.Component {
     };
 
     render() {
-        const { value, showOperation } = this.props;
+        const { value, showOperation,type } = this.props;
         return (
             <span>
                 {
                     <Select
                         value={value.operation}
                         style={{ width: '70px' }}
-                        disabled={!showOperation }
+                        disabled={!showOperation}
                         onChange={this.handleOperationChange}
                     >
-                        <Option value="plus">赠</Option>
                         <Option value="minus">减</Option>
+                        <Option value="plus">赠</Option>
                     </Select> }
                 <InputNumber
                     value={value.number}
@@ -54,6 +54,7 @@ class PriceInput extends React.Component {
                 <Select
                     value={value.currency}
                     style={{ width: '70px' }}
+                    disabled={type=="shopping" }
                     onChange={this.handleCurrencyChange}
                 >
                     <Option value="ingot">元宝</Option>
