@@ -294,9 +294,9 @@ const setSuperVIPSuccess = (customer) => ({
 
 
 const reducer = (state = initialState, action) => {
-    let customers;
-    let byCustomers;
-    let byEnterpriseCustomerApplications;
+    let customers=new Array();
+    let byCustomers=new Object();
+    let byEnterpriseCustomerApplications=new Object();
     switch (action.type) {
         case types.FETCH_CUSTOMER:
             if (state.customers.indexOf(action.customer.uid) == -1) {

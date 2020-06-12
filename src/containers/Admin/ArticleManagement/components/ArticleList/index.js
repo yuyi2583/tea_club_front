@@ -115,9 +115,9 @@ class ArticleList extends React.Component {
         return [
             {
                 title: '文章名称',
-                dataIndex: 'name',
-                key: 'name',
-                ...this.getColumnSearchProps('name'),
+                dataIndex: 'title',
+                key: 'title',
+                ...this.getColumnSearchProps('title'),
             },
             {
                 title: '文章标签',
@@ -164,7 +164,7 @@ class ArticleList extends React.Component {
         const thiz = this;
         confirm({
             title: "确认",
-            content: `确定将${byArticles[uid].name}失效吗?`,
+            content: `确定将${byArticles[uid].title}失效吗?`,
             onOk() {
                 thiz.props.terminalArticle(uid)
                     .then(() => {

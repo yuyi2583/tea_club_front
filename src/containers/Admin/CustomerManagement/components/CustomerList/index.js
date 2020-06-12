@@ -89,20 +89,25 @@ class CustomerList extends React.Component {
     getDataSource = () => {
         const { customers, byCustomers } = this.props;
         let dataSource = new Array();
-        customers.forEach((uid) => {
-            try {
-                const dataItem = {
-                    key: uid,
-                    ...byCustomers[uid],
-                    customerType: byCustomers[uid].customerType.name,
-                    sex: sex[byCustomers[uid].gender],
+        try{
+            customers.forEach((uid) => {
+                try {
+                    const dataItem = {
+                        key: uid,
+                        ...byCustomers[uid],
+                        customerType: byCustomers[uid].customerType.name,
+                        sex: sex[byCustomers[uid].gender],
+                    };
+                    dataSource.push(dataItem);
+                } catch (err) {
+                    // console.error(err);
                 };
-                dataSource.push(dataItem);
-            } catch (err) {
-                // console.error(err);
-            };
+    
+            })
 
-        })
+        }catch(err){
+            console.log(err)
+        }
         return dataSource;
     }
 

@@ -75,14 +75,25 @@ class TagsSelect extends React.Component {
         this.props.fetchTags().catch(err => callMessage("error", err));
     }
 
+    getTagDisplay=()=>{
+        const {tags,byTags}=this.props;
+        let display=null;
+        try{
+            display=tags.map(uid => <CheckableTag key={uid} onClick={() => this.handleTagClick(uid)}>{byTags[uid].name}</CheckableTag>)
+        }catch(err){
+            console.log(err);
+        }
+        return display;
+    }
+
     saveInputRef = input => (this.input = input);
 
     render() {
-        const { tags, byTags } = this.props;
         const { inputVisible, inputValue } = this.state;
+        const tagDisplay=this.getTagDisplay();
         return (
             <div>
-                {tags.map(uid => <CheckableTag key={uid} onClick={() => this.handleTagClick(uid)}>{byTags[uid].name}</CheckableTag>)}
+                {tagDisplay}
                 {inputVisible && (
                     <Input
                         ref={this.saveInputRef}

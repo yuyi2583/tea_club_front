@@ -37,21 +37,8 @@ class OrderDetail extends React.Component {
 
 
     changeOrderStatus = (event) => {
-        console.log(event.target.name);
-        const {byOrders,match,user}=this.props;
-        const { orderId } = match.params;
-        if(byOrders[orderId].deliverMode=="selfPick"){
-            let orderStatus=event.target.name;
-            let params = { uid: orderId,clerk:{uid:user.uid}}
-            this.props.updateOrderStatus(orderStatus, params).then(() => {
-                this.props.callMessage("success", "更新订单状态成功！");
-                this.setState({ modalVisible: false });
-            }).catch((err) => {
-                this.props.callMessage("error", "更新订单状态失败!" + err);
-            });
-        }else{
-            this.setState({ orderStatus: event.target.name, modalVisible: true });
-        }
+        const {match}=this.props;
+        this.setState({ orderStatus: event.target.name, modalVisible: true });
     }
 
     getTitleBar = () => {
@@ -64,7 +51,7 @@ class OrderDetail extends React.Component {
                 case fetchOrderStatus.payed:
                     button = (
                         <span>
-                            <Button type="primary" name={fetchOrderStatus.shipped} onClick={this.changeOrderStatus}>发货</Button>
+                            <Button type="primary" name={fetchOrderStatus.shipped} onClick={this.changeOrderStatus}>{byOrders[orderId].deliverMode=='selfPick'?"商品备好":"发货"}</Button>
                         </span>
                     );
                     break;
@@ -165,11 +152,16 @@ class OrderDetail extends React.Component {
             if (!err) {
                 let params = new Object();
                 if (orderStatus == fetchOrderStatus.shipped) {
-                    params = { uid: orderId, trackInfo: { ...values } };
+                    if(byOrders[orderId].deliverMode=='selfPick'){
+                        params = { uid: orderId}
+                    }else{
+                        params = { uid: orderId, trackInfo: { ...values } };
+                    }
                 } else if (orderStatus == fetchOrderStatus.refunded || orderStatus == fetchOrderStatus.rejectRefund) {
                     params = { ...values, uid: orderId };
                 }
                 params={...params,clerk:{uid:user.uid}};
+                console.log("params",params);
                 this.props.updateOrderStatus(orderStatus, params).then(() => {
                     this.props.callMessage("success", "更新订单状态成功！");
                     this.setState({ modalVisible: false });
@@ -192,72 +184,79 @@ class OrderDetail extends React.Component {
         const { orderStatus } = this.state;
         let title = "";
         let content = "";
+        const {byOrders,match}=this.props;
+        const {orderId}=match.params;
         const { getFieldDecorator } = this.props.form;
         switch (orderStatus) {
             case fetchOrderStatus.shipped:
-                title = "填写物流信息";
-                content = (
-                    <span>
-                        <Menu onClick={this.handleClickMenu} selectedKeys={[this.state.currentModal]} mode="horizontal">
-                            <Menu.Item key="express">
-                                <Icon type="mail" />
-                                物流公司
-                            </Menu.Item>
-                            <Menu.Item key="individual">
-                                <Icon type="appstore" />
-                                个人配送
-                            </Menu.Item>
-                        </Menu>
-                        {this.state.currentModal == "express" ?
-                            <Form>
-                                <Form.Item label="物流单号">
-                                    {getFieldDecorator('trackingId', {
-                                        rules: [
-                                            {
-                                                required: true,
-                                                message: '请输入物流单号!',
-                                            },
-                                        ],
-                                    })(<Input allowClear />)}
-                                </Form.Item>
-                                <Form.Item label="物流公司">
-                                    {getFieldDecorator("companyName", {
-                                        rules: [
-                                            {
-                                                required: true,
-                                                message: '请输入物流公司名称!',
-                                            },
-                                        ],
-                                    })(<Input allowClear />)}
-                                </Form.Item>
-                            </Form>
-                            :
-                            <Form>
-                                <Form.Item label="配送人电话">
-                                    {getFieldDecorator('phone', {
-                                        rules: [
-                                            {
-                                                required: true,
-                                                message: '请输入配送人电话!',
-                                            },
-                                            validator.phone
-                                        ],
-                                    })(<Input allowClear />)}
-                                </Form.Item>
-                                <Form.Item label="描述">
-                                    {getFieldDecorator("description", {
-                                        rules: [
-                                            {
-                                                required: true,
-                                                message: '请输入描述信息!',
-                                            },
-                                        ],
-                                    })(<Input allowClear />)}
-                                </Form.Item>
-                            </Form>
-                        }
-                    </span>
-                );
+                if(byOrders[orderId].deliverMode=='selfPick'){
+                    title="确认发货";
+                    content="确认通知买家提货？";
+                }else{
+                    title = "填写物流信息";
+                    content = (
+                        <span>
+                            <Menu onClick={this.handleClickMenu} selectedKeys={[this.state.currentModal]} mode="horizontal">
+                                <Menu.Item key="express">
+                                    <Icon type="mail" />
+                                    物流公司
+                                </Menu.Item>
+                                <Menu.Item key="individual">
+                                    <Icon type="appstore" />
+                                    个人配送
+                                </Menu.Item>
+                            </Menu>
+                            {this.state.currentModal == "express" ?
+                                <Form>
+                                    <Form.Item label="物流单号">
+                                        {getFieldDecorator('trackingId', {
+                                            rules: [
+                                                {
+                                                    required: true,
+                                                    message: '请输入物流单号!',
+                                                },
+                                            ],
+                                        })(<Input allowClear />)}
+                                    </Form.Item>
+                                    <Form.Item label="物流公司">
+                                        {getFieldDecorator("companyName", {
+                                            rules: [
+                                                {
+                                                    required: true,
+                                                    message: '请输入物流公司名称!',
+                                                },
+                                            ],
+                                        })(<Input allowClear />)}
+                                    </Form.Item>
+                                </Form>
+                                :
+                                <Form>
+                                    <Form.Item label="配送人电话">
+                                        {getFieldDecorator('phone', {
+                                            rules: [
+                                                {
+                                                    required: true,
+                                                    message: '请输入配送人电话!',
+                                                },
+                                                validator.phone
+                                            ],
+                                        })(<Input allowClear />)}
+                                    </Form.Item>
+                                    <Form.Item label="描述">
+                                        {getFieldDecorator("description", {
+                                            rules: [
+                                                {
+                                                    required: true,
+                                                    message: '请输入描述信息!',
+                                                },
+                                            ],
+                                        })(<Input allowClear />)}
+                                    </Form.Item>
+                                </Form>
+                            }
+                        </span>
+                    );
+                }
                 break;
             case fetchOrderStatus.refunded:
                 title = "退款说明";
@@ -269,11 +268,10 @@ class OrderDetail extends React.Component {
                                 {getFieldDecorator("sellerPs", {
                                     rules: [
                                         {
-                                            required: true,
                                             message: '请输入退款理由!',
                                         },
                                     ],
-                                })(<Input.TextArea rows={4} allowClear />)}
+                                })(<Input.TextArea rows={4} allowClear placeholder="若无可不填" />)}
                             </Form.Item>
                         </Form>
                     </span>

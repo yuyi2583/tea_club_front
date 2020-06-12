@@ -83,7 +83,7 @@ class AddArticle extends React.Component {
                 <Spin spinning={retrieveRequestQuantity > 0}>
                     <Form {...formItemLayout} onSubmit={this.handleSubmit}>
                         <Form.Item label="文章标题">
-                            {getFieldDecorator('name', {
+                            {getFieldDecorator('title', {
                                 rules: [
                                     {
                                         required: true,
@@ -109,6 +109,11 @@ class AddArticle extends React.Component {
                             {getFieldDecorator('url', {
                                 rules: [{ required: true, message: '请输入文章链接!' },valodator.url],
                             })(<Input allowClear />)}
+                        </Form.Item>
+                        <Form.Item label="文章描述">
+                            {getFieldDecorator('description', {
+                                rules: [{ required: true, message: '请输入文章描述!' }],
+                            })(<Input.TextArea allowClear />)}
                         </Form.Item>
                         <Form.Item label="文章展示图片">
                             <PictureCard max={1} onChange={this.handleDisplayChange} />
