@@ -189,9 +189,9 @@ class OrderDetail extends React.Component {
         const { getFieldDecorator } = this.props.form;
         switch (orderStatus) {
             case fetchOrderStatus.shipped:
-                if(byOrders[orderId].deliverMode=='selfPick'){
+                if(byOrders[orderId].boxOrder!=null||byOrders[orderId].deliverMode=='selfPick'){
                     title="确认发货";
-                    content="确认通知买家提货？";
+                    content="确认通知买家？";
                 }else{
                     title = "填写物流信息";
                     content = (
@@ -310,14 +310,18 @@ class OrderDetail extends React.Component {
         console.log(byOrders[orderId]);
         let addressDisplay="暂无数据";
         try{
-            const {deliverMode}=byOrders[orderId];
-            if(deliverMode=="selfPick"){
-                const {placeOrderWay}=byOrders[orderId];
-                addressDisplay=`门店自提 ${placeOrderWay.name}`;
+            if(byOrders[orderId].boxOrder!=null){
+                addressDisplay=`${byOrders[orderId].boxOrder.name}下单`;
             }else{
-                const {address}=byOrders[orderId];
-                addressDisplay=`${address.name} ${address.phone} \n`;
-                addressDisplay+=`${address.province} ${address.city} ${address.district} ${address.detail}`;
+                const {deliverMode}=byOrders[orderId];
+                if(deliverMode=="selfPick"){
+                    const {placeOrderWay}=byOrders[orderId];
+                    addressDisplay=`门店自提 ${placeOrderWay.name}`;
+                }else{
+                    const {address}=byOrders[orderId];
+                    addressDisplay=`${address.name} ${address.phone} \n`;
+                    addressDisplay+=`${address.province} ${address.city} ${address.district} ${address.detail}`;
+                }
             }
         }catch(err){
             console.error(err);
